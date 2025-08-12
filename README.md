@@ -67,7 +67,7 @@ pip install -r requirements.txt
 
 # 启动Web界面
 python main.py
-
+```
 
 ### 3. 访问界面
 
