@@ -57,12 +57,6 @@ test/
 
 # 或命令行启动
 python terminal_town.py
-
-# 功能演示
-python demo_terminal.py
-
-# 系统测试
-python test_terminal.py
 ```
 
 ### 方式2: Web界面模式
@@ -72,10 +66,8 @@ python test_terminal.py
 pip install -r requirements.txt
 
 # 启动Web界面
-streamlit run main.py
-# 或
-双击 启动.bat
-```
+python main.py
+
 
 ### 3. 访问界面
 
