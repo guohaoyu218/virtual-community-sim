@@ -1,0 +1,3077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏘️ AI虚拟小镇 - 智能交互版</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a9c0;
+            --border: #2d3748;
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --border: #e2e8f0;
+            --glass: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 动态背景 */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(-45deg, #6366f1, #8b5cf6, #06b6d4, #10b981);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 粒子效果 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* 玻璃形态容器 */
+        .glass-container {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 顶部导航 */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-toggle {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        /* 主要内容区 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            min-height: 800px;
+        }
+
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* 3D地图区域 */
+        .map-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .map-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .map-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .map-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        /* 3D地图网格 */
+        .map-container {
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 80px);
+            grid-template-rows: repeat(6, 80px);
+            gap: 8px;
+            transform: rotateX(15deg) rotateY(5deg);
+            transition: transform 0.3s ease;
+        }
+
+        .map-grid:hover {
+            transform: rotateX(10deg) rotateY(0deg);
+        }
+
+        .map-cell {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .map-cell:hover::before {
+            opacity: 1;
+        }
+
+        .map-cell:hover {
+            transform: translateZ(20px) rotateX(-5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .map-cell.building {
+            background: linear-gradient(145deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .map-cell.agent {
+            background: linear-gradient(145deg, var(--success), var(--accent));
+            color: white;
+            border-color: var(--success);
+            animation: agentPulse 3s infinite;
+        }
+
+        @keyframes agentPulse {
+            0%, 100% { box-shadow: 0 0 20px var(--success); }
+            50% { box-shadow: 0 0 40px var(--success), 0 0 60px var(--success); }
+        }
+
+        /* 右侧面板 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Agent卡片 */
+        .agents-grid {
+            display: grid;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .agents-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .agents-grid::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 3px;
+        }
+
+        .agents-grid::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .agent-card {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .agent-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+
+        .agent-card.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .agent-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .agent-info h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .agent-info p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .agent-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .energy-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .energy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--warning));
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+
+        /* 聊天区域 */
+        .chat-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: messageSlide 0.3s ease;
+            align-items: flex-start;
+        }
+
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px 16px;
+            max-width: 70%;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px 20px;
+            gap: 10px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .chat-input input {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary);
+        }
+
+        .chat-input button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .sidebar {
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .panel {
+                min-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .navbar {
+                padding: 15px 20px;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .map-grid {
+                grid-template-columns: repeat(6, 60px);
+                grid-template-rows: repeat(6, 60px);
+                gap: 4px;
+            }
+            
+            .map-cell {
+                font-size: 1.4rem;
+            }
+            
+            .sidebar {
+                flex-direction: column;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 工具提示 */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 快速操作按钮 */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+        }
+
+        .quick-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 通知系统 */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px 20px;
+            color: var(--text-primary);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--error);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        /* Agent交互面板样式 */
+        .interaction-feed {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .interaction-feed::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .interaction-feed::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 3px;
+        }
+
+        .interaction-feed::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .interaction-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .interaction-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .interaction-content {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .interaction-participants {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .participant-tag {
+            background: var(--primary);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .social-network-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-network-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .relationship-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .relationship-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .relationship-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .relationship-strength {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+
+        .strength-bar {
+            width: 60px;
+            height: 4px;
+            background: var(--bg-primary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--error), var(--warning), var(--success));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <!-- 动态背景 -->
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-city"></i>
+                <span>AI虚拟小镇</span>
+                <span style="font-size: 0.8rem; opacity: 0.7;">v3.0</span>
+            </div>
+            
+            <div class="nav-controls">
+                <div class="status-bar">
+                    <div class="status-item">
+                        <div class="status-dot"></div>
+                        <span>AI系统在线</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-users"></i>
+                        <span id="agentCount">9个Agent</span>
+                    </div>
+                    <div class="status-item">
+                        <i class="fas fa-building"></i>
+                        <span>8个建筑</span>
+                    </div>
+                </div>
+                
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- 主要内容 -->
+        <div class="main-content">
+            <div class="content-area">
+                <!-- 3D地图区域 -->
+                <section class="map-section">
+                    <div class="map-header">
+                        <h2 class="map-title">
+                            <i class="fas fa-map"></i>
+                            智能小镇3D地图
+                        </h2>
+                        <div class="map-controls">
+                            <button class="map-btn" onclick="refreshMap()">
+                                <i class="fas fa-sync-alt"></i>
+                                刷新
+                            </button>
+                            <button class="map-btn" onclick="simulateStep()">
+                                <i class="fas fa-play"></i>
+                                模拟
+                            </button>
+                            <button class="map-btn" onclick="triggerAgentInteraction()">
+                                <i class="fas fa-users"></i>
+                                互动
+                            </button>
+                            <button class="map-btn" onclick="showSocialNetwork()">
+                                <i class="fas fa-network-wired"></i>
+                                社交网络
+                            </button>
+                            <button class="map-btn" onclick="showAdvancedStats()">
+                                <i class="fas fa-chart-line"></i>
+                                高级统计
+                            </button>
+                            <button class="map-btn" onclick="intelligentGroupMovement(); generateMap(); generateAgentCards();">
+                                <i class="fas fa-route"></i>
+                                智能移动
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="map-container">
+                        <div class="map-grid" id="mapGrid">
+                            <!-- 地图格子将由JavaScript生成 -->
+                        </div>
+                    </div>
+                    
+                    <div id="simulationOutput" style="margin-top: 20px; padding: 15px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; min-height: 80px; color: var(--text-secondary);"></div>
+                </section>
+            </div>
+
+            <!-- 右侧面板 -->
+            <aside class="sidebar">
+                <!-- Agent控制面板 -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">
+                            <i class="fas fa-robot"></i>
+                            智能Agent
+                        </h3>
+                        <span class="tooltip" data-tooltip="点击Agent卡片选择对话对象">
+                            <i class="fas fa-info-circle"></i>
+                        </span>
+                    </div>
+                    
+                    <div class="agents-grid" id="agentsGrid">
+                        <!-- Agent卡片将由JavaScript生成 -->
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="randomizeAgents()">
+                            <i class="fas fa-random"></i>
+                            随机移动
+                        </button>
+                        <button class="quick-btn" onclick="resetAgents()">
+                            <i class="fas fa-home"></i>
+                            回到初始位置
+                        </button>
+                        <button class="quick-btn" onclick="toggleAutoInteraction()">
+                            <i class="fas fa-robot"></i>
+                            <span id="autoInteractionText">自动交互</span>
+                        </button>
+                        <button class="quick-btn" onclick="exportGameData()">
+                            <i class="fas fa-download"></i>
+                            导出数据
+                        </button>
+                        <button class="quick-btn" onclick="resetGameData()">
+                            <i class="fas fa-trash"></i>
+                            重置数据
+                        </button>
+                        <button class="quick-btn" onclick="showDecayInfo()">
+                            <i class="fas fa-heart"></i>
+                            衰减信息
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Agent间交互面板 -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">
+                            <i class="fas fa-comments"></i>
+                            Agent交互记录
+                        </h3>
+                        <button class="quick-btn" onclick="clearInteractionHistory()">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="interaction-feed" id="interactionFeed">
+                        <div style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                            <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                            <p>等待Agent间的交互...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="organizeGroupActivity()">
+                            <i class="fas fa-calendar"></i>
+                            组织活动
+                        </button>
+                        <button class="quick-btn" onclick="showLocationStats()">
+                            <i class="fas fa-chart-bar"></i>
+                            地点统计
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 聊天面板 -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">
+                            <i class="fas fa-comments"></i>
+                            智能对话
+                        </h3>
+                        <button class="quick-btn" onclick="clearChat()">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <i class="fas fa-robot"></i>
+                            <span id="chatTitle">选择Agent开始对话</span>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <div style="text-align: center; color: var(--text-secondary); margin: auto;">
+                                <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                                <p>点击上方Agent卡片开始对话</p>
+                                <p style="font-size: 0.8rem; margin-top: 10px;">AI将根据Agent的性格特点进行回应</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input">
+                            <input type="text" id="messageInput" placeholder="输入消息..." disabled>
+                            <button onclick="sendMessage()" disabled id="sendBtn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="quickMessage('你好！')">👋 打招呼</button>
+                        <button class="quick-btn" onclick="quickMessage('最近怎么样？')">❓ 询问近况</button>
+                        <button class="quick-btn" onclick="quickMessage('聊聊工作')">💼 谈论工作</button>
+                        <button class="quick-btn" onclick="quickMessage('今天计划')">📅 询问计划</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- 通知容器 -->
+    <div id="notification" class="notification"></div>
+
+    <!-- 社交网络模态框 -->
+    <div id="socialNetworkModal" class="social-network-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-network-wired"></i>
+                    社交网络分析
+                </h2>
+                <button class="modal-close" onclick="closeSocialNetwork()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="socialNetworkContent">
+                <!-- 社交网络内容将在这里动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏数据 - 增强版本，支持agent间交互
+        const gameData = {
+            buildings: [
+                {name: '咖啡厅', emoji: '☕', x: 1, y: 3, description: '温馨的咖啡厅'},
+                {name: '图书馆', emoji: '📚', x: 4, y: 3, description: '安静的阅读空间'},
+                {name: '公园', emoji: '🌳', x: 2, y: 1, description: '绿色的休闲区'},
+                {name: '办公室', emoji: '💼', x: 5, y: 1, description: '高效的工作场所'},
+                {name: '家', emoji: '🏠', x: 3, y: 5, description: '温暖的家'},
+                {name: '医院', emoji: '🏥', x: 0, y: 2, description: '医疗中心'},
+                {name: '餐厅', emoji: '🍽️', x: 5, y: 4, description: '美食天地'},
+                {name: '修理店', emoji: '🔧', x: 1, y: 0, description: '维修工坊'}
+            ],
+            agents: {
+                'Alex': {
+                    emoji: '👨‍💻', 
+                    occupation: '程序员', 
+                    location: '办公室', 
+                    x: 5, y: 1, 
+                    energy: 85, 
+                    mood: '专注', 
+                    personality: '逻辑思维强，喜欢解决技术问题',
+                    background: '计算机科学专业，热爱编程和算法',
+                    expertise: ['编程', '算法', '技术学习', '问题解决'],
+                    preferences: ['咖啡厅', '办公室', '图书馆'],
+                    relationships: {}, 
+                    lastInteraction: null,
+                    memories: [],
+                    currentThoughts: ''
+                },
+                'Emma': {
+                    emoji: '👩‍🎨', 
+                    occupation: '艺术家', 
+                    location: '公园', 
+                    x: 2, y: 1, 
+                    energy: 90, 
+                    mood: '创作中', 
+                    personality: '富有创造力，感性丰富',
+                    background: '艺术学院毕业，擅长绘画和设计',
+                    expertise: ['艺术创作', '色彩设计', '美学感知', '创意表达'],
+                    preferences: ['公园', '家', '咖啡厅'],
+                    relationships: {}, 
+                    lastInteraction: null,
+                    memories: [],
+                    currentThoughts: ''
+                },
+                'Sarah': {
+                    emoji: '👩‍🏫', 
+                    occupation: '教师', 
+                    location: '图书馆', 
+                    x: 4, y: 3, 
+                    energy: 75, 
+                    mood: '开心', 
+                    personality: '耐心友善，善于沟通',
+                    background: '教育学专业，有多年教学经验',
+                    expertise: ['教育', '知识分享', '学习指导', '沟通技巧'],
+                    preferences: ['图书馆', '咖啡厅', '公园'],
+                    relationships: {}, 
+                    lastInteraction: null,
+                    memories: [],
+                    currentThoughts: ''
+                },
+                'David': {
+                    emoji: '👨‍💼', 
+                    occupation: '商人', 
+                    location: '办公室', 
+                    x: 5, y: 1, 
+                    energy: 80, 
+                    mood: '忙碌', 
+                    personality: '精明能干，善于交际',
+                    background: '商学院毕业，有丰富的商业经验',
+                    expertise: ['商业策略', '投资分析', '市场洞察', '人际交往'],
+                    preferences: ['办公室', '咖啡厅', '餐厅'],
+                    relationships: {}, 
+                    lastInteraction: null,
+                    memories: [],
+                    currentThoughts: ''
+                },
+                'Lisa': {
+                    emoji: '👩‍🎓', 
+                    occupation: '学生', 
+                    location: '图书馆', 
+                    x: 4, y: 3, 
+                    energy: 95, 
+                    mood: '兴奋', 
+                    personality: '好学上进，充满活力',
+                    background: '大学生，正在学习计算机科学',
+                    expertise: ['学习', '提问', '吸收知识', '技术探索'],
+                    preferences: ['图书馆', '咖啡厅', '公园'],
+                    relationships: {}, 
+                    lastInteraction: null,
+                    memories: [],
+                    currentThoughts: ''
+                },
+                'Mike': {
+                    emoji: '👴', 
+                    occupation: '退休人员', 
+                    location: '公园', 
+                    x: 2, y: 1, 
+                    energy: 60, 
+                    mood: '平静', 
+                    personality: '悠闲自在，经验丰富',
+                    background: '退休工程师，有丰富的人生经验',
+                    expertise: ['人生经验', '故事分享', '生活智慧', '休闲娱乐'],
+                    preferences: ['公园', '家', '咖啡厅'],
+                    relationships: {}, 
+                    lastInteraction: null,
+                    memories: [],
+                    currentThoughts: ''
+                },
+                'John': {
+                    emoji: '👨‍⚕️', 
+                    occupation: '医生', 
+                    location: '医院', 
+                    x: 0, y: 2, 
+                    energy: 70, 
+                    mood: '专业', 
+                    personality: '细心负责，关爱病人',
+                    background: '医学院毕业，有多年临床经验',
+                    expertise: ['医疗诊断', '健康咨询', '病人关怀', '医学知识'],
+                    preferences: ['医院', '图书馆', '咖啡厅'],
+                    relationships: {}, 
+                    lastInteraction: null,
+                    memories: [],
+                    currentThoughts: ''
+                },
+                'Anna': {
+                    emoji: '👩‍🍳', 
+                    occupation: '厨师', 
+                    location: '餐厅', 
+                    x: 5, y: 4, 
+                    energy: 85, 
+                    mood: '愉快', 
+                    personality: '热情好客，手艺精湛',
+                    background: '烹饪学校毕业，有多年烹饪经验',
+                    expertise: ['烹饪技巧', '美食制作', '食材搭配', '餐饮服务'],
+                    preferences: ['餐厅', '家', '咖啡厅'],
+                    relationships: {}, 
+                    lastInteraction: null,
+                    memories: [],
+                    currentThoughts: ''
+                },
+                'Tom': {
+                    emoji: '👨‍🔧', 
+                    occupation: '机械师', 
+                    location: '修理店', 
+                    x: 1, y: 0, 
+                    energy: 75, 
+                    mood: '专注', 
+                    personality: '动手能力强，实用主义',
+                    background: '技工学校毕业，有多年维修经验',
+                    expertise: ['机械维修', '工具使用', '问题诊断', '实用技能'],
+                    preferences: ['修理店', '家', '咖啡厅'],
+                    relationships: {}, 
+                    lastInteraction: null,
+                    memories: [],
+                    currentThoughts: ''
+                }
+            },
+            chatHistory: [],
+            selectedAgent: null,
+            agentInteractions: [], // 记录agent间的交互
+            socialNetwork: {}, // 社交网络
+            locationPopularity: {}, // 地点热度
+            autoInteraction: true, // 自动交互开关
+            systemTime: new Date(), // 系统时间
+            lastDecayTime: new Date(), // 上次关系衰减时间
+            decayInterval: 30 * 60 * 1000 // 30分钟衰减间隔
+        };
+
+        let animationId;
+
+        // 初始化社交网络和关系
+        function initializeSocialNetwork() {
+            const agentNames = Object.keys(gameData.agents);
+            
+            // 初始化每个agent的关系网络
+            agentNames.forEach(agentA => {
+                gameData.agents[agentA].relationships = {};
+                agentNames.forEach(agentB => {
+                    if (agentA !== agentB) {
+                        // 基于职业和性格生成初始关系强度
+                        const strength = generateInitialRelationship(agentA, agentB);
+                        gameData.agents[agentA].relationships[agentB] = {
+                            strength: strength,
+                            interactions: 0,
+                            lastMet: null,
+                            topics: [],
+                            interactionHistory: [],
+                            relationshipLevel: getRelationshipLevel(strength)
+                        };
+                    }
+                });
+            });
+            
+            // 初始化地点热度
+            gameData.buildings.forEach(building => {
+                gameData.locationPopularity[building.name] = {
+                    visits: 0,
+                    currentOccupants: 0,
+                    popularityScore: 50,
+                    interactions: 0,
+                    lastActivity: new Date()
+                };
+            });
+        }
+
+        // 生成初始关系强度
+        function generateInitialRelationship(agentA, agentB) {
+            const agentAData = gameData.agents[agentA];
+            const agentBData = gameData.agents[agentB];
+            
+            // 基于职业相性
+            const occupationCompatibility = {
+                '程序员': {'艺术家': 0.6, '教师': 0.7, '商人': 0.8, '学生': 0.9, '退休人员': 0.5, '医生': 0.7, '厨师': 0.6, '机械师': 0.8},
+                '艺术家': {'教师': 0.8, '商人': 0.5, '学生': 0.9, '退休人员': 0.7, '医生': 0.6, '厨师': 0.8, '机械师': 0.4},
+                '教师': {'商人': 0.6, '学生': 0.9, '退休人员': 0.8, '医生': 0.8, '厨师': 0.7, '机械师': 0.6},
+                '商人': {'学生': 0.7, '退休人员': 0.6, '医生': 0.7, '厨师': 0.8, '机械师': 0.7},
+                '学生': {'退休人员': 0.8, '医生': 0.7, '厨师': 0.6, '机械师': 0.5},
+                '退休人员': {'医生': 0.8, '厨师': 0.9, '机械师': 0.7},
+                '医生': {'厨师': 0.7, '机械师': 0.6},
+                '厨师': {'机械师': 0.8}
+            };
+            
+            let compatibility = 0.5; // 默认相性
+            
+            // 查找职业相性
+            if (occupationCompatibility[agentAData.occupation] && 
+                occupationCompatibility[agentAData.occupation][agentBData.occupation]) {
+                compatibility = occupationCompatibility[agentAData.occupation][agentBData.occupation];
+            } else if (occupationCompatibility[agentBData.occupation] && 
+                       occupationCompatibility[agentBData.occupation][agentAData.occupation]) {
+                compatibility = occupationCompatibility[agentBData.occupation][agentAData.occupation];
+            }
+            
+            // 位置效果
+            let locationEffect = 1.0;
+            if (agentAData.location === agentBData.location) {
+                locationEffect = 1.2; // 同地点增加20%关系
+            }
+            
+            // 性格匹配度
+            let personalityMatch = 1.0;
+            const personalityKeywords = {
+                '逻辑思维': ['技术', '编程', '算法', '问题解决'],
+                '创造力': ['艺术', '设计', '创意', '美学'],
+                '耐心': ['教育', '教学', '指导', '沟通'],
+                '精明': ['商业', '投资', '市场', '策略'],
+                '好学': ['学习', '探索', '提问', '吸收'],
+                '经验': ['人生', '故事', '智慧', '休闲'],
+                '细心': ['医疗', '诊断', '关怀', '专业'],
+                '热情': ['烹饪', '美食', '服务', '手艺'],
+                '实用': ['维修', '工具', '技能', '动手']
+            };
+            
+            // 计算性格匹配度
+            const agentAKeywords = agentAData.expertise.join(' ');
+            const agentBKeywords = agentBData.expertise.join(' ');
+            
+            let commonKeywords = 0;
+            Object.values(personalityKeywords).forEach(keywords => {
+                keywords.forEach(keyword => {
+                    if (agentAKeywords.includes(keyword) && agentBKeywords.includes(keyword)) {
+                        commonKeywords++;
+                    }
+                });
+            });
+            
+            if (commonKeywords > 0) {
+                personalityMatch = 1.0 + (commonKeywords * 0.1);
+            }
+            
+            // 添加随机因素
+            const randomFactor = 0.8 + Math.random() * 0.4; // 0.8-1.2
+            
+            // 计算最终关系强度
+            const finalStrength = compatibility * locationEffect * personalityMatch * randomFactor;
+            
+            return Math.min(1.0, Math.max(0.1, finalStrength));
+        }
+
+        // 获取关系等级
+        function getRelationshipLevel(strength) {
+            if (strength >= 0.8) return '亲密朋友';
+            if (strength >= 0.6) return '好朋友';
+            if (strength >= 0.4) return '普通朋友';
+            if (strength >= 0.2) return '熟人';
+            return '陌生人';
+        }
+
+        // 关系衰减系统
+        function applyRelationshipDecay() {
+            const now = new Date();
+            const timeDiff = now - gameData.lastDecayTime;
+            
+            if (timeDiff >= gameData.decayInterval) {
+                const agentNames = Object.keys(gameData.agents);
+                
+                agentNames.forEach(agentA => {
+                    agentNames.forEach(agentB => {
+                        if (agentA !== agentB) {
+                            const relationship = gameData.agents[agentA].relationships[agentB];
+                            if (relationship) {
+                                // 基础衰减
+                                const baseDecay = 0.02;
+                                
+                                // 根据关系强度调整衰减
+                                let decayRate = baseDecay;
+                                if (relationship.strength > 0.7) {
+                                    decayRate *= 0.5; // 亲密朋友衰减较慢
+                                } else if (relationship.strength < 0.3) {
+                                    decayRate *= 1.5; // 陌生人衰减较快
+                                }
+                                
+                                // 随机衰减
+                                if (Math.random() < 0.15) { // 15%概率额外衰减
+                                    const randomDecay = Math.random() * 0.01;
+                                    decayRate += randomDecay;
+                                }
+                                
+                                // 应用衰减
+                                relationship.strength = Math.max(0.1, relationship.strength - decayRate);
+                                relationship.relationshipLevel = getRelationshipLevel(relationship.strength);
+                            }
+                        }
+                    });
+                });
+                
+                gameData.lastDecayTime = now;
+                console.log('关系衰减已应用');
+            }
+        }
+
+        // 初始化粒子效果
+        function initParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 主题切换
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.className = 'fas fa-sun';
+                showNotification('已切换到浅色主题', 'success');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-moon';
+                showNotification('已切换到深色主题', 'success');
+            }
+        }
+
+        // 通知系统
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // 生成3D地图
+        function generateMap() {
+            const mapGrid = document.getElementById('mapGrid');
+            mapGrid.innerHTML = '';
+            
+            for (let y = 0; y < 6; y++) {
+                for (let x = 0; x < 6; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'map-cell';
+                    cell.setAttribute('data-x', x);
+                    cell.setAttribute('data-y', y);
+                    
+                    let cellContent = '⬜';
+                    let cellClass = 'map-cell';
+                    let tooltip = `坐标 (${x}, ${y})`;
+                    
+                    // 检查建筑
+                    const building = gameData.buildings.find(b => b.x === x && b.y === y);
+                    if (building) {
+                        cellContent = building.emoji;
+                        cellClass += ' building';
+                        tooltip = `${building.name} - ${building.description}`;
+                    }
+                    
+                    // 检查Agent（优先显示）
+                    const agentsHere = Object.entries(gameData.agents).filter(([name, agent]) => agent.x === x && agent.y === y);
+                    if (agentsHere.length > 0) {
+                        if (agentsHere.length === 1) {
+                            cellContent = agentsHere[0][1].emoji;
+                            tooltip = `${agentsHere[0][0]} (${agentsHere[0][1].occupation}) - ${agentsHere[0][1].mood}`;
+                        } else {
+                            cellContent = `👥${agentsHere.length}`;
+                            tooltip = `${agentsHere.map(([name]) => name).join(', ')}`;
+                        }
+                        cellClass += ' agent';
+                    }
+                    
+                    cell.className = cellClass;
+                    cell.textContent = cellContent;
+                    cell.title = tooltip;
+                    cell.onclick = () => showCellInfo(x, y);
+                    
+                    mapGrid.appendChild(cell);
+                }
+            }
+        }
+
+        // 显示格子详细信息
+        function showCellInfo(x, y) {
+            let info = `📍 位置 (${x}, ${y})\n\n`;
+            
+            const building = gameData.buildings.find(b => b.x === x && b.y === y);
+            if (building) {
+                info += `🏢 建筑: ${building.emoji} ${building.name}\n📝 ${building.description}\n\n`;
+            }
+            
+            const agentsHere = Object.entries(gameData.agents).filter(([name, agent]) => agent.x === x && agent.y === y);
+            if (agentsHere.length > 0) {
+                info += `🤖 Agent:\n`;
+                agentsHere.forEach(([name, agent]) => {
+                    info += `• ${agent.emoji} ${name} (${agent.occupation})\n  💭 ${agent.mood} | ⚡ ${agent.energy}%\n  🧠 ${agent.personality}\n\n`;
+                });
+            }
+            
+            if (!building && agentsHere.length === 0) {
+                info += "🌱 这里是空地，等待开发...";
+            }
+            
+            showNotification(`查看位置 (${x}, ${y}) 详情`, 'success');
+            alert(info);
+        }
+
+        // 生成Agent卡片
+        function generateAgentCards() {
+            const agentsGrid = document.getElementById('agentsGrid');
+            agentsGrid.innerHTML = '';
+            
+            Object.entries(gameData.agents).forEach(([name, agent]) => {
+                const energyColor = agent.energy > 70 ? 'var(--success)' : agent.energy > 40 ? 'var(--warning)' : 'var(--error)';
+                
+                // 计算关系统计
+                const relationships = agent.relationships || {};
+                const totalRelationships = Object.keys(relationships).length;
+                const strongRelationships = Object.values(relationships).filter(rel => rel.strength > 0.6).length;
+                const avgRelationshipStrength = totalRelationships > 0 ? 
+                    Object.values(relationships).reduce((sum, rel) => sum + rel.strength, 0) / totalRelationships : 0;
+                
+                const card = document.createElement('div');
+                card.className = 'agent-card';
+                card.onclick = () => selectAgent(name);
+                
+                card.innerHTML = `
+                    <div class="agent-header">
+                        <div class="agent-avatar">${agent.emoji}</div>
+                        <div class="agent-info">
+                            <h4>${name}</h4>
+                            <p>${agent.occupation}</p>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary);">${agent.background}</p>
+                        </div>
+                    </div>
+                    <div class="agent-stats">
+                        <div class="stat-item">📍 ${agent.location}</div>
+                        <div class="stat-item">😊 ${agent.mood}</div>
+                        <div class="stat-item">
+                            ⚡ ${agent.energy}%
+                            <div class="energy-bar">
+                                <div class="energy-fill" style="width: ${agent.energy}%; background: ${energyColor};"></div>
+                            </div>
+                        </div>
+                        <div class="stat-item">🎯 (${agent.x}, ${agent.y})</div>
+                        <div class="stat-item">❤️ ${strongRelationships}/${totalRelationships} 好友</div>
+                        <div class="stat-item">🧠 ${agent.memories.length} 记忆</div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary);">
+                        <strong>专长:</strong> ${agent.expertise.slice(0, 3).join(', ')}${agent.expertise.length > 3 ? '...' : ''}
+                    </div>
+                `;
+                
+                agentsGrid.appendChild(card);
+            });
+        }
+
+        // 选择Agent
+        function selectAgent(agentName) {
+            gameData.selectedAgent = agentName;
+            const agent = gameData.agents[agentName];
+            
+            // 更新UI状态
+            document.querySelectorAll('.agent-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // 更新聊天标题
+            document.getElementById('chatTitle').innerHTML = `
+                ${agent.emoji} ${agentName} - ${agent.occupation}
+            `;
+            
+            // 启用聊天输入
+            document.getElementById('messageInput').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('messageInput').placeholder = `与 ${agentName} 对话...`;
+            
+            showNotification(`已选择 ${agentName}，开始对话吧！`, 'success');
+        }
+
+        // 发送消息
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message || !gameData.selectedAgent) return;
+            
+            const agent = gameData.agents[gameData.selectedAgent];
+            
+            // 添加用户消息
+            addMessage('user', '🧑 你', message);
+            
+            // 模拟AI思考
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.innerHTML = '<div class="loading"></div>';
+            sendBtn.disabled = true;
+            
+            setTimeout(() => {
+                const response = generateAgentResponse(gameData.selectedAgent, message);
+                addMessage('agent', `${agent.emoji} ${gameData.selectedAgent}`, response);
+                
+                // 更新Agent状态
+                updateAgentAfterChat(gameData.selectedAgent);
+                
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                sendBtn.disabled = false;
+            }, 1000 + Math.random() * 2000); // 1-3秒思考时间
+            
+            messageInput.value = '';
+        }
+
+        // 添加消息到聊天
+        function addMessage(type, sender, content) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // 清空初始提示
+            if (chatMessages.children.length === 1 && chatMessages.children[0].style.textAlign === 'center') {
+                chatMessages.innerHTML = '';
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${sender.split(' ')[0]}</div>
+                <div class="message-content">
+                    <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 4px;">
+                        ${sender} • ${timestamp}
+                    </div>
+                    ${content}
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // 保存到历史记录
+            gameData.chatHistory.push({
+                type, sender, content, timestamp
+            });
+        }
+
+        // 触发agent间交互
+        function triggerAgentInteraction() {
+            const agentNames = Object.keys(gameData.agents);
+            const interactingAgents = [];
+            
+            // 找到在同一位置的agents
+            const locationGroups = {};
+            agentNames.forEach(name => {
+                const agent = gameData.agents[name];
+                const key = `${agent.x},${agent.y}`;
+                if (!locationGroups[key]) {
+                    locationGroups[key] = [];
+                }
+                locationGroups[key].push(name);
+            });
+            
+            // 在有多个agent的位置触发交互
+            Object.values(locationGroups).forEach(group => {
+                if (group.length >= 2) {
+                    // 随机选择2个或更多agents进行交互
+                    const shuffled = group.sort(() => 0.5 - Math.random());
+                    const participants = shuffled.slice(0, Math.min(3, shuffled.length));
+                    
+                    if (participants.length >= 2) {
+                        executeAgentInteraction(participants);
+                    }
+                }
+            });
+            
+            // 如果没有自然交互，随机创建一个
+            if (interactingAgents.length === 0) {
+                const randomAgents = agentNames.sort(() => 0.5 - Math.random()).slice(0, 2);
+                executeAgentInteraction(randomAgents);
+            }
+        }
+
+        // 执行agent交互
+        function executeAgentInteraction(participants) {
+            const location = gameData.agents[participants[0]].location;
+            const interactionType = getInteractionType(participants, location);
+            const conversation = generateGroupConversation(participants, interactionType, location);
+            
+            // 记录交互
+            const interaction = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleTimeString(),
+                participants: participants,
+                location: location,
+                type: interactionType,
+                conversation: conversation
+            };
+            
+            gameData.agentInteractions.unshift(interaction);
+            
+            // 更新关系强度
+            let totalRelationshipChange = 0;
+            participants.forEach(agentA => {
+                participants.forEach(agentB => {
+                    if (agentA !== agentB) {
+                        const change = updateRelationship(agentA, agentB, interactionType, participants, location);
+                        totalRelationshipChange += change;
+                    }
+                });
+            });
+            
+            // 更新地点热度
+            if (gameData.locationPopularity[location]) {
+                gameData.locationPopularity[location].interactions = 
+                    (gameData.locationPopularity[location].interactions || 0) + 1;
+                gameData.locationPopularity[location].popularityScore += 0.1;
+                gameData.locationPopularity[location].lastActivity = new Date();
+            }
+            
+            // 显示交互
+            displayInteraction(interaction);
+            
+            // 显示关系变化信息
+            const changeText = totalRelationshipChange > 0 ? 
+                `关系总体提升 ${(totalRelationshipChange * 100).toFixed(1)}%` : 
+                `关系总体下降 ${Math.abs(totalRelationshipChange * 100).toFixed(1)}%`;
+            
+            showNotification(`${participants.join(', ')} 在${location}进行了${interactionType}，${changeText}`, 'success');
+        }
+
+        // 获取交互类型
+        function getInteractionType(participants, location) {
+            const locationInteractions = {
+                '咖啡厅': ['闲聊', '工作讨论', '放松交谈', '商务洽谈', '创意交流'],
+                '图书馆': ['学术讨论', '知识分享', '安静交流', '学习指导', '研究合作'],
+                '公园': ['散步聊天', '运动交流', '休闲对话', '户外活动', '自然探索'],
+                '办公室': ['工作协作', '业务讨论', '项目交流', '技术分享', '团队建设'],
+                '家': ['私人谈话', '家庭话题', '深入交流', '情感分享', '生活讨论'],
+                '医院': ['健康咨询', '关怀对话', '专业交流', '医疗讨论', '病情分析'],
+                '餐厅': ['用餐聊天', '美食讨论', '社交聚餐', '烹饪技巧', '饮食文化'],
+                '修理店': ['技术交流', '实用讨论', '经验分享', '工具使用', '问题解决']
+            };
+            
+            const options = locationInteractions[location] || ['一般交流', '友好对话', '随意聊天'];
+            
+            // 根据参与者关系决定交互类型
+            const agentA = participants[0];
+            const agentB = participants[1];
+            const relationship = gameData.agents[agentA].relationships[agentB];
+            
+            if (relationship) {
+                const strength = relationship.strength;
+                
+                // 关系强度影响交互类型概率
+                if (strength > 0.7) {
+                    // 亲密朋友：更多正面交互
+                    const positiveTypes = ['深入交流', '情感分享', '创意合作', '知识分享'];
+                    if (Math.random() < 0.7) {
+                        return positiveTypes[Math.floor(Math.random() * positiveTypes.length)];
+                    }
+                } else if (strength < 0.3) {
+                    // 陌生人：可能产生负面交互
+                    if (Math.random() < 0.3) {
+                        const negativeTypes = ['误解', '分歧', '尴尬对话'];
+                        return negativeTypes[Math.floor(Math.random() * negativeTypes.length)];
+                    }
+                }
+            }
+            
+            return options[Math.floor(Math.random() * options.length)];
+        }
+
+        // 计算关系变化
+        function calculateRelationshipChange(interactionType, participants, location) {
+            const baseChanges = {
+                // 正面交互
+                '闲聊': 0.05, '工作讨论': 0.08, '学术讨论': 0.1, '散步聊天': 0.06,
+                '技术交流': 0.09, '美食讨论': 0.07, '深入交流': 0.12, '专业交流': 0.1,
+                '创意交流': 0.11, '学习指导': 0.09, '研究合作': 0.12, '户外活动': 0.08,
+                '团队建设': 0.11, '情感分享': 0.13, '生活讨论': 0.08, '烹饪技巧': 0.09,
+                '饮食文化': 0.08, '工具使用': 0.07, '问题解决': 0.1,
+                
+                // 负面交互
+                '误解': -0.15, '分歧': -0.18, '尴尬对话': -0.12, '争论': -0.20,
+                '冲突': -0.25, '误解': -0.15, '不愉快': -0.16, '分歧讨论': -0.17
+            };
+            
+            let change = baseChanges[interactionType] || 0.05;
+            
+            // 位置效果
+            const locationEffects = {
+                '咖啡厅': 1.1, '图书馆': 1.0, '公园': 1.2, '办公室': 0.9,
+                '家': 1.3, '医院': 0.8, '餐厅': 1.1, '修理店': 0.9
+            };
+            
+            change *= (locationEffects[location] || 1.0);
+            
+            // 参与者数量效果
+            if (participants.length > 2) {
+                change *= 0.8; // 群体交互效果稍弱
+            }
+            
+            // 关系强度效果
+            const agentA = participants[0];
+            const agentB = participants[1];
+            const relationship = gameData.agents[agentA].relationships[agentB];
+            
+            if (relationship) {
+                if (change > 0) {
+                    // 正面变化：关系越强，增长越慢
+                    if (relationship.strength > 0.7) {
+                        change *= 0.7;
+                    } else if (relationship.strength < 0.3) {
+                        change *= 1.3;
+                    }
+                } else {
+                    // 负面变化：关系越强，伤害越深
+                    if (relationship.strength > 0.7) {
+                        change *= 1.2;
+                    } else if (relationship.strength < 0.3) {
+                        change *= 0.8;
+                    }
+                }
+            }
+            
+            return change;
+        }
+
+        // 更新关系强度
+        function updateRelationship(agentA, agentB, interactionType, participants, location) {
+            const relationship = gameData.agents[agentA].relationships[agentB];
+            if (relationship) {
+                // 计算关系变化
+                const change = calculateRelationshipChange(interactionType, participants, location);
+                
+                // 应用变化
+                relationship.strength = Math.max(0.1, Math.min(1.0, relationship.strength + change));
+                relationship.interactions += 1;
+                relationship.lastMet = new Date().toISOString();
+                
+                // 记录交互历史
+                relationship.interactionHistory.push({
+                    type: interactionType,
+                    change: change,
+                    timestamp: new Date().toISOString(),
+                    location: location,
+                    participants: participants
+                });
+                
+                // 限制历史记录数量
+                if (relationship.interactionHistory.length > 20) {
+                    relationship.interactionHistory = relationship.interactionHistory.slice(-20);
+                }
+                
+                // 更新关系等级
+                relationship.relationshipLevel = getRelationshipLevel(relationship.strength);
+                
+                // 添加话题
+                if (!relationship.topics.includes(interactionType)) {
+                    relationship.topics.push(interactionType);
+                }
+                
+                // 更新地点热度
+                if (gameData.locationPopularity[location]) {
+                    gameData.locationPopularity[location].interactions = 
+                        (gameData.locationPopularity[location].interactions || 0) + 1;
+                    gameData.locationPopularity[location].popularityScore += 0.1;
+                    gameData.locationPopularity[location].lastActivity = new Date();
+                }
+                
+                return change;
+            }
+            return 0;
+        }
+
+        // 生成群体对话
+        function generateGroupConversation(participants, interactionType, location) {
+            const conversation = [];
+            const agentTemplates = {
+                'Alex': ['从技术角度来说...', '我觉得可以用编程思维解决', '这让我想到了算法问题'],
+                'Emma': ['这很有艺术感！', '我想画下这个场景', '创意就是这样产生的'],
+                'Sarah': ['这是个很好的学习机会', '让我来分享一些经验', '教育的本质是...'],
+                'David': ['从商业角度考虑', '这有很大的市场潜力', '我们可以合作...'],
+                'Lisa': ['太有趣了！', '我要记录下来', '能详细说说吗？'],
+                'Mike': ['年轻时我也遇到过', '经验告诉我...', '人生如茶...'],
+                'John': ['从医学角度看', '健康很重要', '预防胜于治疗'],
+                'Anna': ['这让我想到美食', '烹饪和生活一样', '味道是情感的表达'],
+                'Tom': ['实际操作是关键', '动手能力很重要', '工具和技巧...']
+            };
+            
+            participants.forEach((participant, index) => {
+                const templates = agentTemplates[participant] || ['我觉得...', '有道理', '确实如此'];
+                const response = templates[Math.floor(Math.random() * templates.length)];
+                conversation.push({
+                    speaker: participant,
+                    message: `${response}关于${interactionType}的话题。`
+                });
+            });
+            
+            return conversation;
+        }
+
+        // 显示交互记录
+        function displayInteraction(interaction) {
+            const feed = document.getElementById('interactionFeed');
+            
+            // 清空初始提示
+            if (feed.children.length === 1 && feed.children[0].style.textAlign === 'center') {
+                feed.innerHTML = '';
+            }
+            
+            const interactionDiv = document.createElement('div');
+            interactionDiv.className = 'interaction-item';
+            
+            const participantTags = interaction.participants.map(name => 
+                `<span class="participant-tag">${gameData.agents[name].emoji} ${name}</span>`
+            ).join('');
+            
+            const conversationText = interaction.conversation.map(conv => 
+                `<strong>${conv.speaker}:</strong> ${conv.message}`
+            ).join('<br>');
+            
+            interactionDiv.innerHTML = `
+                <div class="interaction-header">
+                    <i class="fas fa-clock"></i>
+                    <span>${interaction.timestamp}</span>
+                    <span>•</span>
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${interaction.location}</span>
+                    <span>•</span>
+                    <span>${interaction.type}</span>
+                </div>
+                <div class="interaction-participants">
+                    ${participantTags}
+                </div>
+                <div class="interaction-content">
+                    ${conversationText}
+                </div>
+            `;
+            
+            feed.insertBefore(interactionDiv, feed.firstChild);
+            
+            // 限制显示的交互数量
+            while (feed.children.length > 20) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // 显示社交网络
+        function showSocialNetwork() {
+            const modal = document.getElementById('socialNetworkModal');
+            const content = document.getElementById('socialNetworkContent');
+            
+            let html = '<div class="relationship-grid">';
+            
+            Object.entries(gameData.agents).forEach(([agentName, agent]) => {
+                html += `
+                    <div class="relationship-card">
+                        <div class="relationship-header">
+                            <span style="font-size: 1.5rem;">${agent.emoji}</span>
+                            <div>
+                                <h4 style="margin: 0;">${agentName}</h4>
+                                <p style="margin: 0; font-size: 0.8rem; color: var(--text-secondary);">${agent.occupation}</p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                `;
+                
+                // 显示与其他agent的关系
+                Object.entries(agent.relationships || {}).forEach(([otherAgent, relationship]) => {
+                    const strengthPercent = Math.round(relationship.strength * 100);
+                    const strengthColor = relationship.strength > 0.7 ? 'var(--success)' : 
+                                         relationship.strength > 0.4 ? 'var(--warning)' : 'var(--error)';
+                    
+                    html += `
+                        <div class="relationship-strength">
+                            <span style="font-size: 0.9rem;">${gameData.agents[otherAgent].emoji} ${otherAgent}</span>
+                            <div class="strength-bar">
+                                <div class="strength-fill" style="width: ${strengthPercent}%; background: ${strengthColor};"></div>
+                            </div>
+                            <span>${strengthPercent}%</span>
+                        </div>
+                    `;
+                });
+                
+                html += '</div></div>';
+            });
+            
+            html += '</div>';
+            content.innerHTML = html;
+            modal.classList.add('show');
+        }
+
+        // 关闭社交网络模态框
+        function closeSocialNetwork() {
+            document.getElementById('socialNetworkModal').classList.remove('show');
+        }
+
+        // 组织群体活动
+        function organizeGroupActivity() {
+            const activities = [
+                {name: '图书馆读书会', location: '图书馆', participants: ['Sarah', 'Lisa', 'Alex']},
+                {name: '公园野餐聚会', location: '公园', participants: ['Emma', 'Mike', 'Anna']},
+                {name: '咖啡厅商务洽谈', location: '咖啡厅', participants: ['David', 'Alex', 'John']},
+                {name: '餐厅美食品鉴', location: '餐厅', participants: ['Anna', 'Emma', 'Sarah']},
+                {name: '办公室技术讨论', location: '办公室', participants: ['Alex', 'Tom', 'David']},
+                {name: '医院健康讲座', location: '医院', participants: ['John', 'Sarah', 'Mike']}
+            ];
+            
+            const activity = activities[Math.floor(Math.random() * activities.length)];
+            
+            // 移动participants到指定位置
+            const building = gameData.buildings.find(b => b.name === activity.location);
+            if (building) {
+                activity.participants.forEach(agentName => {
+                    if (gameData.agents[agentName]) {
+                        gameData.agents[agentName].x = building.x;
+                        gameData.agents[agentName].y = building.y;
+                        gameData.agents[agentName].location = building.name;
+                    }
+                });
+                
+                // 触发群体交互
+                executeAgentInteraction(activity.participants);
+                
+                generateMap();
+                generateAgentCards();
+                
+                showNotification(`组织了${activity.name}，参与者：${activity.participants.join(', ')}`, 'success');
+            }
+        }
+
+        // 显示地点统计
+        function showLocationStats() {
+            let statsText = "📊 地点热度统计:\n\n";
+            
+            Object.entries(gameData.locationPopularity).forEach(([location, stats]) => {
+                const currentCount = Object.values(gameData.agents).filter(agent => agent.location === location).length;
+                statsText += `${gameData.buildings.find(b => b.name === location)?.emoji || '📍'} ${location}:\n`;
+                statsText += `  当前人数: ${currentCount}\n`;
+                statsText += `  交互次数: ${stats.interactions || 0}\n`;
+                statsText += `  热度分数: ${(stats.popularityScore || 0).toFixed(1)}\n\n`;
+            });
+            
+            alert(statsText);
+        }
+
+        // 切换自动交互
+        function toggleAutoInteraction() {
+            gameData.autoInteraction = !gameData.autoInteraction;
+            const button = document.getElementById('autoInteractionText');
+            button.textContent = gameData.autoInteraction ? '关闭自动交互' : '开启自动交互';
+            
+            showNotification(
+                gameData.autoInteraction ? '自动交互已开启' : '自动交互已关闭',
+                'success'
+            );
+        }
+
+        // 清空交互历史
+        function clearInteractionHistory() {
+            gameData.agentInteractions = [];
+            const feed = document.getElementById('interactionFeed');
+            feed.innerHTML = `
+                <div style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                    <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                    <p>等待Agent间的交互...</p>
+                </div>
+            `;
+            showNotification('交互历史已清空', 'success');
+        }
+
+        function generateAgentResponse(agentName, message) {
+            const agent = gameData.agents[agentName];
+            
+            // 基于Agent性格和专长生成智能回复
+            const responseTemplates = {
+                'Alex': {
+                    keywords: ['编程', '算法', '技术', '逻辑', '代码', '项目'],
+                    responses: [
+                        "从程序员的角度来看，这个问题很有意思！我觉得可以用算法的思维来解决。",
+                        "让我想想...这就像调试代码一样，需要逐步分析问题的根源。",
+                        "编程教会了我逻辑思维，我认为任何问题都有最优解。",
+                        "这让我想到了一个我最近在做的项目，技术真的很神奇！",
+                        "从技术角度分析，这个问题可以这样解决...",
+                        "代码世界里的逻辑思维，让我对这个问题有了新的理解。"
+                    ]
+                },
+                'Emma': {
+                    keywords: ['艺术', '创作', '色彩', '美学', '灵感', '设计'],
+                    responses: [
+                        "这激发了我的创作灵感！我想用画笔记录下这种感觉。",
+                        "艺术来源于生活，你的话让我看到了新的色彩和可能性。",
+                        "每个人都有自己的美学观点，这就是艺术的魅力所在。",
+                        "我正在创作一个新作品，也许可以加入这些元素。",
+                        "从艺术的角度看，这个问题充满了美感。",
+                        "色彩和形状的组合，让我想到了一个创意方案。"
+                    ]
+                },
+                'Sarah': {
+                    keywords: ['教育', '学习', '知识', '教学', '指导', '经验'],
+                    responses: [
+                        "作为老师，我很喜欢这样的交流！这是很好的学习机会。",
+                        "教育的本质是启发思考，你的观点很有启发性。",
+                        "我经常和学生们讨论类似的话题，知识的分享让人快乐。",
+                        "让我们一起探讨这个问题，我可以分享一些我的教学经验。",
+                        "从教育角度看，这个问题很有价值。",
+                        "教学相长，你的想法也让我学到了新东西。"
+                    ]
+                },
+                'David': {
+                    keywords: ['商业', '投资', '市场', '策略', '机会', '合作'],
+                    responses: [
+                        "从商业角度来看，这里面有很大的价值和机会！",
+                        "成功需要策略和执行力，我们来分析一下可行性。",
+                        "商场如战场，但合作共赢才是长久之道。",
+                        "我最近在谈一个项目，你的想法给了我新的思路。",
+                        "市场分析告诉我，这个方向很有潜力。",
+                        "商业思维就是要看到别人看不到的机会。"
+                    ]
+                },
+                'Lisa': {
+                    keywords: ['学习', '探索', '提问', '吸收', '考试', '同学'],
+                    responses: [
+                        "哇，太有趣了！我要把这个记录下来，说不定考试会用到。",
+                        "学习真的很快乐，每天都能学到新东西！",
+                        "你能详细解释一下吗？我想更深入地理解这个概念。",
+                        "我准备把这个分享给同学们，大家一起讨论会更有意思。",
+                        "这个问题让我想到了课本上的内容。",
+                        "学习新知识的感觉真的很棒！"
+                    ]
+                },
+                'Mike': {
+                    keywords: ['经验', '人生', '故事', '智慧', '年轻', '退休'],
+                    responses: [
+                        "年轻时我也遇到过类似的情况，经验告诉我...",
+                        "人生如茶，需要慢慢品味。我有很多故事可以分享。",
+                        "现在的年轻人真有想法，我们那个时代可没有这些。",
+                        "退休后我有了更多时间思考，生活的智慧需要沉淀。",
+                        "人生经验告诉我，这个问题需要这样处理...",
+                        "年轻时的经历，让我对这个问题有了深刻的理解。"
+                    ]
+                },
+                'John': {
+                    keywords: ['医疗', '健康', '诊断', '关怀', '病人', '预防'],
+                    responses: [
+                        "从医学角度来看，这个问题很重要。健康永远是第一位的。",
+                        "预防胜于治疗，我们要从根源上解决问题。",
+                        "作为医生，我见过太多案例，每个人的情况都不同。",
+                        "医者仁心，我希望能帮助到更多的人。",
+                        "从健康角度考虑，这个问题需要重视。",
+                        "医疗经验告诉我，预防比治疗更重要。"
+                    ]
+                },
+                'Anna': {
+                    keywords: ['烹饪', '美食', '食材', '味道', '厨房', '手艺'],
+                    responses: [
+                        "这让我想到了美食！好的食材配上好心情，就是完美的菜肴。",
+                        "烹饪就像生活，需要用心调味，每一道菜都有故事。",
+                        "你想尝尝我的拿手菜吗？我保证会让你回味无穷！",
+                        "厨房是我的艺术工作室，每一次创作都是对味蕾的挑战。",
+                        "从美食角度看，这个问题很有味道。",
+                        "烹饪技巧告诉我，细节决定成败。"
+                    ]
+                },
+                'Tom': {
+                    keywords: ['维修', '工具', '技能', '动手', '实践', '问题'],
+                    responses: [
+                        "这需要实际动手来解决，理论知识要结合实践。",
+                        "我修过各种各样的东西，实践出真知是我的座右铭。",
+                        "工具和技巧很重要，但更重要的是对问题的理解。",
+                        "让我看看有什么可以改进的地方，我喜欢解决实际问题。",
+                        "从实用角度看，这个问题需要动手解决。",
+                        "维修经验告诉我，问题往往在细节中。"
+                    ]
+                }
+            };
+            
+            const template = responseTemplates[agentName];
+            if (template) {
+                // 检查消息中是否包含Agent专长的关键词
+                const hasExpertise = template.keywords.some(keyword => 
+                    message.includes(keyword) || agent.expertise.some(exp => exp.includes(keyword))
+                );
+                
+                if (hasExpertise) {
+                    // 如果涉及专长，生成更专业的回复
+                    const professionalResponses = [
+                        `作为${agent.occupation}，我对这个问题很有研究。${template.responses[Math.floor(Math.random() * template.responses.length)]}`,
+                        `从我的专业角度来看，${template.responses[Math.floor(Math.random() * template.responses.length)]}`,
+                        `这正好是我的专长领域！${template.responses[Math.floor(Math.random() * template.responses.length)]}`
+                    ];
+                    return professionalResponses[Math.floor(Math.random() * professionalResponses.length)];
+                } else {
+                    // 一般回复
+                    return template.responses[Math.floor(Math.random() * template.responses.length)];
+                }
+            }
+            
+            // 默认回复
+            const defaultResponses = [
+                "我理解你的意思，这确实值得思考。",
+                "每个人都有不同的观点，这很正常。",
+                "谢谢你的分享，我学到了新东西。",
+                "这个问题很有趣，让我想想...",
+                "从我的角度来说，这个想法很有道理。"
+            ];
+            
+            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        }
+
+        // 聊天后更新Agent状态
+        function updateAgentAfterChat(agentName) {
+            const agent = gameData.agents[agentName];
+            
+            // 随机调整能量和心情
+            agent.energy = Math.max(10, Math.min(100, agent.energy + Math.floor(Math.random() * 11) - 5));
+            
+            const moods = ['开心', '专注', '放松', '思考中', '兴奋', '平静'];
+            if (Math.random() < 0.3) { // 30%概率改变心情
+                agent.mood = moods[Math.floor(Math.random() * moods.length)];
+            }
+            
+            // 刷新显示
+            generateAgentCards();
+            generateMap();
+        }
+
+        // 快速消息
+        function quickMessage(message) {
+            document.getElementById('messageInput').value = message;
+        }
+
+        // 清空聊天
+        function clearChat() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div style="text-align: center; color: var(--text-secondary); margin: auto;">
+                    <i class="fas fa-comments" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                    <p>聊天记录已清空</p>
+                </div>
+            `;
+            gameData.chatHistory = [];
+            showNotification('聊天记录已清空', 'success');
+        }
+
+        // 随机移动Agent
+        function randomizeAgents() {
+            Object.entries(gameData.agents).forEach(([name, agent]) => {
+                const building = gameData.buildings[Math.floor(Math.random() * gameData.buildings.length)];
+                agent.x = building.x;
+                agent.y = building.y;
+                agent.location = building.name;
+                
+                // 更新心情
+                const moodEffects = {
+                    '咖啡厅': '放松', '图书馆': '专注', '公园': '开心',
+                    '办公室': '忙碌', '家': '舒适', '医院': '严肃',
+                    '餐厅': '愉快', '修理店': '专注'
+                };
+                agent.mood = moodEffects[building.name] || '平静';
+            });
+            
+            generateMap();
+            generateAgentCards();
+            showNotification('所有Agent已随机移动', 'success');
+        }
+
+        // 重置Agent位置
+        function resetAgents() {
+            const initialPositions = {
+                'Alex': {location: '办公室', x: 5, y: 1},
+                'Emma': {location: '公园', x: 2, y: 1},
+                'Sarah': {location: '图书馆', x: 4, y: 3},
+                'David': {location: '办公室', x: 5, y: 1},
+                'Lisa': {location: '图书馆', x: 4, y: 3},
+                'Mike': {location: '公园', x: 2, y: 1},
+                'John': {location: '医院', x: 0, y: 2},
+                'Anna': {location: '餐厅', x: 5, y: 4},
+                'Tom': {location: '修理店', x: 1, y: 0}
+            };
+            
+            Object.entries(initialPositions).forEach(([name, pos]) => {
+                if (gameData.agents[name]) {
+                    gameData.agents[name].x = pos.x;
+                    gameData.agents[name].y = pos.y;
+                    gameData.agents[name].location = pos.location;
+                }
+            });
+            
+            generateMap();
+            generateAgentCards();
+            showNotification('所有Agent已回到初始位置', 'success');
+        }
+
+        // 刷新地图
+        function refreshMap() {
+            generateMap();
+            showNotification('地图已刷新', 'success');
+        }
+
+        // 模拟一步 - 增强版，考虑agent关系和交互
+        function simulateStep() {
+            const events = [];
+            const agentNames = Object.keys(gameData.agents);
+            const activeAgents = agentNames.sort(() => 0.5 - Math.random()).slice(0, Math.min(4, agentNames.length));
+            
+            activeAgents.forEach(agentName => {
+                const agent = gameData.agents[agentName];
+                
+                // 基于当前状态和关系的行为
+                const actions = [
+                    `在${agent.location}${agent.mood}地工作`,
+                    `观察${agent.location}的环境，思考人生`,
+                    `决定做一些有趣的事情`,
+                    `感到${agent.energy > 70 ? '精力充沛' : '有些疲惫'}`,
+                    `回忆起与朋友们的美好时光`,
+                    `计划下次与同事聚会`,
+                    `享受当前的${agent.mood}状态`
+                ];
+                
+                const action = actions[Math.floor(Math.random() * actions.length)];
+                events.push(`${agent.emoji} ${agentName}: ${action}`);
+                
+                // 更新Agent状态
+                agent.energy = Math.max(10, Math.min(100, agent.energy + Math.floor(Math.random() * 21) - 10));
+                
+                // 智能移动：考虑关系和偏好
+                if (Math.random() < 0.3) {
+                    let targetLocation = null;
+                    
+                    // 有时会跟随关系好的agent
+                    if (Math.random() < 0.4 && agent.relationships) {
+                        const bestFriends = Object.entries(agent.relationships)
+                            .filter(([_, rel]) => rel.strength > 0.6)
+                            .sort((a, b) => b[1].strength - a[1].strength);
+                        
+                        if (bestFriends.length > 0) {
+                            const friendName = bestFriends[0][0];
+                            const friendLocation = gameData.agents[friendName].location;
+                            targetLocation = friendLocation;
+                            events.push(`💝 ${agentName} 想去找好友 ${friendName}，前往 ${friendLocation}`);
+                        }
+                    }
+                    
+                    // 否则随机移动
+                    if (!targetLocation) {
+                        const newBuilding = gameData.buildings[Math.floor(Math.random() * gameData.buildings.length)];
+                        targetLocation = newBuilding.name;
+                        const oldLocation = agent.location;
+                        events.push(`🚶 ${agentName} 从 ${oldLocation} 移动到 ${newBuilding.name}`);
+                    }
+                    
+                    // 执行移动
+                    const building = gameData.buildings.find(b => b.name === targetLocation);
+                    if (building) {
+                        agent.x = building.x;
+                        agent.y = building.y;
+                        agent.location = building.name;
+                        
+                        // 更新地点热度
+                        if (gameData.locationPopularity[targetLocation]) {
+                            gameData.locationPopularity[targetLocation].visits = 
+                                (gameData.locationPopularity[targetLocation].visits || 0) + 1;
+                            gameData.locationPopularity[targetLocation].popularityScore += 0.05;
+                        }
+                    }
+                }
+                
+                // 更新心情基于环境和关系
+                if (Math.random() < 0.2) {
+                    const locationMoods = {
+                        '咖啡厅': ['放松', '惬意', '社交'],
+                        '图书馆': ['专注', '学习', '安静'],
+                        '公园': ['开心', '活力', '自由'],
+                        '办公室': ['忙碌', '专业', '效率'],
+                        '家': ['舒适', '安全', '温暖'],
+                        '医院': ['严肃', '关怀', '专业'],
+                        '餐厅': ['愉快', '满足', '享受'],
+                        '修理店': ['专注', '实用', '成就感']
+                    };
+                    
+                    const possibleMoods = locationMoods[agent.location] || ['平静', '思考', '观察'];
+                    agent.mood = possibleMoods[Math.floor(Math.random() * possibleMoods.length)];
+                }
+            });
+            
+            // 检查同地点的agents，可能触发交互
+            const locationGroups = {};
+            agentNames.forEach(name => {
+                const agent = gameData.agents[name];
+                const key = `${agent.x},${agent.y}`;
+                if (!locationGroups[key]) {
+                    locationGroups[key] = [];
+                }
+                locationGroups[key].push(name);
+            });
+            
+            // 如果有多个agent在同一位置，可能会交互
+            Object.values(locationGroups).forEach(group => {
+                if (group.length >= 2 && Math.random() < 0.3) { // 30%概率交互
+                    const location = gameData.agents[group[0]].location;
+                    events.push(`👥 ${group.join(', ')} 在${location}相遇了！`);
+                    
+                    // 如果自动交互开启，触发真实交互
+                    if (gameData.autoInteraction && Math.random() < 0.5) {
+                        setTimeout(() => {
+                            executeAgentInteraction(group.slice(0, 3)); // 最多3个agent交互
+                        }, 1000);
+                    }
+                }
+            });
+            
+            // 显示模拟结果
+            const outputDiv = document.getElementById('simulationOutput');
+            outputDiv.innerHTML = `
+                <div style="color: var(--primary); font-weight: 600; margin-bottom: 10px;">
+                    <i class="fas fa-clock"></i> 模拟时间: ${new Date().toLocaleTimeString()}
+                </div>
+                ${events.map(event => `<div style="margin: 5px 0; padding: 5px 0; border-left: 3px solid var(--accent); padding-left: 10px;">${event}</div>`).join('')}
+            `;
+            
+            // 刷新显示
+            generateMap();
+            generateAgentCards();
+            showNotification(`智能模拟完成，${activeAgents.length}个Agent执行了动作`, 'success');
+        }
+
+        // 键盘事件
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.getElementById('messageInput') === document.activeElement) {
+                sendMessage();
+            }
+            if (e.key === 'Escape') {
+                clearChat();
+            }
+        });
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            loadGameData(); // 加载保存的数据
+            initializeSocialNetwork(); // 初始化社交网络
+            generateMap();
+            generateAgentCards();
+            
+            // 添加输入框事件监听
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            showNotification('AI虚拟小镇已启动！社交网络已初始化', 'success');
+            
+            // 定期自动模拟和交互
+            setInterval(() => {
+                if (Math.random() < 0.1) { // 10%概率自动模拟
+                    simulateStep();
+                }
+                
+                // 自动agent交互
+                if (gameData.autoInteraction && Math.random() < 0.15) { // 15%概率自动交互
+                    triggerAgentInteraction();
+                }
+                
+                // 智能移动
+                if (Math.random() < 0.2) { // 20%概率智能移动
+                    intelligentGroupMovement();
+                    generateMap();
+                    generateAgentCards();
+                }
+                
+                // 关系衰减
+                applyRelationshipDecay();
+                
+                // 自动保存数据
+                saveGameData();
+                
+            }, 20000); // 每20秒检查一次
+            
+            // 定期更新地点热度
+            setInterval(() => {
+                Object.entries(gameData.locationPopularity).forEach(([location, stats]) => {
+                    const currentCount = Object.values(gameData.agents).filter(agent => agent.location === location).length;
+                    gameData.locationPopularity[location].currentOccupants = currentCount;
+                    gameData.locationPopularity[location].popularityScore = 
+                        Math.max(0, stats.popularityScore - 0.01); // 热度缓慢衰减
+                });
+            }, 10000); // 每10秒更新热度
+            
+            // 定期保存数据
+            setInterval(() => {
+                saveGameData();
+            }, 60000); // 每分钟保存一次
+        });
+
+        // 数据持久化系统
+        function saveGameData() {
+            try {
+                const dataToSave = {
+                    agents: gameData.agents,
+                    socialNetwork: gameData.socialNetwork,
+                    locationPopularity: gameData.locationPopularity,
+                    agentInteractions: gameData.agentInteractions.slice(-100), // 只保存最近100条
+                    chatHistory: gameData.chatHistory.slice(-50), // 只保存最近50条
+                    systemTime: gameData.systemTime,
+                    lastDecayTime: gameData.lastDecayTime
+                };
+                
+                localStorage.setItem('aiTownData', JSON.stringify(dataToSave));
+                console.log('游戏数据已保存');
+            } catch (error) {
+                console.error('保存数据失败:', error);
+            }
+        }
+
+        function loadGameData() {
+            try {
+                const savedData = localStorage.getItem('aiTownData');
+                if (savedData) {
+                    const loadedData = JSON.parse(savedData);
+                    
+                    // 恢复数据
+                    if (loadedData.agents) {
+                        Object.assign(gameData.agents, loadedData.agents);
+                    }
+                    if (loadedData.socialNetwork) {
+                        Object.assign(gameData.socialNetwork, loadedData.socialNetwork);
+                    }
+                    if (loadedData.locationPopularity) {
+                        Object.assign(gameData.locationPopularity, loadedData.locationPopularity);
+                    }
+                    if (loadedData.agentInteractions) {
+                        gameData.agentInteractions = loadedData.agentInteractions;
+                    }
+                    if (loadedData.chatHistory) {
+                        gameData.chatHistory = loadedData.chatHistory;
+                    }
+                    if (loadedData.systemTime) {
+                        gameData.systemTime = new Date(loadedData.systemTime);
+                    }
+                    if (loadedData.lastDecayTime) {
+                        gameData.lastDecayTime = new Date(loadedData.lastDecayTime);
+                    }
+                    
+                    console.log('游戏数据已加载');
+                    showNotification('游戏数据已恢复', 'success');
+                }
+            } catch (error) {
+                console.error('加载数据失败:', error);
+            }
+        }
+
+        // 高级统计系统
+        function getAdvancedStats() {
+            const stats = {
+                agents: {
+                    total: Object.keys(gameData.agents).length,
+                    byOccupation: {},
+                    byLocation: {},
+                    byMood: {},
+                    avgEnergy: 0,
+                    totalMemories: 0
+                },
+                relationships: {
+                    total: 0,
+                    byLevel: {},
+                    avgStrength: 0,
+                    totalInteractions: 0
+                },
+                locations: {
+                    total: Object.keys(gameData.buildings).length,
+                    byPopularity: [],
+                    totalVisits: 0,
+                    totalInteractions: 0
+                },
+                interactions: {
+                    total: gameData.agentInteractions.length,
+                    byType: {},
+                    byLocation: {},
+                    recent: gameData.agentInteractions.slice(-10)
+                }
+            };
+            
+            // Agent统计
+            let totalEnergy = 0;
+            Object.values(gameData.agents).forEach(agent => {
+                // 职业统计
+                stats.agents.byOccupation[agent.occupation] = 
+                    (stats.agents.byOccupation[agent.occupation] || 0) + 1;
+                
+                // 位置统计
+                stats.agents.byLocation[agent.location] = 
+                    (stats.agents.byLocation[agent.location] || 0) + 1;
+                
+                // 心情统计
+                stats.agents.byMood[agent.mood] = 
+                    (stats.agents.byMood[agent.mood] || 0) + 1;
+                
+                totalEnergy += agent.energy;
+                stats.agents.totalMemories += agent.memories.length;
+            });
+            stats.agents.avgEnergy = totalEnergy / stats.agents.total;
+            
+            // 关系统计
+            let totalStrength = 0;
+            Object.values(gameData.agents).forEach(agent => {
+                Object.values(agent.relationships).forEach(relationship => {
+                    stats.relationships.total++;
+                    stats.relationships.totalInteractions += relationship.interactions;
+                    totalStrength += relationship.strength;
+                    
+                    stats.relationships.byLevel[relationship.relationshipLevel] = 
+                        (stats.relationships.byLevel[relationship.relationshipLevel] || 0) + 1;
+                });
+            });
+            stats.relationships.avgStrength = totalStrength / stats.relationships.total;
+            
+            // 地点统计
+            let totalVisits = 0;
+            let totalLocationInteractions = 0;
+            Object.entries(gameData.locationPopularity).forEach(([location, data]) => {
+                totalVisits += data.visits || 0;
+                totalLocationInteractions += data.interactions || 0;
+                
+                stats.locations.byPopularity.push({
+                    location: location,
+                    popularity: data.popularityScore,
+                    visits: data.visits,
+                    interactions: data.interactions,
+                    currentOccupants: data.currentOccupants
+                });
+            });
+            stats.locations.totalVisits = totalVisits;
+            stats.locations.totalInteractions = totalLocationInteractions;
+            
+            // 交互统计
+            gameData.agentInteractions.forEach(interaction => {
+                stats.interactions.byType[interaction.type] = 
+                    (stats.interactions.byType[interaction.type] || 0) + 1;
+                stats.interactions.byLocation[interaction.location] = 
+                    (stats.interactions.byLocation[interaction.location] || 0) + 1;
+            });
+            
+            // 排序
+            stats.locations.byPopularity.sort((a, b) => b.popularity - a.popularity);
+            
+            return stats;
+        }
+
+        // 显示高级统计
+        function showAdvancedStats() {
+            const stats = getAdvancedStats();
+            let statsText = "📊 高级统计分析\n\n";
+            
+            // Agent统计
+            statsText += "👥 Agent统计:\n";
+            statsText += `  总数量: ${stats.agents.total}\n`;
+            statsText += `  平均能量: ${stats.agents.avgEnergy.toFixed(1)}%\n`;
+            statsText += `  总记忆数: ${stats.agents.totalMemories}\n\n`;
+            
+            statsText += "💼 职业分布:\n";
+            Object.entries(stats.agents.byOccupation).forEach(([occupation, count]) => {
+                statsText += `  ${occupation}: ${count} 人\n`;
+            });
+            statsText += "\n";
+            
+            // 关系统计
+            statsText += "❤️ 关系统计:\n";
+            statsText += `  总关系数: ${stats.relationships.total}\n`;
+            statsText += `  平均强度: ${(stats.relationships.avgStrength * 100).toFixed(1)}%\n`;
+            statsText += `  总交互数: ${stats.relationships.totalInteractions}\n\n`;
+            
+            statsText += "📈 关系等级分布:\n";
+            Object.entries(stats.relationships.byLevel).forEach(([level, count]) => {
+                statsText += `  ${level}: ${count} 个\n`;
+            });
+            statsText += "\n";
+            
+            // 地点统计
+            statsText += "📍 地点统计:\n";
+            statsText += `  总地点数: ${stats.locations.total}\n`;
+            statsText += `  总访问数: ${stats.locations.totalVisits}\n`;
+            statsText += `  总交互数: ${stats.locations.totalInteractions}\n\n`;
+            
+            statsText += "🔥 热门地点排行:\n";
+            stats.locations.byPopularity.slice(0, 5).forEach((loc, index) => {
+                statsText += `  ${loc.location}: ${loc.popularity.toFixed(1)}分\n`;
+            });
+            statsText += "\n";
+            
+            // 交互统计
+            statsText += "💬 交互统计:\n";
+            statsText += `  总交互数: ${stats.interactions.total}\n\n`;
+            
+            statsText += "🎯 交互类型分布:\n";
+            Object.entries(stats.interactions.byType).forEach(([type, count]) => {
+                statsText += `  ${type}: ${count} 次\n`;
+            });
+            
+            alert(statsText);
+        }
+
+        // 智能移动系统
+        function intelligentAgentMovement(agentName) {
+            const agent = gameData.agents[agentName];
+            const currentLocation = agent.location;
+            
+            // 移动概率：30%概率移动
+            if (Math.random() > 0.3) {
+                return null;
+            }
+            
+            let targetLocation = null;
+            let moveReason = '';
+            
+            // 策略1：跟随关系好的朋友
+            if (Math.random() < 0.4 && agent.relationships) {
+                const bestFriends = Object.entries(agent.relationships)
+                    .filter(([_, rel]) => rel.strength > 0.6)
+                    .sort((a, b) => b[1].strength - a[1].strength);
+                
+                if (bestFriends.length > 0) {
+                    const friendName = bestFriends[0][0];
+                    const friendLocation = gameData.agents[friendName].location;
+                    
+                    if (friendLocation !== currentLocation) {
+                        targetLocation = friendLocation;
+                        moveReason = `想去找好友 ${friendName}`;
+                    }
+                }
+            }
+            
+            // 策略2：基于职业偏好
+            if (!targetLocation && Math.random() < 0.3) {
+                const preferredLocations = agent.preferences.filter(loc => loc !== currentLocation);
+                if (preferredLocations.length > 0) {
+                    targetLocation = preferredLocations[Math.floor(Math.random() * preferredLocations.length)];
+                    moveReason = `职业偏好`;
+                }
+            }
+            
+            // 策略3：探索新地点
+            if (!targetLocation && Math.random() < 0.2) {
+                const unvisitedLocations = Object.keys(gameData.buildings).filter(loc => 
+                    loc !== currentLocation && !agent.memories.some(m => m.location === loc)
+                );
+                
+                if (unvisitedLocations.length > 0) {
+                    targetLocation = unvisitedLocations[Math.floor(Math.random() * unvisitedLocations.length)];
+                    moveReason = `探索新地点`;
+                }
+            }
+            
+            // 策略4：随机移动
+            if (!targetLocation) {
+                const allLocations = Object.keys(gameData.buildings);
+                const otherLocations = allLocations.filter(loc => loc !== currentLocation);
+                targetLocation = otherLocations[Math.floor(Math.random() * otherLocations.length)];
+                moveReason = `随机移动`;
+            }
+            
+            // 执行移动
+            if (targetLocation && targetLocation !== currentLocation) {
+                const building = gameData.buildings.find(b => b.name === targetLocation);
+                if (building) {
+                    const oldLocation = agent.location;
+                    agent.x = building.x;
+                    agent.y = building.y;
+                    agent.location = targetLocation;
+                    
+                    // 更新地点热度
+                    if (gameData.locationPopularity[targetLocation]) {
+                        gameData.locationPopularity[targetLocation].visits = 
+                            (gameData.locationPopularity[targetLocation].visits || 0) + 1;
+                        gameData.locationPopularity[targetLocation].popularityScore += 0.05;
+                        gameData.locationPopularity[targetLocation].lastActivity = new Date();
+                    }
+                    
+                    // 记录移动记忆
+                    agent.memories.push({
+                        type: 'movement',
+                        from: oldLocation,
+                        to: targetLocation,
+                        reason: moveReason,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    // 限制记忆数量
+                    if (agent.memories.length > 50) {
+                        agent.memories = agent.memories.slice(-50);
+                    }
+                    
+                    // 更新心情基于新地点
+                    updateAgentMood(agentName, targetLocation);
+                    
+                    return {
+                        from: oldLocation,
+                        to: targetLocation,
+                        reason: moveReason
+                    };
+                }
+            }
+            
+            return null;
+        }
+
+        // 更新Agent心情
+        function updateAgentMood(agentName, location) {
+            const agent = gameData.agents[agentName];
+            
+            const locationMoods = {
+                '咖啡厅': ['放松', '惬意', '社交', '思考'],
+                '图书馆': ['专注', '学习', '安静', '求知'],
+                '公园': ['开心', '活力', '自由', '放松'],
+                '办公室': ['忙碌', '专业', '效率', '专注'],
+                '家': ['舒适', '安全', '温暖', '放松'],
+                '医院': ['严肃', '关怀', '专业', '专注'],
+                '餐厅': ['愉快', '满足', '享受', '社交'],
+                '修理店': ['专注', '实用', '成就感', '忙碌']
+            };
+            
+            const possibleMoods = locationMoods[location] || ['平静', '思考', '观察'];
+            const newMood = possibleMoods[Math.floor(Math.random() * possibleMoods.length)];
+            
+            // 70%概率改变心情
+            if (Math.random() < 0.7) {
+                agent.mood = newMood;
+            }
+            
+            // 能量变化
+            const energyChange = Math.floor(Math.random() * 11) - 5; // -5 到 +5
+            agent.energy = Math.max(10, Math.min(100, agent.energy + energyChange));
+        }
+
+        // 智能群体移动
+        function intelligentGroupMovement() {
+            const agentNames = Object.keys(gameData.agents);
+            const movedAgents = [];
+            
+            agentNames.forEach(agentName => {
+                const movement = intelligentAgentMovement(agentName);
+                if (movement) {
+                    movedAgents.push({
+                        agent: agentName,
+                        ...movement
+                    });
+                }
+            });
+            
+            return movedAgents;
+        }
+
+        // 基于关系的推荐移动
+        function getRecommendedLocations(agentName) {
+            const agent = gameData.agents[agentName];
+            const recommendations = [];
+            
+            // 基于朋友位置推荐
+            Object.entries(agent.relationships).forEach(([friendName, relationship]) => {
+                if (relationship.strength > 0.5) {
+                    const friendLocation = gameData.agents[friendName].location;
+                    if (friendLocation !== agent.location) {
+                        recommendations.push({
+                            location: friendLocation,
+                            reason: `好友 ${friendName} 在此`,
+                            priority: relationship.strength
+                        });
+                    }
+                }
+            });
+            
+            // 基于职业偏好推荐
+            agent.preferences.forEach(pref => {
+                if (pref !== agent.location) {
+                    recommendations.push({
+                        location: pref,
+                        reason: '职业偏好',
+                        priority: 0.6
+                    });
+                }
+            });
+            
+            // 基于地点热度推荐
+            Object.entries(gameData.locationPopularity).forEach(([location, stats]) => {
+                if (location !== agent.location && stats.popularityScore > 60) {
+                    recommendations.push({
+                        location: location,
+                        reason: '热门地点',
+                        priority: stats.popularityScore / 100
+                    });
+                }
+            });
+            
+            // 按优先级排序
+            return recommendations.sort((a, b) => b.priority - a.priority);
+        }
+
+        // 数据导出功能
+        function exportGameData() {
+            try {
+                const exportData = {
+                    exportTime: new Date().toISOString(),
+                    version: '3.0',
+                    agents: gameData.agents,
+                    socialNetwork: gameData.socialNetwork,
+                    locationPopularity: gameData.locationPopularity,
+                    agentInteractions: gameData.agentInteractions,
+                    chatHistory: gameData.chatHistory,
+                    systemTime: gameData.systemTime,
+                    lastDecayTime: gameData.lastDecayTime
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `ai_town_data_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showNotification('游戏数据已导出', 'success');
+            } catch (error) {
+                console.error('导出数据失败:', error);
+                showNotification('导出数据失败', 'error');
+            }
+        }
+
+        // 重置游戏数据
+        function resetGameData() {
+            if (confirm('确定要重置所有游戏数据吗？这将清除所有Agent关系、交互历史和聊天记录。')) {
+                try {
+                    // 清除本地存储
+                    localStorage.removeItem('aiTownData');
+                    
+                    // 重置游戏数据
+                    gameData.agentInteractions = [];
+                    gameData.chatHistory = [];
+                    gameData.systemTime = new Date();
+                    gameData.lastDecayTime = new Date();
+                    
+                    // 重新初始化社交网络
+                    initializeSocialNetwork();
+                    
+                    // 重置Agent位置
+                    resetAgents();
+                    
+                    // 清空交互历史显示
+                    clearInteractionHistory();
+                    
+                    // 清空聊天记录
+                    clearChat();
+                    
+                    // 刷新显示
+                    generateMap();
+                    generateAgentCards();
+                    
+                    showNotification('游戏数据已重置', 'success');
+                } catch (error) {
+                    console.error('重置数据失败:', error);
+                    showNotification('重置数据失败', 'error');
+                }
+            }
+        }
+
+        // 显示关系衰减信息
+        function showDecayInfo() {
+            const now = new Date();
+            const timeDiff = now - gameData.lastDecayTime;
+            const minutesSinceDecay = Math.floor(timeDiff / (1000 * 60));
+            
+            let decayText = `📊 关系衰减信息\n\n`;
+            decayText += `上次衰减时间: ${gameData.lastDecayTime.toLocaleString()}\n`;
+            decayText += `距离下次衰减: ${Math.max(0, 30 - minutesSinceDecay)} 分钟\n`;
+            decayText += `衰减间隔: 30 分钟\n\n`;
+            
+            // 统计关系变化
+            let strongRelationships = 0;
+            let weakRelationships = 0;
+            let totalRelationships = 0;
+            
+            Object.values(gameData.agents).forEach(agent => {
+                Object.values(agent.relationships).forEach(relationship => {
+                    totalRelationships++;
+                    if (relationship.strength > 0.6) {
+                        strongRelationships++;
+                    } else if (relationship.strength < 0.3) {
+                        weakRelationships++;
+                    }
+                });
+            });
+            
+            decayText += `关系统计:\n`;
+            decayText += `  总关系数: ${totalRelationships}\n`;
+            decayText += `  强关系 (>60%): ${strongRelationships}\n`;
+            decayText += `  弱关系 (<30%): ${weakRelationships}\n`;
+            decayText += `  中等关系: ${totalRelationships - strongRelationships - weakRelationships}\n`;
+            
+            alert(decayText);
+        }
+    </script>
+</body>
+</html>

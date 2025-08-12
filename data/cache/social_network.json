@@ -1,0 +1,90 @@
+{
+  "Sarah": {
+    "Lisa": 67,
+    "John": 54,
+    "Emma": 69,
+    "Mike": 57,
+    "Alex": 63,
+    "David": 45,
+    "Tom": 42
+  },
+  "Lisa": {
+    "Sarah": 67,
+    "Emma": 66,
+    "Alex": 43,
+    "David": 57,
+    "John": 43,
+    "Anna": 54,
+    "Mike": 58,
+    "Tom": 40
+  },
+  "Mike": {
+    "John": 63,
+    "Emma": 32,
+    "Sarah": 57,
+    "Anna": 57,
+    "David": 63,
+    "Tom": 36,
+    "Lisa": 58,
+    "Alex": 56
+  },
+  "John": {
+    "Mike": 63,
+    "Sarah": 54,
+    "Emma": 63,
+    "Anna": 57,
+    "Alex": 59,
+    "Tom": 55,
+    "David": 55,
+    "Lisa": 43
+  },
+  "Emma": {
+    "Mike": 32,
+    "Sarah": 69,
+    "John": 63,
+    "Lisa": 66,
+    "David": 64,
+    "Tom": 65,
+    "Alex": 53,
+    "Anna": 52
+  },
+  "Anna": {
+    "Mike": 57,
+    "David": 42,
+    "John": 57,
+    "Tom": 66,
+    "Alex": 36,
+    "Emma": 52,
+    "Lisa": 54
+  },
+  "Alex": {
+    "Sarah": 63,
+    "Tom": 51,
+    "John": 59,
+    "Emma": 53,
+    "Anna": 36,
+    "Lisa": 43,
+    "David": 49,
+    "Mike": 56
+  },
+  "David": {
+    "Anna": 42,
+    "Emma": 64,
+    "Tom": 17,
+    "Mike": 63,
+    "Sarah": 45,
+    "John": 55,
+    "Alex": 49,
+    "Lisa": 57
+  },
+  "Tom": {
+    "Alex": 51,
+    "Emma": 65,
+    "David": 17,
+    "Anna": 66,
+    "Mike": 36,
+    "John": 55,
+    "Sarah": 42,
+    "Lisa": 40
+  }
+}

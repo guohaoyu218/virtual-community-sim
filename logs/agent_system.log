@@ -1,0 +1,1167 @@
+2025-08-10 00:53:35,899 - root - INFO - 日志系统初始化完成
+2025-08-10 00:53:35,899 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 00:53:36,437 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 00:53:37,967 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 00:53:37,967 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 00:53:37,983 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 00:53:38,187 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 00:53:38,187 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 00:53:38,205 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 00:53:38,206 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 00:53:49,212 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 00:53:49,749 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 00:53:53,066 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 00:53:53,089 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 00:53:53,208 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 00:53:56,982 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 00:53:57,021 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 00:53:57,174 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 00:54:01,123 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 00:54:01,163 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 00:54:01,268 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 00:54:04,937 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 00:54:04,968 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 00:54:05,096 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 00:54:09,407 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 00:54:09,436 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 00:54:09,560 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 00:54:13,442 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 00:54:13,472 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 00:54:13,608 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 00:54:17,531 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 00:54:17,557 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 00:54:17,667 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 00:54:21,303 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 00:54:21,366 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 00:54:21,479 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 00:54:25,207 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 00:57:58,999 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-10 01:10:27,897 - root - INFO - 日志系统初始化完成
+2025-08-10 01:10:27,897 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 01:10:28,671 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 01:10:30,694 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 01:10:30,694 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 01:10:30,698 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 15
+2025-08-10 01:10:30,928 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 01:10:30,928 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 01:10:31,058 - memory.vector_store - INFO - 创建集合成功: agent_alex_memories
+2025-08-10 01:10:31,059 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 01:10:31,059 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 01:10:43,653 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 01:10:44,368 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 01:10:59,466 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 01:10:59,678 - memory.vector_store - INFO - 创建集合成功: agent_emma_memories
+2025-08-10 01:10:59,679 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 01:10:59,896 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 01:11:15,135 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 01:11:15,879 - memory.vector_store - INFO - 创建集合成功: agent_sarah_memories
+2025-08-10 01:11:15,879 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 01:11:16,034 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 01:11:29,069 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 01:11:29,237 - memory.vector_store - INFO - 创建集合成功: agent_david_memories
+2025-08-10 01:11:29,237 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 01:11:29,302 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 01:11:33,015 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 01:11:33,167 - memory.vector_store - INFO - 创建集合成功: agent_lisa_memories
+2025-08-10 01:11:33,167 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 01:11:33,256 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 01:11:48,137 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 01:11:48,287 - memory.vector_store - INFO - 创建集合成功: agent_mike_memories
+2025-08-10 01:11:48,288 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 01:11:48,389 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 01:12:01,968 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 01:12:02,122 - memory.vector_store - INFO - 创建集合成功: agent_john_memories
+2025-08-10 01:12:02,122 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 01:12:02,216 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 01:12:15,343 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 01:12:16,015 - memory.vector_store - INFO - 创建集合成功: agent_anna_memories
+2025-08-10 01:12:16,015 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 01:12:16,143 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 01:12:31,671 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 01:12:31,803 - memory.vector_store - INFO - 创建集合成功: agent_tom_memories
+2025-08-10 01:12:31,804 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 01:12:31,912 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 01:12:46,862 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 01:23:05,412 - root - INFO - 日志系统初始化完成
+2025-08-10 01:23:05,413 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 01:23:06,143 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 01:23:08,242 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 01:23:08,242 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 01:23:08,251 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 01:23:08,446 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 01:23:08,447 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 01:23:08,462 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 01:23:08,463 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 01:23:21,136 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 01:23:22,015 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 01:23:38,429 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 01:23:38,462 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 01:23:38,645 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 01:23:53,650 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 01:23:53,682 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 01:23:53,832 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 01:24:09,524 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 01:24:09,536 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 01:24:09,669 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 01:24:24,527 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 01:24:24,546 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 01:24:24,662 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 01:24:40,032 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 01:24:40,075 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 01:24:40,167 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 01:24:55,730 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 01:24:55,758 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 01:24:55,882 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 01:25:10,114 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 01:25:10,124 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 01:25:10,228 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 01:25:25,365 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 01:25:25,377 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 01:25:25,529 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 01:25:41,000 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 01:33:21,519 - root - INFO - 日志系统初始化完成
+2025-08-10 01:33:21,522 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 01:33:22,076 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 01:33:23,775 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 01:33:23,775 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 01:33:23,784 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 01:33:23,971 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 01:33:23,973 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 01:33:23,994 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 01:33:23,994 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 01:33:35,699 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 01:33:36,603 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 01:33:47,717 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 01:33:47,979 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 01:33:59,044 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 01:33:59,166 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 01:34:14,656 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 01:34:14,678 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 01:34:14,787 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 01:34:29,823 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 01:34:29,861 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 01:34:29,983 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 01:34:44,727 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 01:34:44,739 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 01:34:44,897 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 01:35:00,761 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 01:35:00,777 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 01:35:00,925 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 01:35:16,363 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 01:35:16,378 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 01:35:16,561 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 01:35:32,355 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 01:35:32,377 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 01:35:32,544 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 01:35:48,608 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 01:36:57,856 - root - INFO - 日志系统初始化完成
+2025-08-10 01:36:57,858 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 01:36:58,536 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 01:37:00,659 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 01:37:00,659 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 01:37:00,668 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 01:37:00,898 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 01:37:00,898 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 01:37:00,939 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 01:37:00,939 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 01:37:12,328 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 01:37:12,898 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 01:37:27,914 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 01:37:27,944 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 01:37:28,092 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 01:37:43,821 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 01:37:43,845 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 01:37:43,944 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 01:37:58,846 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 01:37:58,866 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 01:37:58,978 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 01:38:13,686 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 01:38:13,710 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 01:38:13,789 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 01:38:29,064 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 01:38:29,088 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 01:38:29,197 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 01:38:45,017 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 01:38:45,059 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 01:38:45,177 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 01:39:00,184 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 01:39:00,206 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 01:39:00,319 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 01:39:15,584 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 01:39:15,615 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 01:39:15,714 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 01:39:31,093 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 01:52:07,175 - root - INFO - 日志系统初始化完成
+2025-08-10 01:52:07,175 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 01:52:07,736 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 01:52:09,311 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 01:52:09,311 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 01:52:09,324 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 01:52:09,596 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 01:52:09,596 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 01:52:09,628 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 01:52:09,628 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 01:54:05,257 - root - INFO - 日志系统初始化完成
+2025-08-10 01:54:05,257 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 01:54:05,798 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 01:54:07,200 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 01:54:07,201 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 01:54:07,208 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 01:54:07,426 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 01:54:07,426 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 01:54:07,456 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 01:54:07,457 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 01:55:13,592 - root - INFO - 日志系统初始化完成
+2025-08-10 01:55:13,592 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 01:55:14,128 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 01:55:15,440 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 01:55:15,441 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 01:55:15,446 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 15
+2025-08-10 01:55:15,652 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 01:55:15,652 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 01:55:15,806 - memory.vector_store - INFO - 创建集合成功: agent_alex_memories
+2025-08-10 01:55:15,806 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 01:55:15,806 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 01:57:49,040 - root - INFO - 日志系统初始化完成
+2025-08-10 01:57:49,040 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 01:57:49,617 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 01:57:51,385 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 01:57:51,387 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 01:57:51,393 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 16
+2025-08-10 01:57:51,611 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 01:57:51,612 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 01:57:51,638 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 01:57:51,638 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 02:00:10,181 - root - INFO - 日志系统初始化完成
+2025-08-10 02:00:24,881 - root - INFO - 日志系统初始化完成
+2025-08-10 02:00:24,881 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 02:00:25,434 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 02:00:26,711 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 02:00:26,711 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 02:00:26,720 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 16
+2025-08-10 02:00:26,926 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 02:00:26,926 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 02:00:26,960 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 02:00:26,961 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 02:01:32,225 - root - INFO - 日志系统初始化完成
+2025-08-10 02:01:32,225 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 02:01:32,774 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 02:01:34,021 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 02:01:34,021 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 02:01:34,021 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 16
+2025-08-10 02:01:34,243 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 02:01:34,243 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 02:01:34,266 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 02:01:34,266 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 02:01:52,173 - root - INFO - 日志系统初始化完成
+2025-08-10 02:01:52,175 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 02:01:52,697 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 02:01:53,966 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 02:01:53,966 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 02:01:53,971 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 16
+2025-08-10 02:01:54,132 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 02:01:54,132 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 02:01:54,150 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 02:01:54,151 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 02:08:06,925 - root - INFO - 日志系统初始化完成
+2025-08-10 02:08:06,926 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 02:08:07,497 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 02:08:09,097 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 02:08:09,097 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 02:08:09,117 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 16
+2025-08-10 02:08:09,354 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 02:08:09,354 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 02:08:09,363 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 02:08:09,364 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 02:08:21,444 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 02:08:22,072 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 02:08:26,113 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 02:08:26,273 - memory.vector_store - INFO - 创建集合成功: agent_emma_memories
+2025-08-10 02:08:26,274 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 02:08:26,433 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 02:08:30,312 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 02:08:30,457 - memory.vector_store - INFO - 创建集合成功: agent_sarah_memories
+2025-08-10 02:08:30,457 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 02:08:30,624 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 02:08:35,187 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 02:08:35,352 - memory.vector_store - INFO - 创建集合成功: agent_david_memories
+2025-08-10 02:08:35,355 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 02:08:35,529 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 02:08:39,157 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 02:08:39,354 - memory.vector_store - INFO - 创建集合成功: agent_lisa_memories
+2025-08-10 02:08:39,354 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 02:08:39,474 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 02:08:43,475 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 02:08:43,653 - memory.vector_store - INFO - 创建集合成功: agent_mike_memories
+2025-08-10 02:08:43,653 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 02:08:43,785 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 02:08:47,263 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 02:08:47,430 - memory.vector_store - INFO - 创建集合成功: agent_john_memories
+2025-08-10 02:08:47,430 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 02:08:47,518 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 02:08:51,749 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 02:08:51,919 - memory.vector_store - INFO - 创建集合成功: agent_anna_memories
+2025-08-10 02:08:51,919 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 02:08:52,045 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 02:08:55,673 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 02:08:55,838 - memory.vector_store - INFO - 创建集合成功: agent_tom_memories
+2025-08-10 02:08:55,838 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 02:08:56,044 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 02:09:00,099 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 02:10:56,896 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-10 02:11:03,398 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-10 02:13:50,973 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-10 02:16:50,206 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-10 02:19:07,487 - root - INFO - 日志系统初始化完成
+2025-08-10 02:19:07,490 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 02:19:08,013 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 02:19:09,549 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 02:19:09,551 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 02:19:09,565 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 02:19:09,778 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 02:19:09,778 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 02:19:09,812 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 02:19:09,812 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 02:19:22,138 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 02:19:22,721 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 02:19:26,507 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 02:19:26,552 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 02:19:26,703 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 02:19:30,738 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 02:19:30,762 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 02:19:30,918 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 02:19:34,178 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 02:19:34,201 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 02:19:34,423 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 02:19:38,508 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 02:19:38,529 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 02:19:38,738 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 02:19:43,238 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 02:19:43,273 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 02:19:43,442 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 02:19:47,603 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 02:19:47,616 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 02:19:47,805 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 02:19:52,834 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 02:19:52,856 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 02:19:53,025 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 02:19:57,292 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 02:19:57,308 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 02:19:57,456 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 02:20:01,743 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 02:22:55,642 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-10 02:24:26,607 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-10 02:25:54,542 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-10 02:29:12,391 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-10 02:30:28,239 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-10 02:30:42,925 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-10 02:32:25,109 - root - INFO - 日志系统初始化完成
+2025-08-10 02:32:25,109 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 02:32:25,641 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 02:32:27,125 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 02:32:27,125 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 02:32:27,144 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 02:32:27,332 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 02:32:27,332 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 02:32:27,375 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 02:32:27,375 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 02:32:38,477 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 02:32:39,014 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 02:32:52,379 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 02:32:52,401 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 02:32:52,528 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 02:32:56,189 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 02:32:56,211 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 02:32:56,318 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 02:33:11,229 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 02:33:11,251 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 02:33:11,364 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 02:33:26,631 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 02:33:26,652 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 02:33:26,759 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 02:33:42,239 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 02:33:42,261 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 02:33:42,406 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 02:33:57,699 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 02:33:57,722 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 02:33:57,876 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 02:34:12,117 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 02:34:12,148 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 02:34:12,259 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 02:34:27,957 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 02:34:28,001 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 02:34:28,137 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 02:34:43,199 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 02:34:51,331 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-10 02:35:01,456 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-10 02:37:27,447 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-10 02:37:31,338 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-10 02:38:43,322 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-10 02:43:44,008 - root - INFO - 日志系统初始化完成
+2025-08-10 02:43:44,010 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 02:43:44,570 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 02:43:46,229 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 02:43:46,230 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 02:43:46,247 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 02:43:46,420 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 02:43:46,420 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 02:43:46,440 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 02:43:46,441 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 02:43:57,916 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 02:43:58,442 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 02:44:02,401 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 02:44:02,423 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 02:44:02,588 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 02:44:07,018 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 02:44:07,065 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 02:44:07,183 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 02:44:12,148 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 02:44:12,190 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 02:44:12,312 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 02:44:15,976 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 02:44:16,011 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 02:44:16,120 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 02:44:19,833 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 02:44:19,853 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 02:44:19,967 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 02:44:24,194 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 02:44:24,236 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 02:44:24,384 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 02:44:29,294 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 02:44:29,332 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 02:44:29,418 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 02:44:34,007 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 02:44:34,035 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 02:44:34,163 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 02:44:38,020 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 02:51:54,412 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-10 02:55:44,510 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-10 02:58:03,564 - root - INFO - 日志系统初始化完成
+2025-08-10 02:58:03,564 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 02:58:04,094 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 02:58:05,597 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 02:58:05,597 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 02:58:05,619 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 02:58:05,811 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 02:58:05,811 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 02:58:05,866 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 02:58:05,867 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 02:58:17,208 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 02:58:17,776 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 02:58:21,532 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 02:58:21,555 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 02:58:21,681 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 02:58:25,879 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 02:58:25,923 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 02:58:26,071 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 02:58:27,804 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 02:58:27,837 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 02:58:27,989 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 02:58:31,925 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 02:58:31,964 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 02:58:32,081 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 02:58:35,916 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 02:58:35,935 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 02:58:36,057 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 02:58:40,583 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 02:58:40,627 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 02:58:40,765 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 02:58:45,138 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 02:58:45,173 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 02:58:45,313 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 02:58:50,120 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 02:58:50,144 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 02:58:50,296 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 02:58:54,521 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 03:03:28,757 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-10 03:04:56,215 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-10 03:10:20,149 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-10 03:10:24,662 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-10 03:18:28,303 - root - INFO - 日志系统初始化完成
+2025-08-10 03:18:28,303 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 03:18:28,835 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 03:18:30,324 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 03:18:30,324 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 03:18:30,338 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 03:18:30,582 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 03:18:30,582 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 03:18:30,608 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 03:18:30,608 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 03:18:41,723 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 03:18:42,266 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 03:18:45,889 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 03:18:45,914 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 03:18:46,084 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 03:18:49,333 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 03:18:49,385 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 03:18:49,541 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 03:18:53,429 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 03:18:53,453 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 03:18:53,614 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 03:18:57,152 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 03:18:57,171 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 03:18:57,334 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 03:19:00,548 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 03:19:00,577 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 03:19:00,745 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 03:19:05,016 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 03:19:05,045 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 03:19:05,214 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 03:19:08,213 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 03:19:08,230 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 03:19:08,408 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 03:19:12,617 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 03:19:12,644 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 03:19:12,752 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 03:19:16,519 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 03:24:37,186 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-10 03:24:39,477 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-10 03:26:46,196 - root - INFO - 日志系统初始化完成
+2025-08-10 03:26:46,196 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 03:26:46,744 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 03:26:48,418 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 03:26:48,418 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 03:26:48,431 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 03:26:48,645 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 03:26:48,645 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 03:26:48,683 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 03:26:48,684 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 03:26:59,847 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 03:27:00,367 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 03:27:04,742 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 03:27:04,786 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 03:27:04,963 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 03:27:09,048 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 03:27:09,064 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 03:27:09,246 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 03:27:12,827 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 03:27:12,859 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 03:27:13,032 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 03:27:16,445 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 03:27:16,479 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 03:27:16,637 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 03:27:20,678 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 03:27:20,703 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 03:27:20,785 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 03:27:24,769 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 03:27:24,789 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 03:27:24,989 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 03:27:28,998 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 03:27:29,041 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 03:27:29,222 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 03:27:32,696 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 03:27:32,705 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 03:27:32,918 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 03:27:36,611 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 03:28:33,513 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-10 03:30:10,947 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-10 03:31:46,815 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-10 03:35:12,846 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-10 03:46:59,965 - root - INFO - 日志系统初始化完成
+2025-08-10 03:46:59,965 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 03:47:00,490 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 03:47:01,987 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 03:47:01,987 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 03:47:02,009 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 03:47:02,230 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 03:47:02,230 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 03:47:02,251 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 03:47:02,252 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 03:47:13,342 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 03:47:13,889 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 03:47:19,368 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 03:47:19,403 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 03:47:19,527 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 03:47:23,562 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 03:47:23,602 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 03:47:23,707 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 03:47:28,627 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 03:47:28,649 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 03:47:28,763 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 03:47:33,247 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 03:47:33,268 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 03:47:33,415 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 03:47:37,371 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 03:47:37,399 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 03:47:37,514 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 03:47:41,042 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 03:47:41,076 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 03:47:41,184 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 03:47:45,753 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 03:47:45,771 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 03:47:45,868 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 03:47:50,506 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 03:47:50,532 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 03:47:50,634 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 03:47:53,918 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 03:49:20,620 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-10 03:57:18,570 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-10 04:00:43,523 - root - INFO - 日志系统初始化完成
+2025-08-10 04:00:43,523 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 04:00:44,046 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 04:00:45,607 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 04:00:45,608 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 04:00:45,627 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 04:00:45,781 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 04:00:45,781 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 04:00:45,804 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 04:00:45,806 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 04:00:57,247 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 04:00:57,767 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 04:01:02,196 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 04:01:02,230 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 04:01:02,340 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 04:01:05,896 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 04:01:05,913 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 04:01:06,039 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 04:01:10,461 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 04:01:10,500 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 04:01:10,635 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 04:01:14,822 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 04:01:14,852 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 04:01:14,946 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 04:01:19,163 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 04:01:19,182 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 04:01:19,279 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 04:01:22,918 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 04:01:22,939 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 04:01:23,045 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 04:01:26,832 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 04:01:26,850 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 04:01:27,004 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 04:01:30,796 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 04:01:30,818 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 04:01:30,957 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 04:01:35,004 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 04:09:23,487 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-10 04:10:13,916 - root - INFO - 日志系统初始化完成
+2025-08-10 04:10:13,916 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 04:10:14,455 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 04:10:16,063 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 04:10:16,063 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 04:10:16,085 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 04:10:16,290 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 04:10:16,296 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 04:10:16,322 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 04:10:16,323 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 04:10:27,580 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 04:10:28,207 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 04:10:32,308 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 04:10:32,337 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 04:10:32,474 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 04:10:36,606 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 04:10:36,631 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 04:10:36,807 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 04:10:39,695 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 04:10:39,735 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 04:10:39,906 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 04:10:43,705 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 04:10:43,736 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 04:10:43,926 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 04:10:47,660 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 04:10:47,678 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 04:10:47,867 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 04:10:52,036 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 04:10:52,068 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 04:10:52,211 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 04:10:55,895 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 04:10:55,934 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 04:10:56,020 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 04:11:00,844 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 04:11:00,880 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 04:11:01,050 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 04:11:05,916 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 04:19:15,368 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-10 04:19:51,518 - root - INFO - 日志系统初始化完成
+2025-08-10 04:19:51,518 - ui.fast_web_ui - INFO - 真实Agent系统加载成功
+2025-08-10 04:19:51,640 - ui.fast_web_ui - ERROR - 应用启动失败: 'FastWebUI' object has no attribute 'themes'
+2025-08-10 04:22:33,907 - root - INFO - 日志系统初始化完成
+2025-08-10 04:22:33,907 - ui.fast_web_ui - INFO - 真实Agent系统加载成功
+2025-08-10 04:24:46,455 - root - INFO - 日志系统初始化完成
+2025-08-10 04:24:46,455 - ui.fast_web_ui - INFO - 真实Agent系统加载成功
+2025-08-10 04:24:46,500 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 04:24:47,079 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 04:24:48,672 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 04:24:48,672 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 04:24:48,696 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 04:24:48,920 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 04:24:48,920 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 04:24:48,943 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 04:24:48,943 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 04:25:01,137 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 04:25:01,731 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 04:25:05,215 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 04:25:05,239 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 04:25:05,419 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 04:25:09,174 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 04:25:09,194 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 04:25:09,380 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 04:25:12,370 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 04:25:12,372 - ui.fast_web_ui - INFO - 真实AI Agent系统初始化完成
+2025-08-10 04:31:16,260 - root - INFO - 日志系统初始化完成
+2025-08-10 04:31:16,307 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 04:31:16,850 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 04:31:18,324 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 04:31:18,324 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 04:31:18,345 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 04:31:18,589 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 04:31:18,589 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 04:31:18,631 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 04:31:18,631 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 04:31:30,339 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 04:31:30,970 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 04:31:34,788 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 04:31:34,827 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 04:31:34,953 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 04:31:37,792 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 04:31:37,824 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 04:31:37,946 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 04:31:41,697 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 04:37:02,593 - root - INFO - 日志系统初始化完成
+2025-08-10 04:37:02,598 - ui.fast_web_ui - INFO - 真实Agent系统加载成功
+2025-08-10 04:37:02,645 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 04:37:03,194 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 04:37:04,689 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 04:37:04,689 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 04:37:04,696 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 04:37:04,969 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 04:37:04,969 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 04:37:04,980 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 04:37:04,980 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 04:37:16,211 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 04:37:16,749 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 04:37:20,442 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 04:37:20,477 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 04:37:20,607 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 04:37:24,219 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 04:37:24,247 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 04:37:24,393 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 04:37:27,072 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 04:37:27,123 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 04:37:27,259 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 04:37:30,775 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 04:37:30,797 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 04:37:30,911 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 04:37:34,979 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 04:37:35,004 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 04:37:35,116 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 04:37:38,361 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 04:37:38,389 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 04:37:38,498 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 04:37:41,875 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 04:37:41,895 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 04:37:42,053 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 04:37:45,702 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 04:37:45,745 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 04:37:45,878 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 04:37:48,168 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 04:37:48,168 - ui.fast_web_ui - INFO - 真实AI Agent系统初始化完成 (9个Agent)
+2025-08-10 04:41:04,416 - root - INFO - 日志系统初始化完成
+2025-08-10 04:41:04,416 - ui.fast_web_ui - INFO - 真实Agent系统加载成功
+2025-08-10 04:41:04,466 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-10 04:41:05,031 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-10 04:41:06,741 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-10 04:41:06,744 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-10 04:41:06,760 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-10 04:41:07,006 - memory.vector_store - INFO - 健康检查通过
+2025-08-10 04:41:07,006 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-10 04:41:07,030 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-10 04:41:07,031 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-10 04:41:18,614 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-10 04:41:19,152 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-10 04:41:22,309 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-10 04:41:22,338 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-10 04:41:22,546 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-10 04:41:25,901 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-10 04:41:25,923 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-10 04:41:26,123 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-10 04:41:29,502 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-10 04:41:29,544 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-10 04:41:29,629 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-10 04:41:33,080 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-10 04:41:33,129 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-10 04:41:33,301 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-10 04:41:37,303 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-10 04:41:37,319 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-10 04:41:37,516 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-10 04:41:40,671 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-10 04:41:40,687 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-10 04:41:40,877 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-10 04:41:44,562 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-10 04:41:44,571 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-10 04:41:44,727 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-10 04:41:48,592 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-10 04:41:48,622 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-10 04:41:48,765 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-10 04:41:52,753 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-10 04:41:52,753 - ui.fast_web_ui - INFO - 真实AI Agent系统初始化完成 (9个Agent)
+2025-08-11 09:37:51,023 - root - INFO - 日志系统初始化完成
+2025-08-11 09:38:52,553 - root - INFO - 日志系统初始化完成
+2025-08-11 09:38:52,554 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-11 09:38:57,239 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-11 09:38:59,147 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-11 09:38:59,147 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-11 09:39:03,225 - memory.vector_store - ERROR - 连接测试失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-08-11 09:39:03,226 - memory.vector_store - WARNING - 连接尝试 1 失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-08-11 09:39:04,226 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-11 09:39:08,728 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-11 09:39:12,797 - memory.vector_store - ERROR - 连接测试失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-08-11 09:39:12,797 - memory.vector_store - WARNING - 连接尝试 2 失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-08-11 09:39:13,800 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-12 10:23:08,057 - root - INFO - 日志系统初始化完成
+2025-08-12 10:23:08,058 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-12 10:23:08,706 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-12 10:23:10,917 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-12 10:23:10,918 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-12 10:23:10,943 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-12 10:23:11,202 - memory.vector_store - INFO - 健康检查通过
+2025-08-12 10:23:11,202 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-12 10:23:11,241 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-12 10:23:11,244 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-12 10:23:24,323 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-12 10:23:25,099 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-12 10:23:28,602 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-12 10:23:28,643 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-12 10:23:28,858 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-12 10:23:32,431 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-12 10:23:32,461 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-12 10:23:32,606 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-12 10:23:36,584 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-12 10:23:36,631 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-12 10:23:36,875 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-12 10:23:40,532 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-12 10:23:40,543 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-12 10:23:40,915 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-12 10:23:44,651 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-12 10:23:44,681 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-12 10:23:45,044 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-12 10:23:48,669 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-12 10:23:48,717 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-12 10:23:48,856 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-12 10:23:52,182 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-12 10:23:52,215 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-12 10:23:52,436 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-12 10:23:56,555 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-12 10:23:56,590 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-12 10:23:56,760 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-12 10:24:00,674 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-12 10:26:34,220 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-12 10:32:29,218 - root - INFO - 日志系统初始化完成
+2025-08-12 10:32:29,219 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-12 10:32:29,822 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-12 10:32:31,809 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-12 10:32:31,809 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-12 10:32:31,839 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-12 10:32:32,064 - memory.vector_store - INFO - 健康检查通过
+2025-08-12 10:32:32,064 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-12 10:32:32,074 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-12 10:32:32,076 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-12 10:32:44,198 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-12 10:32:44,831 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-12 10:32:49,232 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-12 10:32:49,245 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-12 10:32:49,420 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-12 10:32:53,353 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-12 10:32:53,386 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-12 10:32:53,585 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-12 10:32:57,978 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-12 10:32:58,010 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-12 10:32:58,075 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-12 10:33:02,294 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-12 10:33:02,336 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-12 10:33:02,468 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-12 10:33:06,321 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-12 10:33:06,361 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-12 10:33:06,479 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-12 10:33:10,081 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-12 10:33:10,108 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-12 10:33:10,209 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-12 10:33:13,942 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-12 10:33:13,969 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-12 10:33:14,149 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-12 10:33:17,556 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-12 10:33:17,588 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-12 10:33:17,737 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-12 10:33:22,049 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-12 10:34:57,895 - root - INFO - 日志系统初始化完成
+2025-08-12 10:34:57,896 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-12 10:34:58,547 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-12 10:35:00,597 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-12 10:35:00,598 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-12 10:35:00,604 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-12 10:35:00,896 - memory.vector_store - INFO - 健康检查通过
+2025-08-12 10:35:00,897 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-12 10:35:00,926 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-12 10:35:00,927 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-12 10:35:13,051 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-12 10:35:13,622 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-12 10:35:17,479 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-12 10:35:17,509 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-12 10:35:17,600 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-12 10:35:20,975 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-12 10:35:21,007 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-12 10:35:21,178 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-12 10:35:25,152 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-12 10:35:25,183 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-12 10:35:25,338 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-12 10:35:29,650 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-12 10:35:29,661 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-12 10:35:29,846 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-12 10:35:34,117 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-12 10:35:34,143 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-12 10:35:34,326 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-12 10:35:38,469 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-12 10:35:38,506 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-12 10:35:38,670 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-12 10:35:42,913 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-12 10:35:42,938 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-12 10:35:43,162 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-12 10:35:46,703 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-12 10:35:46,725 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-12 10:35:46,910 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-12 10:35:50,562 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-12 10:37:51,402 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-12 10:39:43,125 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-12 10:42:36,806 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-12 10:44:19,202 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-12 10:44:50,162 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-12 10:45:22,295 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-12 10:48:20,529 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-12 10:51:19,840 - root - INFO - 日志系统初始化完成
+2025-08-12 10:51:19,841 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-12 10:51:20,413 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-12 10:51:22,389 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-12 10:51:22,390 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-12 10:51:22,411 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-12 10:51:22,686 - memory.vector_store - INFO - 健康检查通过
+2025-08-12 10:51:22,687 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-12 10:51:22,698 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-12 10:51:22,698 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-12 10:51:34,880 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-12 10:51:35,492 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-12 10:51:40,358 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-12 10:51:40,368 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-12 10:51:40,516 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-12 10:51:44,140 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-12 10:51:44,171 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-12 10:51:44,253 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-12 10:51:48,334 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-12 10:51:48,370 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-12 10:51:48,510 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-12 10:51:51,883 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-12 10:51:51,923 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-12 10:51:51,967 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-12 10:51:56,641 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-12 10:51:56,651 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-12 10:51:56,766 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-12 10:52:00,801 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-12 10:52:00,825 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-12 10:52:01,026 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-12 10:52:04,859 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-12 10:52:04,869 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-12 10:52:05,007 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-12 10:52:09,563 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-12 10:52:09,590 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-12 10:52:09,823 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-12 10:52:14,146 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-12 11:03:29,903 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-12 11:09:08,062 - root - INFO - 日志系统初始化完成
+2025-08-12 11:09:08,062 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-12 11:09:08,634 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-12 11:09:10,607 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-12 11:09:10,607 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-12 11:09:10,617 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-12 11:09:10,880 - memory.vector_store - INFO - 健康检查通过
+2025-08-12 11:09:10,880 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-12 11:09:10,903 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-12 11:09:10,904 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-12 11:09:25,183 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-12 11:09:26,122 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-12 11:09:30,929 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-12 11:09:30,964 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-12 11:09:31,122 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-12 11:09:34,909 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-12 11:09:34,933 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-12 11:09:35,107 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-12 11:09:39,339 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-12 11:09:39,379 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-12 11:09:39,565 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-12 11:09:43,688 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-12 11:09:43,709 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-12 11:09:43,859 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-12 11:09:47,659 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-12 11:09:47,673 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-12 11:09:47,869 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-12 11:09:52,555 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-12 11:09:52,597 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-12 11:09:52,761 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-12 11:09:56,791 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-12 11:09:56,833 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-12 11:09:57,003 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-12 11:10:01,035 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-12 11:10:01,062 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-12 11:10:01,245 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-12 11:10:05,294 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-12 11:11:02,643 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-12 11:12:59,369 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-12 11:13:03,337 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-12 11:31:19,153 - root - INFO - 日志系统初始化完成
+2025-08-12 11:31:19,154 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-12 11:31:20,716 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-12 11:31:24,338 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-12 11:31:24,339 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-12 11:31:24,361 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-12 11:31:24,665 - memory.vector_store - INFO - 健康检查通过
+2025-08-12 11:31:24,666 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-12 11:31:24,716 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-12 11:31:24,717 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-12 11:31:41,562 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-12 11:31:42,461 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-12 11:31:46,645 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-12 11:31:46,690 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-12 11:31:46,869 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-12 11:31:50,915 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-12 11:31:50,949 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-12 11:31:51,087 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-12 11:31:54,993 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-12 11:31:55,006 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-12 11:31:55,181 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-12 11:31:59,352 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-12 11:31:59,381 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-12 11:31:59,587 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-12 11:32:03,959 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-12 11:32:03,972 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-12 11:32:04,132 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-12 11:32:08,401 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-12 11:32:08,433 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-12 11:32:08,581 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-12 11:32:12,884 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-12 11:32:12,911 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-12 11:32:13,085 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-12 11:32:17,067 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-12 11:32:17,103 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-12 11:32:17,250 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-12 11:32:22,428 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-12 11:43:57,446 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-12 11:44:04,650 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-12 11:44:42,477 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-12 11:46:46,866 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-12 11:46:55,483 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-12 11:51:24,532 - root - INFO - 日志系统初始化完成
+2025-08-12 11:51:24,533 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-12 11:51:26,011 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-12 11:51:29,741 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-12 11:51:29,741 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-12 11:51:29,752 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-12 11:51:30,021 - memory.vector_store - INFO - 健康检查通过
+2025-08-12 11:51:30,021 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-12 11:51:30,036 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-12 11:51:30,036 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-12 11:51:46,095 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-12 11:51:47,102 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-12 11:51:51,112 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-12 11:51:51,153 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-12 11:51:51,332 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-12 11:51:55,236 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-12 11:51:55,252 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-12 11:51:55,470 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-12 11:51:59,695 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-12 11:51:59,727 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-12 11:51:59,894 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-12 11:52:03,907 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-12 11:52:03,939 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-12 11:52:04,095 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-12 11:52:08,084 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-12 11:52:08,099 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-12 11:52:08,478 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-12 11:52:12,678 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-12 11:52:12,708 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-12 11:52:12,840 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-12 11:52:17,238 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-12 11:52:17,271 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-12 11:52:17,461 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-12 11:52:21,822 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-12 11:52:21,850 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-12 11:52:22,023 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-12 11:52:25,832 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-12 11:59:59,914 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-12 12:02:38,501 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-12 12:02:41,879 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-12 12:05:33,739 - root - INFO - 日志系统初始化完成
+2025-08-12 12:05:33,740 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-12 12:05:35,166 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-12 12:05:38,760 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-12 12:05:38,761 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-12 12:05:38,794 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-12 12:05:39,113 - memory.vector_store - INFO - 健康检查通过
+2025-08-12 12:05:39,113 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-12 12:05:39,128 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-12 12:05:39,129 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-12 12:05:56,100 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-12 12:05:57,078 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-12 12:06:00,689 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-12 12:06:00,730 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-12 12:06:00,888 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-12 12:06:04,422 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-12 12:06:04,447 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-12 12:06:04,646 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-12 12:06:08,659 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-12 12:06:08,671 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-12 12:06:08,826 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-12 12:06:13,268 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-12 12:06:13,320 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-12 12:06:13,481 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-12 12:06:17,455 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-12 12:06:17,480 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-12 12:06:17,631 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-12 12:06:21,309 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-12 12:06:21,359 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-12 12:06:21,488 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-12 12:06:25,577 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-12 12:06:25,590 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-12 12:06:25,725 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-12 12:06:29,642 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-12 12:06:29,674 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-12 12:06:29,808 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-12 12:06:33,850 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-12 12:11:15,178 - agents.behavior_manager - INFO - 小镇事件开始: 小镇集市 在 公园
+2025-08-12 12:15:30,487 - agents.behavior_manager - INFO - 小镇事件开始: 艺术展览 在 咖啡厅
+2025-08-12 12:23:16,858 - root - INFO - 日志系统初始化完成
+2025-08-12 12:23:16,858 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-12 12:23:17,467 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-12 12:23:19,810 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-12 12:23:19,810 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-12 12:23:19,817 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 24
+2025-08-12 12:23:20,088 - memory.vector_store - INFO - 健康检查通过
+2025-08-12 12:23:20,089 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-12 12:23:20,105 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-12 12:23:20,107 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-12 12:23:32,545 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-12 12:23:33,387 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-12 12:23:37,758 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-12 12:23:37,792 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-12 12:23:37,869 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-12 12:23:41,480 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-12 12:23:41,506 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-12 12:23:41,590 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-12 12:23:45,181 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-12 12:23:45,190 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-12 12:23:45,293 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-12 12:23:49,037 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-12 12:23:49,051 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-12 12:23:49,135 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-12 12:23:52,359 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-12 12:23:52,383 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-12 12:23:52,467 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-12 12:23:55,862 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-12 12:23:55,897 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-12 12:23:56,082 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-12 12:24:00,445 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-12 12:24:00,461 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-12 12:24:00,533 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-12 12:24:04,546 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-12 12:24:04,589 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-12 12:24:04,687 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-12 12:24:07,909 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-12 12:28:49,080 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-12 12:32:42,178 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆

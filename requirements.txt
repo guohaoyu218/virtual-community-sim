@@ -1,0 +1,28 @@
+# 🏘️ AI Agent虚拟小镇 - Web版本依赖
+
+# Streamlit Web界面
+streamlit>=1.28.0
+plotly>=5.17.0
+
+# AI模型相关
+torch>=2.0.0
+transformers>=4.35.0
+sentence-transformers>=2.2.0
+accelerate>=0.24.0
+bitsandbytes>=0.41.0
+
+# 向量数据库
+qdrant-client>=1.7.0
+
+# 基础依赖
+numpy>=1.24.0
+pandas>=2.0.0
+python-dotenv>=1.0.0
+requests>=2.25.0
+
+# 日志和配置
+pyyaml>=6.0.0
+colorlog>=6.7.0
+
+# 可选：性能优化
+redis>=5.0.0  # 可选的缓存系统
