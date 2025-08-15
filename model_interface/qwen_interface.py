@@ -66,7 +66,7 @@ class QwenInterface:
                 return_tensors="pt", 
                 padding=True, 
                 truncation=True, 
-                max_length=1024  # 减少输入长度提高速度
+                max_length=1024  
             ).to('cuda')
             
             with torch.no_grad():

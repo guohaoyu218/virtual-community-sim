@@ -1165,3 +1165,94 @@
 2025-08-12 12:24:07,909 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
 2025-08-12 12:28:49,080 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
 2025-08-12 12:32:42,178 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-15 17:14:59,909 - root - INFO - 日志系统初始化完成
+2025-08-15 17:15:00,046 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-15 17:15:03,591 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-15 17:15:03,601 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-15 17:15:03,833 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-15 17:15:07,890 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-15 17:15:07,925 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-15 17:15:08,073 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-15 17:15:11,982 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-15 17:15:12,011 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-15 17:15:12,218 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-15 17:15:16,449 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-15 17:15:16,479 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-15 17:15:16,599 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-15 17:15:21,163 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-15 17:15:21,182 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-15 17:15:21,304 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-15 17:15:25,106 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-15 17:15:25,142 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-15 17:15:25,227 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-15 17:15:29,182 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-15 17:15:29,252 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-15 17:15:29,400 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-15 17:15:32,763 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-15 17:15:32,773 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-15 17:15:32,927 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-15 17:15:36,377 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-15 17:15:36,378 - terminal_town - WARNING - 从向量数据库加载社交网络失败: VectorStore.search_memories() got an unexpected keyword argument 'query_text'
+2025-08-15 17:15:36,379 - terminal_town - WARNING - 验证Alex记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:15:36,379 - terminal_town - WARNING - 验证Emma记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:15:36,380 - terminal_town - WARNING - 验证Sarah记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:15:36,380 - terminal_town - WARNING - 验证David记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:15:36,382 - terminal_town - WARNING - 验证Lisa记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:15:36,382 - terminal_town - WARNING - 验证Mike记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:15:36,382 - terminal_town - WARNING - 验证John记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:15:36,383 - terminal_town - WARNING - 验证Anna记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:15:36,383 - terminal_town - WARNING - 验证Tom记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:16:22,015 - root - INFO - 日志系统初始化完成
+2025-08-15 17:16:22,016 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-15 17:16:22,700 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-15 17:16:25,307 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-15 17:16:25,308 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-15 17:16:25,316 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 25
+2025-08-15 17:16:25,508 - memory.vector_store - INFO - 健康检查通过
+2025-08-15 17:16:25,509 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-08-15 17:16:25,528 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-15 17:16:25,529 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-15 17:16:38,266 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-15 17:16:38,942 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-08-15 17:16:43,362 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-08-15 17:16:43,391 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-15 17:16:43,609 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-08-15 17:16:47,768 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-08-15 17:16:47,796 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-15 17:16:47,968 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-08-15 17:16:51,839 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-08-15 17:16:51,871 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-08-15 17:16:52,042 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-08-15 17:16:55,488 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-08-15 17:16:55,531 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-08-15 17:16:55,707 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-08-15 17:16:59,523 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-08-15 17:16:59,551 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-08-15 17:16:59,758 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-08-15 17:17:03,406 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-08-15 17:17:03,448 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-08-15 17:17:03,639 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-08-15 17:17:07,384 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-08-15 17:17:07,413 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-08-15 17:17:07,604 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-08-15 17:17:11,306 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-08-15 17:17:11,347 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-08-15 17:17:11,514 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-08-15 17:17:15,542 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-08-15 17:17:15,543 - __main__ - WARNING - 从向量数据库加载社交网络失败: VectorStore.search_memories() got an unexpected keyword argument 'query_text'
+2025-08-15 17:17:15,543 - __main__ - WARNING - 验证Alex记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:17:15,543 - __main__ - WARNING - 验证Emma记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:17:15,545 - __main__ - WARNING - 验证Sarah记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:17:15,545 - __main__ - WARNING - 验证David记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:17:15,546 - __main__ - WARNING - 验证Lisa记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:17:15,546 - __main__ - WARNING - 验证Mike记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:17:15,546 - __main__ - WARNING - 验证John记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:17:15,547 - __main__ - WARNING - 验证Anna记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:17:15,547 - __main__ - WARNING - 验证Tom记忆系统失败: 'MemoryManager' object has no attribute 'get_recent_memories'
+2025-08-15 17:19:06,401 - memory.vector_store - INFO - 创建集合成功: global_interactions
+2025-08-15 17:19:06,435 - agents.behavior_manager - INFO - 小镇事件开始: 技术讲座 在 图书馆
+2025-08-15 17:20:08,002 - memory.vector_store - INFO - 创建集合成功: group_activities
+2025-08-15 17:23:14,584 - agents.behavior_manager - INFO - 小镇事件开始: 健康检查日 在 办公室
+2025-08-15 17:23:23,612 - memory.vector_store - INFO - 创建集合成功: social_network_data
+2025-08-15 17:23:27,516 - __main__ - INFO - 社交网络数据已保存到向量数据库
+2025-08-15 17:23:27,517 - __main__ - INFO - 已保存9个Agent的记忆数据到向量数据库

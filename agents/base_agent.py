@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 class BaseAgent:
     def __init__(self, name: str, personality: str, background: str, profession: str = "通用"):
         self.name = name
-        self.personality = personality
-        self.background = background
-        self.profession = profession
+        self.personality = personality#性格
+        self.background = background#背景
+        self.profession = profession#职业   
         
         # 状态信息
         self.current_location = "家"

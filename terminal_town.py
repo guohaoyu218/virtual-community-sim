@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-"""
-🏘️ AI Agent虚拟小镇 - 终端交互模式
-快速、流畅的命令行界面体验
-"""
 
 import os
 import sys
@@ -19,24 +12,18 @@ import json
 from datetime import datetime
 
 # 添加项目路径
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-try:
-    from agents.specific_agents import (AlexProgrammer, EmmaArtist, SarahTeacher, 
+
+from agents.specific_agents import (AlexProgrammer, EmmaArtist, SarahTeacher, 
                                        DavidBusinessman, LisaStudent, MikeRetired,
                                        JohnDoctor, AnnaChef, TomMechanic)
-    from agents.behavior_manager import behavior_manager
-    from setup_logging import setup_logging
-    import logging
+from agents.behavior_manager import behavior_manager
+from setup_logging import setup_logging
+import logging
     
-    setup_logging()
-    logger = logging.getLogger(__name__)
-    REAL_AGENTS_AVAILABLE = True
-    print("✅ 真实AI Agent系统已加载 (8个Agent)")
-except ImportError as e:
-    REAL_AGENTS_AVAILABLE = False
-    print(f"⚠️  使用简化Agent系统: {e}")
-
+setup_logging()
+logger = logging.getLogger(__name__)
 class TerminalColors:
     """终端颜色定义"""
     HEADER = '\033[95m'
@@ -85,8 +72,8 @@ class TerminalTown:
     
     def init_agents(self):
         """初始化AI Agent"""
-        if REAL_AGENTS_AVAILABLE:
-            try:
+       
+        try:
                 self.agents = {
                     'Alex': TerminalAgent(AlexProgrammer(), TerminalColors.ALEX, '👨‍💻'),
                     'Emma': TerminalAgent(EmmaArtist(), TerminalColors.EMMA, '👩‍🎨'),
@@ -99,42 +86,11 @@ class TerminalTown:
                     'Tom': TerminalAgent(TomMechanic(), TerminalColors.BOLD, '👨‍🔧')
                 }
                 print("🧠 真实AI Agent系统初始化完成 (9个Agent)")
-            except Exception as e:
-                print(f"❌ AI初始化失败，使用简化版本: {e}")
-                self.init_simple_agents()
-        else:
-            self.init_simple_agents()
+        except Exception as e:
+                print(f"❌ AI初始化失败: {e}")
+                
     
-    def init_simple_agents(self):
-        """初始化简化Agent"""
-        self.agents = {
-            'Alex': SimpleAgent('Alex', '程序员', TerminalColors.ALEX, '👨‍💻'),
-            'Emma': SimpleAgent('Emma', '艺术家', TerminalColors.EMMA, '👩‍🎨'),
-            'Sarah': SimpleAgent('Sarah', '老师', TerminalColors.SARAH, '👩‍🏫'),
-            'David': SimpleAgent('David', '商人', TerminalColors.CYAN, '👨‍💼'),
-            'Lisa': SimpleAgent('Lisa', '学生', TerminalColors.YELLOW, '👩‍🎓'),
-            'Mike': SimpleAgent('Mike', '退休人员', TerminalColors.BLUE, '👴'),
-            'John': SimpleAgent('John', '医生', TerminalColors.GREEN, '👨‍⚕️'),
-            'Anna': SimpleAgent('Anna', '厨师', TerminalColors.RED, '👩‍🍳'),
-            'Tom': SimpleAgent('Tom', '机械师', TerminalColors.BOLD, '👨‍🔧')
-        }
-        
-        # 设置初始位置
-        initial_locations = {
-            'Alex': '办公室',
-            'Emma': '公园',
-            'Sarah': '图书馆',
-            'David': '办公室',
-            'Lisa': '图书馆',
-            'Mike': '公园',
-            'John': '医院',
-            'Anna': '餐厅',
-            'Tom': '修理店'
-        }
-        
-        for name, location in initial_locations.items():
-            if name in self.agents:
-                self.agents[name].location = location
+    
     
     def clear_screen(self):
         """清屏"""
@@ -299,8 +255,41 @@ class TerminalTown:
                 'response': response
             })
             
+            # 保存用户对话到向量数据库
+            self._save_user_chat_to_vector_db(agent_name, message, response)
+            
         except Exception as e:
             print(f"{TerminalColors.RED}❌ 对话失败: {e}{TerminalColors.END}\n")
+    
+    def _save_user_chat_to_vector_db(self, agent_name, user_message, agent_response):
+        """保存用户对话到向量数据库"""
+        try:
+            if agent_name in self.agents and hasattr(self.agents[agent_name], 'real_agent'):
+                agent = self.agents[agent_name].real_agent
+                if hasattr(agent, 'memory_manager'):
+                    # 构建对话内容
+                    chat_content = f"用户与{agent_name}对话：用户说'{user_message}'，{agent_name}回答'{agent_response}'"
+                    
+                    # 用户对话通常重要性较高
+                    importance = 0.8
+                    
+                    agent.memory_manager.add_memory(
+                        content=chat_content,
+                        memory_type='user_interaction',
+                        base_importance=importance,
+                        metadata={
+                            'interaction_type': 'user_chat',
+                            'user_message': user_message[:100],  # 保存用户消息摘要
+                            'agent_response': agent_response[:100],  # 保存Agent回应摘要
+                            'timestamp': datetime.now().isoformat(),
+                            'response_time': time.time(),
+                            'interaction_context': 'terminal_chat'
+                        }
+                    )
+                    
+                    logger.debug(f"已保存用户对话到{agent_name}的记忆中")
+        except Exception as e:
+            logger.warning(f"保存用户对话到向量数据库失败: {e}")
     
     def move_agent(self, agent_name: str, location: str):
         """移动Agent"""
@@ -360,10 +349,9 @@ class TerminalTown:
                 agent_name = random.choice(agent_names)
                 agent = self.agents[agent_name]
                 
-                # 简化的Agent选择显示
-                # print(f"{TerminalColors.CYAN}🎯 选择Agent: {agent_name}{TerminalColors.END}")  # 注释掉，减少干扰
                 
-                # 智能行动选择 - 增加多人讨论，移除独立负面互动
+                
+                # 智能行动选择 
                 action_weights = {
                     'social': 40,        # 增加社交权重，让负面互动在社交中自然产生
                     'group_discussion': 20,  # 增加多人讨论
@@ -456,7 +444,7 @@ class TerminalTown:
                     # 根据当前关系和随机因素决定对话结果
                     current_relationship = self.behavior_manager.get_relationship_strength(agent_name, target_name)
                     
-                    # 根据关系强度决定对话类型的概率 - 减少负面互动概率，降低关系下降频率
+                    # 根据关系强度决定对话类型的概率 
                     if current_relationship >= 70:
                         # 关系很好：80%友好，15%中性，5%负面（从10%降低到5%）
                         interaction_weights = [('friendly_chat', 80), ('casual_meeting', 15), ('misunderstanding', 4), ('argument', 1)]
@@ -631,6 +619,9 @@ class TerminalTown:
                             if relationship_info.get('level_changed', False):
                                 level_color = TerminalColors.GREEN if relationship_info['new_strength'] > relationship_info['old_strength'] else TerminalColors.YELLOW
                                 print(f"     {level_color}�� {relationship_info.get('level_change_message', '关系等级发生变化')}{TerminalColors.END}")
+                        
+                        # 保存交互数据到向量数据库
+                        self._save_interaction_to_vector_db(agent_name, target_name, topic, response, feedback, chosen_interaction, current_loc, relationship_info)
                         
                         print()  # 空行分隔
                     except Exception as e:
@@ -861,6 +852,9 @@ class TerminalTown:
                                 change_symbol = "+" if relationship_info['change'] > 0 else ""
                                 change_color = TerminalColors.GREEN if relationship_info['change'] > 0 else TerminalColors.RED
                                 print(f"       {relationship_info['relationship_emoji']} ({change_color}{change_symbol}{relationship_info['change']}{TerminalColors.END})")
+                            
+                            # 保存群体讨论交互到向量数据库
+                            self._save_group_interaction_to_vector_db(agent_name, participant_name, starter, ai_response, interaction_type, current_loc, topic, relationship_info)
                         
                         # 可能的后续互动 - 参与者之间的对话
                         if len(participants) >= 2 and random.random() < 0.4:  # 40%概率有后续互动
@@ -1119,7 +1113,7 @@ class TerminalTown:
         print(f"{TerminalColors.RED}🛑 自动模拟循环结束{TerminalColors.END}")
     
     def _clean_response(self, response: str) -> str:
-        """彻底清理AI回应中的提示词残留 - 强化版"""
+        """彻底清理AI回应中的提示词残留 """
         # 预处理：移除明显的提示词段落
         response = response.strip()
         
@@ -1252,39 +1246,161 @@ class TerminalTown:
         return result if result else "嗯。"
     
     def load_persistent_data(self):
-        """加载持久化数据"""
+        """加载持久化数据 - 优化版本：从向量数据库加载重要数据，从JSON加载配置数据"""
         try:
-            # 加载社交网络数据
-            social_data_file = os.path.join("data", "cache", "social_network.json")
-            if os.path.exists(social_data_file):
-                with open(social_data_file, 'r', encoding='utf-8') as f:
-                    social_data = json.load(f)
-                    self.behavior_manager.social_network = social_data
-                    print(f"📊 已加载社交网络数据：{len(social_data)} 个关系网络")
+            # 1. 从向量数据库加载社交网络数据
+            self._load_social_network_from_vector_db()
             
-            # 加载Agent记忆摘要
+            # 2. Agent记忆数据已通过memory_manager自动从向量数据库加载
+            self._verify_agent_memories_loaded()
+            
+            # 3. 从JSON加载简单配置数据
+            config_file = os.path.join("data", "cache", "system_config.json")
+            if os.path.exists(config_file):
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    config_data = json.load(f)
+                    
+                    # 恢复地点热度数据
+                    if 'location_popularity' in config_data:
+                        self.behavior_manager.location_popularity = config_data['location_popularity']
+                        print(f"🏢 已加载地点热度数据：{len(config_data['location_popularity'])} 个地点")
+                    
+                    # 恢复Agent位置
+                    if 'agent_positions' in config_data:
+                        for agent_name, location in config_data['agent_positions'].items():
+                            if agent_name in self.agents:
+                                self.agents[agent_name].location = location
+                                if hasattr(self.agents[agent_name], 'real_agent'):
+                                    self.agents[agent_name].real_agent.current_location = location
+                        print(f"📍 已恢复 {len(config_data['agent_positions'])} 个Agent位置")
+                    
+                    # 恢复系统状态
+                    if 'system_status' in config_data:
+                        system_status = config_data['system_status']
+                        print(f"⚙️ 系统状态：上次保存 {system_status.get('last_save_time', '未知')}")
+            
+            # 4. 备用：如果向量数据库加载失败，尝试从旧JSON格式加载
+            self._load_legacy_json_data()
+            
+            print(f"{TerminalColors.GREEN}✅ 数据持久化加载完成（向量数据库 + JSON配置）{TerminalColors.END}")
+            
+        except Exception as e:
+            print(f"{TerminalColors.YELLOW}⚠️ 加载持久化数据失败，使用默认设置: {e}{TerminalColors.END}")
+    
+    def _load_social_network_from_vector_db(self):
+        """从向量数据库加载社交网络数据"""
+        try:
+            from memory.vector_store import get_vector_store
+            vector_store = get_vector_store()
+            
+            collection_name = "social_network_data"
+            
+            # 查询所有社交关系数据
+            social_memories = vector_store.search_memories(
+                collection_name=collection_name,
+                query_text="关系强度",
+                limit=100,  # 获取更多关系数据
+                min_score=0.1
+            )
+            
+            # 重建社交网络
+            loaded_relationships = 0
+            for memory in social_memories:
+                try:
+                    metadata = memory.get('metadata', {})
+                    agent1 = metadata.get('agent1')
+                    agent2 = metadata.get('agent2')
+                    strength = metadata.get('strength', 50)
+                    
+                    if agent1 and agent2:
+                        if agent1 not in self.behavior_manager.social_network:
+                            self.behavior_manager.social_network[agent1] = {}
+                        if agent2 not in self.behavior_manager.social_network:
+                            self.behavior_manager.social_network[agent2] = {}
+                        
+                        self.behavior_manager.social_network[agent1][agent2] = strength
+                        self.behavior_manager.social_network[agent2][agent1] = strength
+                        loaded_relationships += 1
+                        
+                except Exception as e:
+                    logger.warning(f"加载关系数据失败: {e}")
+            
+            if loaded_relationships > 0:
+                print(f"📊 从向量数据库加载了 {loaded_relationships} 个关系数据")
+            else:
+                print(f"📊 向量数据库中暂无社交网络数据，使用默认设置")
+                
+        except Exception as e:
+            logger.warning(f"从向量数据库加载社交网络失败: {e}")
+    
+    def _verify_agent_memories_loaded(self):
+        """验证Agent记忆数据加载状态"""
+        try:
+            loaded_agents = 0
+            for agent_name, agent in self.agents.items():
+                if hasattr(agent, 'real_agent') and hasattr(agent.real_agent, 'memory_manager'):
+                    try:
+                        # 验证memory_manager能否正常工作
+                        recent_memories = agent.real_agent.memory_manager.get_recent_memories(limit=3)
+                        if recent_memories:
+                            print(f"🧠 {agent_name} 记忆系统正常，已有 {len(recent_memories)} 条记忆")
+                        loaded_agents += 1
+                    except Exception as e:
+                        logger.warning(f"验证{agent_name}记忆系统失败: {e}")
+            
+            print(f"🧠 已验证 {loaded_agents} 个Agent的记忆系统")
+            
+        except Exception as e:
+            logger.warning(f"验证Agent记忆系统失败: {e}")
+    
+    def _load_legacy_json_data(self):
+        """加载旧版JSON格式数据作为备用"""
+        try:
+            # 尝试加载旧版社交网络数据（如果向量数据库没有数据）
+            if not self.behavior_manager.social_network:
+                social_data_file = os.path.join("data", "cache", "social_network.json")
+                if os.path.exists(social_data_file):
+                    with open(social_data_file, 'r', encoding='utf-8') as f:
+                        social_data = json.load(f)
+                        self.behavior_manager.social_network = social_data
+                        print(f"📊 备用加载：从JSON恢复了 {len(social_data)} 个关系网络")
+            
+            # 处理旧版Agent记忆数据
             memories_file = os.path.join("data", "cache", "agent_memories.json")
             if os.path.exists(memories_file):
                 with open(memories_file, 'r', encoding='utf-8') as f:
                     memories_data = json.load(f)
-                    for agent_name, agent in self.agents.items():
-                        if agent_name in memories_data and hasattr(agent, 'real_agent'):
-                            # 恢复重要记忆
-                            agent_memories = memories_data[agent_name]
-                            print(f"🧠 {agent_name} 恢复了 {len(agent_memories)} 条重要记忆")
-            
-            # 加载地点热度数据
-            location_data_file = os.path.join("data", "cache", "location_popularity.json")
-            if os.path.exists(location_data_file):
-                with open(location_data_file, 'r', encoding='utf-8') as f:
-                    location_data = json.load(f)
-                    self.behavior_manager.location_popularity = location_data
-                    print(f"🏢 已加载地点热度数据：{len(location_data)} 个地点")
-            
-            print(f"{TerminalColors.GREEN}✅ 数据持久化加载完成{TerminalColors.END}")
+                    if memories_data:  # 如果有旧数据，迁移到向量数据库
+                        self._migrate_json_memories_to_vector_db(memories_data)
             
         except Exception as e:
-            print(f"{TerminalColors.YELLOW}⚠️ 加载持久化数据失败，使用默认设置: {e}{TerminalColors.END}")
+            logger.warning(f"加载备用JSON数据失败: {e}")
+    
+    def _migrate_json_memories_to_vector_db(self, memories_data):
+        """将JSON格式的记忆数据迁移到向量数据库"""
+        try:
+            migrated_count = 0
+            for agent_name, memories in memories_data.items():
+                if agent_name in self.agents and hasattr(self.agents[agent_name], 'real_agent'):
+                    agent = self.agents[agent_name].real_agent
+                    if hasattr(agent, 'memory_manager'):
+                        for memory_text in memories:
+                            try:
+                                agent.memory_manager.add_memory(
+                                    content=memory_text,
+                                    memory_type='migrated_memory',
+                                    base_importance=0.5,
+                                    metadata={'migrated_from_json': True}
+                                )
+                                migrated_count += 1
+                            except Exception as e:
+                                logger.warning(f"迁移{agent_name}的记忆失败: {e}")
+            
+            if migrated_count > 0:
+                print(f"🔄 已迁移 {migrated_count} 条记忆数据到向量数据库")
+                
+        except Exception as e:
+            logger.warning(f"迁移记忆数据失败: {e}")
     
     def _redistribute_agents_randomly(self):
         """随机重新分布Agent到各个地点，增加社交机会"""
@@ -1336,41 +1452,244 @@ class TerminalTown:
             logger.warning(f"重新分布Agent失败: {e}")
     
     def save_persistent_data(self):
-        """保存持久化数据"""
+        """保存持久化数据 - 优化版本：重要数据使用向量数据库，配置数据使用JSON"""
         try:
             # 确保cache目录存在
             cache_dir = os.path.join("data", "cache")
             os.makedirs(cache_dir, exist_ok=True)
             
-            # 保存社交网络数据
-            social_data_file = os.path.join(cache_dir, "social_network.json")
-            with open(social_data_file, 'w', encoding='utf-8') as f:
-                json.dump(self.behavior_manager.social_network, f, ensure_ascii=False, indent=2)
+            # 1. 社交网络数据 - 保存到向量数据库（语义化存储）
+            self._save_social_network_to_vector_db()
             
-            # 保存Agent重要记忆摘要
-            memories_data = {}
-            for agent_name, agent in self.agents.items():
-                if hasattr(agent, 'real_agent') and hasattr(agent.real_agent, 'memory_manager'):
-                    try:
-                        # 获取最重要的几条记忆
-                        important_memories = agent.real_agent.memory_manager.get_recent_memories(limit=10)
-                        memories_data[agent_name] = important_memories
-                    except:
-                        pass
+            # 2. Agent记忆数据 - 已经通过memory_manager自动保存到向量数据库
+            self._save_agent_memories_to_vector_db()
             
-            memories_file = os.path.join(cache_dir, "agent_memories.json")
-            with open(memories_file, 'w', encoding='utf-8') as f:
-                json.dump(memories_data, f, ensure_ascii=False, indent=2)
+            # 3. 仅保存简单配置数据到JSON（非语义化数据）
+            simple_config = {
+                'location_popularity': self.behavior_manager.location_popularity,
+                'agent_positions': {name: agent.location for name, agent in self.agents.items()},
+                'system_status': {
+                    'last_save_time': datetime.now().isoformat(),
+                    'auto_simulation': self.auto_simulation,
+                    'agent_count': len(self.agents)
+                }
+            }
             
-            # 保存地点热度数据
-            location_data_file = os.path.join(cache_dir, "location_popularity.json")
-            with open(location_data_file, 'w', encoding='utf-8') as f:
-                json.dump(self.behavior_manager.location_popularity, f, ensure_ascii=False, indent=2)
+            config_file = os.path.join(cache_dir, "system_config.json")
+            with open(config_file, 'w', encoding='utf-8') as f:
+                json.dump(simple_config, f, ensure_ascii=False, indent=2)
             
-            print(f"{TerminalColors.GREEN}💾 数据已保存到本地缓存{TerminalColors.END}")
+            print(f"{TerminalColors.GREEN}💾 数据已保存：向量数据库(记忆/关系) + JSON配置{TerminalColors.END}")
             
         except Exception as e:
             print(f"{TerminalColors.RED}❌ 保存数据失败: {e}{TerminalColors.END}")
+    
+    def _save_social_network_to_vector_db(self):
+        """将社交网络数据保存到向量数据库"""
+        try:
+            from memory.vector_store import get_vector_store
+            vector_store = get_vector_store()
+            
+            # 为社交网络创建专用集合
+            collection_name = "social_network_data"
+            vector_store.create_collection(collection_name)
+            
+            # 将每个关系保存为向量化数据
+            for agent1, relationships in self.behavior_manager.social_network.items():
+                for agent2, strength in relationships.items():
+                    if strength > 0:  # 只保存有意义的关系
+                        # 构建关系描述文本
+                        relationship_text = f"{agent1}和{agent2}的关系强度为{strength}，关系类型为友好交往"
+                        
+                        # 保存到向量数据库
+                        vector_store.add_memory(
+                            collection_name=collection_name,
+                            content=relationship_text,
+                            agent_id="system",
+                            importance=min(strength / 100.0, 1.0),
+                            memory_type="social_relationship",
+                            metadata={
+                                'agent1': agent1,
+                                'agent2': agent2, 
+                                'strength': strength,
+                                'relationship_type': 'friendship',
+                                'timestamp': datetime.now().isoformat()
+                            }
+                        )
+            
+            logger.info("社交网络数据已保存到向量数据库")
+            
+        except Exception as e:
+            logger.warning(f"保存社交网络到向量数据库失败，使用JSON备份: {e}")
+            # 备份到JSON
+            social_data_file = os.path.join("data", "cache", "social_network.json")
+            with open(social_data_file, 'w', encoding='utf-8') as f:
+                json.dump(self.behavior_manager.social_network, f, ensure_ascii=False, indent=2)
+    
+    def _save_agent_memories_to_vector_db(self):
+        """确保Agent记忆数据保存到向量数据库"""
+        try:
+            saved_count = 0
+            for agent_name, agent in self.agents.items():
+                if hasattr(agent, 'real_agent') and hasattr(agent.real_agent, 'memory_manager'):
+                    try:
+                        # Agent的记忆已经通过memory_manager自动保存到向量数据库
+                        # 这里只需要添加最新的交互记忆
+                        recent_interactions = getattr(agent, '_recent_interactions', [])
+                        for interaction in recent_interactions[-5:]:  # 保存最近5次交互
+                            agent.real_agent.memory_manager.add_memory(
+                                content=interaction.get('content', ''),
+                                memory_type='social_interaction',
+                                base_importance=0.7,
+                                metadata={
+                                    'interaction_type': interaction.get('type', 'chat'),
+                                    'timestamp': interaction.get('timestamp', datetime.now().isoformat()),
+                                    'participants': interaction.get('participants', [])
+                                }
+                            )
+                        saved_count += 1
+                    except Exception as e:
+                        logger.warning(f"保存{agent_name}记忆失败: {e}")
+            
+            logger.info(f"已保存{saved_count}个Agent的记忆数据到向量数据库")
+            
+        except Exception as e:
+            logger.warning(f"保存Agent记忆到向量数据库失败: {e}")
+    
+    def _save_interaction_to_vector_db(self, agent1_name, agent2_name, topic, response, feedback, interaction_type, location, relationship_info):
+        """保存交互数据到向量数据库"""
+        try:
+            from memory.vector_store import get_vector_store
+            vector_store = get_vector_store()
+            
+            # 构建完整的交互记录
+            interaction_content = f"{agent1_name}和{agent2_name}在{location}进行了{interaction_type}类型的交互。{agent1_name}说：'{topic}'，{agent2_name}回应：'{response}'，{agent1_name}反馈：'{feedback}'"
+            
+            # 计算交互重要性（基于关系变化和交互类型）
+            importance = 0.5  # 基础重要性
+            if abs(relationship_info.get('change', 0)) > 5:
+                importance += 0.3  # 关系有显著变化
+            if interaction_type in ['argument', 'misunderstanding']:
+                importance += 0.2  # 负面交互更重要
+            if relationship_info.get('level_changed', False):
+                importance += 0.3  # 关系等级变化很重要
+            importance = min(importance, 1.0)
+            
+            # 保存到各自的Agent记忆中
+            for agent_name in [agent1_name, agent2_name]:
+                if agent_name in self.agents and hasattr(self.agents[agent_name], 'real_agent'):
+                    agent = self.agents[agent_name].real_agent
+                    if hasattr(agent, 'memory_manager'):
+                        agent.memory_manager.add_memory(
+                            content=interaction_content,
+                            memory_type='social_interaction',
+                            base_importance=importance,
+                            metadata={
+                                'interaction_type': interaction_type,
+                                'participants': [agent1_name, agent2_name],
+                                'location': location,
+                                'relationship_change': relationship_info.get('change', 0),
+                                'relationship_level': relationship_info.get('new_level', '未知'),
+                                'timestamp': datetime.now().isoformat(),
+                                'topic': topic[:50] if topic else '',  # 保存话题摘要
+                                'sentiment': 'positive' if interaction_type == 'friendly_chat' else ('negative' if interaction_type in ['argument', 'misunderstanding'] else 'neutral')
+                            }
+                        )
+            
+            # 同时保存到全局交互集合
+            collection_name = "global_interactions"
+            vector_store.create_collection(collection_name)
+            
+            vector_store.add_memory(
+                collection_name=collection_name,
+                content=interaction_content,
+                agent_id="system",
+                importance=importance,
+                memory_type="agent_interaction",
+                metadata={
+                    'agent1': agent1_name,
+                    'agent2': agent2_name,
+                    'interaction_type': interaction_type,
+                    'location': location,
+                    'relationship_change': relationship_info.get('change', 0),
+                    'relationship_strength_before': relationship_info.get('old_strength', 50),
+                    'relationship_strength_after': relationship_info.get('new_strength', 50),
+                    'timestamp': datetime.now().isoformat()
+                }
+            )
+            
+            logger.debug(f"已保存交互记录到向量数据库: {agent1_name} ↔ {agent2_name} ({interaction_type})")
+            
+        except Exception as e:
+            logger.warning(f"保存交互记录到向量数据库失败: {e}")
+    
+    def _save_group_interaction_to_vector_db(self, initiator_name, participant_name, starter_text, response_text, interaction_type, location, topic, relationship_info):
+        """保存群体讨论交互到向量数据库"""
+        try:
+            from memory.vector_store import get_vector_store
+            vector_store = get_vector_store()
+            
+            # 构建群体讨论记录
+            interaction_content = f"在{location}的群体讨论中，{initiator_name}发起话题'{topic}'说：'{starter_text}'，{participant_name}以{interaction_type}方式回应：'{response_text}'"
+            
+            # 群体讨论的重要性通常较高
+            importance = 0.6  # 基础重要性
+            if abs(relationship_info.get('change', 0)) > 3:
+                importance += 0.2
+            if interaction_type in ['argument', 'misunderstanding']:
+                importance += 0.2  # 群体冲突更显著
+            importance = min(importance, 1.0)
+            
+            # 保存到参与者的Agent记忆中
+            for agent_name in [initiator_name, participant_name]:
+                if agent_name in self.agents and hasattr(self.agents[agent_name], 'real_agent'):
+                    agent = self.agents[agent_name].real_agent
+                    if hasattr(agent, 'memory_manager'):
+                        agent.memory_manager.add_memory(
+                            content=interaction_content,
+                            memory_type='group_discussion',
+                            base_importance=importance,
+                            metadata={
+                                'interaction_type': interaction_type,
+                                'discussion_type': 'group',
+                                'participants': [initiator_name, participant_name],
+                                'location': location,
+                                'topic': topic,
+                                'initiator': initiator_name,
+                                'responder': participant_name,
+                                'relationship_change': relationship_info.get('change', 0),
+                                'timestamp': datetime.now().isoformat(),
+                                'public_interaction': True,
+                                'sentiment': 'positive' if interaction_type == 'friendly_chat' else ('negative' if interaction_type in ['argument', 'misunderstanding'] else 'neutral')
+                            }
+                        )
+            
+            # 保存到全局群体活动集合
+            collection_name = "group_activities"
+            vector_store.create_collection(collection_name)
+            
+            vector_store.add_memory(
+                collection_name=collection_name,
+                content=interaction_content,
+                agent_id="system",
+                importance=importance,
+                memory_type="group_interaction",
+                metadata={
+                    'initiator': initiator_name,
+                    'participant': participant_name,
+                    'interaction_type': interaction_type,
+                    'location': location,
+                    'topic': topic,
+                    'relationship_change': relationship_info.get('change', 0),
+                    'timestamp': datetime.now().isoformat(),
+                    'discussion_size': 'multi_person'
+                }
+            )
+            
+            logger.debug(f"已保存群体讨论记录到向量数据库: {initiator_name} → {participant_name} (topic: {topic})")
+            
+        except Exception as e:
+            logger.warning(f"保存群体讨论记录到向量数据库失败: {e}")
     
     def create_town_event(self):
         """创建小镇随机事件"""
@@ -1407,21 +1726,20 @@ class TerminalTown:
         print("=" * 40)
         
         # AI系统状态
-        if REAL_AGENTS_AVAILABLE:
-            print(f"{TerminalColors.GREEN}🧠 AI系统: 真实Agent系统已启用{TerminalColors.END}")
-            print(f"   ✅ 本地Qwen模型: 可用")
-            try:
+     
+        print(f"{TerminalColors.GREEN}🧠 AI系统: 真实Agent系统已启用{TerminalColors.END}")
+        print(f"   ✅ 本地Qwen模型: 可用")
+        try:
                 sample_agent = list(self.agents.values())[0]
                 if hasattr(sample_agent, 'real_agent') and hasattr(sample_agent.real_agent, 'deepseek_api'):
                     if sample_agent.real_agent.deepseek_api.is_available():
                         print(f"   ✅ DeepSeek API: 已连接")
                     else:
                         print(f"   ❌ DeepSeek API: 未配置")
-            except Exception as e:
+        except Exception as e:
                 logger.warning(f"检查API状态失败: {e}")
                 print(f"   ⚠️  API状态: 未知")
-        else:
-            print(f"{TerminalColors.YELLOW}🤖 AI系统: 简化Agent系统{TerminalColors.END}")
+       
         
         # Agent状态
         total_agents = len(self.agents)
@@ -1942,175 +2260,6 @@ class TerminalAgent:
             "有什么新鲜事吗？"
         ]
         return random.choice(greetings)
-
-class SimpleAgent:
-    """简化版Agent"""
-    
-    def __init__(self, name: str, profession: str, color: str, emoji: str):
-        self.name = name
-        self.profession = profession
-        self.color = color
-        self.emoji = emoji
-        self.location = '家'
-        self.mood = '平静'
-        self.energy = 80
-        self.current_action = '闲逛'
-    
-    def get_status(self):
-        """获取状态"""
-        return {
-            'location': self.location,
-            'mood': self.mood,
-            'energy': self.energy,
-            'current_action': self.current_action
-        }
-    
-    def respond(self, message: str) -> str:
-        """简化响应"""
-        responses = {
-            'Alex': [
-                "作为程序员，我觉得这个问题很有趣。",
-                "让我从技术角度思考一下...",
-                "这让我想到了一个算法问题。",
-                "编程世界里总有解决方案。",
-                "代码的美在于逻辑的清晰。"
-            ],
-            'Emma': [
-                "这激发了我的创作灵感！",
-                "从艺术的角度来看，很有意思。",
-                "我想用画笔记录下这个想法。",
-                "美好的事物总是让人感动。",
-                "艺术来源于生活的每一个细节。"
-            ],
-            'Sarah': [
-                "这是一个很好的学习机会！",
-                "让我来解释一下这个概念...",
-                "分享知识是一件快乐的事。",
-                "每个问题都有它的教育价值。",
-                "我们一起来探讨这个话题吧。"
-            ],
-            'David': [
-                "从商业角度看，这很有潜力。",
-                "我们可以考虑这样的投资机会。",
-                "效率和成果是关键指标。",
-                "让我们谈谈如何实现盈利。",
-                "成功的秘诀在于抓住机遇。"
-            ],
-            'Lisa': [
-                "哇，这太有趣了！我想了解更多。",
-                "作为学生，我总是充满好奇心。",
-                "这个话题我们课堂上讨论过。",
-                "学习新东西总是让我兴奋。",
-                "我要把这个记在我的笔记里。"
-            ],
-            'Mike': [
-                "这让我想起了年轻时的经历。",
-                "根据我的人生经验...",
-                "年轻人，这个问题很有深度。",
-                "时间会告诉我们答案。",
-                "智慧来源于生活的积累。"
-            ],
-            'John': [
-                "从健康的角度来说...",
-                "我建议要注意身体状况。",
-                "预防总是比治疗更重要。",
-                "健康是最大的财富。",
-                "让我们关注一下安全问题。"
-            ],
-            'Anna': [
-                "这就像烹饪一样，需要合适的配料。",
-                "让我用美食来比喻一下...",
-                "温暖的食物能治愈心灵。",
-                "每个人都有自己的口味偏好。",
-                "料理的艺术在于用心调配。"
-            ],
-            'Tom': [
-                "这个问题很实际，需要动手解决。",
-                "机械的原理其实很简单。",
-                "修理东西就是要找到问题根源。",
-                "实用性是最重要的考虑因素。",
-                "工具合适，事半功倍。"
-            ]
-        }
-        
-        agent_responses = responses.get(self.name, ["我理解你的意思。", "这很有趣！"])
-        return random.choice(agent_responses)
-    
-    def think_and_respond(self, situation: str) -> str:
-        """思考并回应 - 简化版本"""
-        # 简化Agent的智能回应
-        contextual_responses = {
-            'Alex': {
-                '工作': "我正在优化一个算法，代码效率提升了30%。",
-                '聊天': "从技术角度来说，这个问题有多种解决方案。",
-                '放松': "我在调试代码的间隙，思考一下架构设计。",
-                '移动': "我想去办公室，那里有更好的开发环境。",
-                '默认': "作为程序员，我习惯用逻辑思维分析问题。"
-            },
-            'Emma': {
-                '工作': "我正在创作一幅描绘城市黄昏的画作。",
-                '聊天': "艺术就是要表达内心最真实的感受。",
-                '放松': "我在公园里寻找创作灵感，自然的色彩很美。",
-                '移动': "我想去艺术馆，那里的作品总能启发我。",
-                '默认': "生活中的每个细节都可能成为艺术的素材。"
-            },
-            'Sarah': {
-                '工作': "我在准备明天的课程，希望让学生们更好理解这个概念。",
-                '聊天': "教育的本质是点亮学生心中的求知欲。",
-                '放松': "阅读是我最好的放松方式，知识让人充实。",
-                '移动': "图书馆是我的第二个家，安静的环境适合思考。",
-                '默认': "分享知识是一件非常有意义的事情。"
-            }
-        }
-        
-        # 简单的上下文检测
-        context = '默认'
-        if any(word in situation for word in ['工作', '职业', '专业']):
-            context = '工作'
-        elif any(word in situation for word in ['聊天', '说话', '交流']):
-            context = '聊天'
-        elif any(word in situation for word in ['放松', '休息', '思考']):
-            context = '放松'
-        elif any(word in situation for word in ['去', '移动', '地方']):
-            context = '移动'
-        
-        agent_contexts = contextual_responses.get(self.name, {})
-        if context in agent_contexts:
-            return agent_contexts[context]
-        else:
-            return agent_contexts.get('默认', self.respond(situation))
-    
-    def update_status(self):
-        """更新状态"""
-        # 简化的状态更新
-        moods = ['平静', '愉快', '思考', '专注', '放松']
-        if random.random() < 0.3:
-            self.mood = random.choice(moods)
-        
-        self.energy = max(10, self.energy - random.randint(1, 3))
-        if self.energy < 30:
-            self.mood = '疲惫'
-    
-    def think(self) -> str:
-        """思考"""
-        thoughts = {
-            'Alex': ["代码还可以优化...", "新技术值得学习", "这个Bug需要仔细调试", "算法效率还能提升"],
-            'Emma': ["这个颜色很有趣", "想要创作新作品", "自然的光影变化很美", "艺术灵感来了"],
-            'Sarah': ["学生们今天表现不错", "需要准备明天的课程", "教育方法可以改进", "知识传播很重要"],
-            'David': ["市场机会不错", "投资回报率如何", "商业模式需要优化", "竞争对手在做什么"],
-            'Lisa': ["这门课程很有意思", "考试要好好准备", "实习机会要把握", "未来规划很重要"],
-            'Mike': ["年轻人真有活力", "时代变化真快", "经验值得分享", "健康最重要"],
-            'John': ["病人的康复很重要", "医疗技术在进步", "预防胜过治疗", "同理心很关键"],
-            'Anna': ["新食谱值得尝试", "食材的搭配很重要", "客人的笑容最珍贵", "烹饪是种艺术"],
-            'Tom': ["这个机器需要保养", "工具要保持锋利", "安全操作最重要", "经验比理论重要"]
-        }
-        
-        agent_thoughts = thoughts.get(self.name, ["我在思考..."])
-        return random.choice(agent_thoughts)
-    
-    def interact_with(self, other_agent) -> str:
-        """与其他Agent交互"""
-        return f"嗨，{other_agent.name}！很高兴见到你。"
 
 def main():
     """主函数"""

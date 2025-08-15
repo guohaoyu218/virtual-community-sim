@@ -244,7 +244,7 @@ class AgentBehaviorManager:
     
     def plan_group_activity(self, agents: List, activity_type: str = None) -> Optional[Dict]:
         """规划群体活动"""
-        if len(agents) < 2:
+        if len(agents) < 3:
             return None
         
         activities = [

@@ -33,9 +33,9 @@ MODEL_CONFIG = {
     "loading_retry_attempts": 3,
     "loading_timeout": 300,
     
-    # 生成配置 - 降低token以提升速度
-    "default_max_tokens": 150,  # 从1000降到150
-    "complex_max_tokens": 300,  # 从2000降到300
+    # 生成配置
+    "default_max_tokens": 150,  
+    "complex_max_tokens": 300,  
 }
 
 # 嵌入模型配置
@@ -123,7 +123,7 @@ API_CONFIG = {
         "api_key": os.getenv("DEEPSEEK_API_KEY", ""),
         "base_url": "https://api.deepseek.com",
         "model": "deepseek-chat",
-        "max_tokens": 200,  # 从1500降到200
+        "max_tokens": 200,  
         "temperature": 0.7,
     },
     "use_api_fallback": True,
