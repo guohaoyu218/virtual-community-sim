@@ -15,37 +15,12 @@
 - **记忆系统**: AI Agent具备长期记忆和关系管理
 - **自动模拟**: 24/7无人值守智能运行
 
-## 📁 项目结构
+<img width="956" height="601" alt="image" src="https://github.com/user-attachments/assets/07e29578-4e03-4f1e-b220-8700fa93b9c5" />
+<img width="1264" height="560" alt="image" src="https://github.com/user-attachments/assets/9b33a750-58e4-4bc3-b343-8c90a2f3e8c8" />
+<img width="501" height="426" alt="image" src="https://github.com/user-attachments/assets/efb04ec8-7584-4e3d-bf7d-d41383829fbf" />
 
-```
-test/
-├── main.py                 # 主启动文件
-├── requirements.txt        # 依赖包列表
-├── setup_logging.py       # 日志配置
-├── .env                   # 环境变量配置
-├── agents/                # AI Agent核心系统
-│   ├── base_agent.py      # Agent基础类
-│   └── specific_agents.py # 具体Agent实现
-├── config/                # 配置文件
-│   └── settings.py        # 项目设置
-├── memory/                # 记忆系统
-│   ├── memory_manager.py  # 记忆管理
-│   ├── vector_store.py    # 向量存储
-│   └── embedding_service.py # 嵌入服务
-├── model_interface/       # AI模型接口
-│   ├── qwen_interface.py  # 本地Qwen模型
-│   └── deepseek_api.py    # DeepSeek API
-├── ui/                    # Web界面
-│   └── fast_web_ui.py     # 主Web界面
-├── data/                  # 数据存储
-│   ├── agent_profiles/    # Agent配置
-│   ├── interactions/      # 交互记录
-│   ├── qdrant_db/         # 向量数据库
-│   └── cache/             # 缓存文件
-├── logs/                  # 日志文件
-└── model/                 # 本地AI模型
-    └── Qwen2.5-3B/        # Qwen模型文件
-```
+
+
 
 ## 🚀 快速开始
 
