@@ -10,6 +10,11 @@ import logging
 from typing import Dict, List, Optional
 import json
 from datetime import datetime
+from threading import Lock, RLock, Event, Condition
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
+import queue
+from contextlib import contextmanager
+import concurrent.futures
 
 # 添加项目路径
 #sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -42,9 +47,10 @@ class TerminalColors:
     SARAH = '\033[92m'   # 绿色 - 老师
 
 class TerminalTown:
-    """终端版AI小镇"""
+    """终端版AI小镇 - 线程安全优化版"""
     
     def __init__(self):
+        # 基础数据结构
         self.agents = {}
         self.buildings = {
             '咖啡厅': {'x': 1, 'y': 3, 'emoji': '☕', 'occupants': []},
@@ -57,10 +63,32 @@ class TerminalTown:
             '修理店': {'x': 1, 'y': 0, 'emoji': '🔧', 'occupants': []}
         }
         self.chat_history = []
+        
+        # 线程安全控制
+        self._agents_lock = RLock()          # Agent状态的读写锁
+        self._chat_lock = Lock()             # 聊天历史的保护锁
+        self._social_lock = Lock()           # 社交网络的保护锁
+        self._simulation_lock = Lock()       # 自动模拟的控制锁
+        self._vector_db_lock = Lock()        # 向量数据库写入锁
+        self._buildings_lock = Lock()        # 建筑物状态锁
+        
+        # 并发控制
+        self._shutdown_event = Event()       # 优雅关闭信号
+        self._simulation_condition = Condition(self._simulation_lock)
+        self._thread_pool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="TownAgent")
+        
+        # 异步操作队列
+        self._memory_save_queue = queue.Queue(maxsize=100)
+        self._interaction_queue = queue.Queue(maxsize=50)
+        
+        # 系统状态
         self.auto_simulation = False
         self.simulation_thread = None
         self.running = True
         self.behavior_manager = behavior_manager
+        
+        # 启动后台任务
+        self._start_background_workers()
         
         self.init_agents()
         
@@ -70,6 +98,99 @@ class TerminalTown:
         self.clear_screen()
         self.show_welcome()
     
+    def _start_background_workers(self):
+        """启动后台工作线程"""
+        # 内存保存工作线程
+        self._memory_worker = threading.Thread(
+            target=self._memory_save_worker, 
+            name="MemoryWorker",
+            daemon=True
+        )
+        self._memory_worker.start()
+        
+        # 交互处理工作线程
+        self._interaction_worker = threading.Thread(
+            target=self._interaction_worker_func,
+            name="InteractionWorker", 
+            daemon=True
+        )
+        self._interaction_worker.start()
+        
+        logger.info("后台工作线程已启动")
+    
+    def _memory_save_worker(self):
+        """后台内存保存工作线程"""
+        while not self._shutdown_event.is_set():
+            try:
+                # 阻塞等待任务，超时1秒
+                task = self._memory_save_queue.get(timeout=1.0)
+                if task is None:  # 关闭信号
+                    break
+                    
+                # 批量处理内存保存任务
+                self._process_memory_save_batch([task])
+                self._memory_save_queue.task_done()
+                
+            except queue.Empty:
+                continue
+            except Exception as e:
+                logger.error(f"内存保存工作线程异常: {e}")
+    
+    def _interaction_worker_func(self):
+        """交互处理工作线程"""
+        while not self._shutdown_event.is_set():
+            try:
+                interaction_data = self._interaction_queue.get(timeout=1.0)
+                if interaction_data is None:
+                    break
+                    
+                self._process_interaction_async(interaction_data)
+                self._interaction_queue.task_done()
+                
+            except queue.Empty:
+                continue
+            except Exception as e:
+                logger.error(f"交互处理工作线程异常: {e}")
+    
+    @contextmanager
+    def _safe_agent_access(self, agent_name: str):
+        """安全的Agent访问上下文管理器"""
+        with self._agents_lock:
+            if agent_name not in self.agents:
+                raise ValueError(f"Agent {agent_name} 不存在")
+            yield self.agents[agent_name]
+    
+    def _safe_chat_append(self, chat_entry: dict):
+        """线程安全的聊天历史添加"""
+        with self._chat_lock:
+            self.chat_history.append(chat_entry)
+            # 限制历史记录长度，防止内存溢出
+            if len(self.chat_history) > 1000:
+                self.chat_history = self.chat_history[-800:]  # 保留最近800条
+    
+    def _safe_social_update(self, agent1_name: str, agent2_name: str, 
+                           interaction_type: str, context: dict = None):
+        """线程安全的社交网络更新"""
+        with self._social_lock:
+            return self.behavior_manager.update_social_network(
+                agent1_name, agent2_name, interaction_type, context
+            )
+    
+    def _safe_building_update(self, agent_name: str, old_location: str, new_location: str):
+        """线程安全的建筑物状态更新"""
+        with self._buildings_lock:
+            # 从旧位置移除
+            if old_location in self.buildings:
+                occupants = self.buildings[old_location]['occupants']
+                if agent_name in occupants:
+                    occupants.remove(agent_name)
+            
+            # 添加到新位置
+            if new_location in self.buildings:
+                occupants = self.buildings[new_location]['occupants']
+                if agent_name not in occupants:
+                    occupants.append(agent_name)
+
     def init_agents(self):
         """初始化AI Agent"""
        
@@ -199,42 +320,193 @@ class TerminalTown:
             print()
     
     def chat_with_agent(self, agent_name: str, message: str = None):
-        """与Agent对话"""
-        if agent_name not in self.agents:
-            print(f"{TerminalColors.RED}❌ 找不到Agent: {agent_name}{TerminalColors.END}")
+        """与Agent对话 - 线程安全版本"""
+        try:
+            with self._safe_agent_access(agent_name) as agent:
+                print(f"\n{TerminalColors.BOLD}💬 与 {agent.color}{agent.emoji} {agent_name}{TerminalColors.END}{TerminalColors.BOLD} 对话{TerminalColors.END}")
+                print("=" * 40)
+                print(f"{TerminalColors.CYAN}💡 输入 'exit' 结束对话{TerminalColors.END}\n")
+                
+                if message:
+                    self._process_chat_message_safe(agent, agent_name, message)
+                else:
+                    # 进入对话循环
+                    self._enter_chat_loop(agent, agent_name)
+                    
+        except ValueError as e:
+            print(f"{TerminalColors.RED}❌ {e}{TerminalColors.END}")
             print(f"可用的Agent: {', '.join(self.agents.keys())}")
-            return
-        
-        agent = self.agents[agent_name]
-        
-        print(f"\n{TerminalColors.BOLD}💬 与 {agent.color}{agent.emoji} {agent_name}{TerminalColors.END}{TerminalColors.BOLD} 对话{TerminalColors.END}")
-        print("=" * 40)
-        print(f"{TerminalColors.CYAN}💡 输入 'exit' 结束对话{TerminalColors.END}\n")
-        
-        if message:
-            # 直接处理传入的消息
-            self._process_chat_message(agent, agent_name, message)
-        else:
-            # 进入对话循环
-            while True:
-                try:
-                    user_input = input(f"{TerminalColors.YELLOW}🧑 你: {TerminalColors.END}").strip()
-                    
-                    if user_input.lower() in ['exit', 'quit', '退出']:
-                        print(f"{TerminalColors.GREEN}👋 对话结束{TerminalColors.END}\n")
-                        break
-                    
-                    if not user_input:
-                        continue
-                        
-                    self._process_chat_message(agent, agent_name, user_input)
-                    
-                except KeyboardInterrupt:
-                    print(f"\n{TerminalColors.GREEN}👋 对话结束{TerminalColors.END}\n")
-                    break
-                except EOFError:
-                    break
+        except Exception as e:
+            logger.error(f"聊天系统异常: {e}")
+            print(f"{TerminalColors.RED}❌ 聊天系统暂时不可用{TerminalColors.END}")
     
+    def _enter_chat_loop(self, agent, agent_name: str):
+        """进入安全的对话循环"""
+        while self.running and not self._shutdown_event.is_set():
+            try:
+                user_input = input(f"{TerminalColors.YELLOW}🧑 你: {TerminalColors.END}").strip()
+                
+                if user_input.lower() in ['exit', '退出', 'quit']:
+                    print(f"{TerminalColors.GREEN}👋 结束与{agent_name}的对话{TerminalColors.END}\n")
+                    break
+                
+                if user_input:
+                    self._process_chat_message_safe(agent, agent_name, user_input)
+                    
+            except KeyboardInterrupt:
+                print(f"\n{TerminalColors.YELLOW}⚠️ 对话被中断{TerminalColors.END}")
+                break
+            except EOFError:
+                break
+            except Exception as e:
+                logger.error(f"对话循环异常: {e}")
+                print(f"{TerminalColors.RED}❌ 对话出现异常，请重试{TerminalColors.END}")
+    
+    def _process_chat_message_safe(self, agent, agent_name: str, message: str):
+        """线程安全的聊天消息处理"""
+        start_time = time.time()
+        response_future = None
+        
+        try:
+            # 使用线程池异步处理AI回应，避免阻塞
+            response_future = self._thread_pool.submit(
+                self._get_agent_response, agent, agent_name, message
+            )
+            
+            # 显示思考状态
+            print(f"  {agent.color}{agent.emoji} {agent_name}: {TerminalColors.END}{TerminalColors.YELLOW}思考中...{TerminalColors.END}")
+            
+            # 等待回应，设置超时
+            try:
+                response = response_future.result(timeout=30.0)  # 30秒超时
+            except Exception as e:
+                response = f"*{agent_name}思考了很久，似乎在深度思考中...*"
+                logger.warning(f"{agent_name}回应超时: {e}")
+            
+            # 清除思考状态显示
+            print(f"\033[1A\033[K", end="")  # 上移一行并清除
+            
+            # 显示最终回应
+            print(f"  {agent.color}{agent.emoji} {agent_name}: {TerminalColors.END}{response}")
+            
+            # 计算响应时间
+            response_time = time.time() - start_time
+            if response_time > 5.0:
+                print(f"  {TerminalColors.YELLOW}⏱️  响应时间: {response_time:.1f}秒{TerminalColors.END}")
+            
+            # 异步保存对话记录
+            self._async_save_chat_record(agent_name, message, response, response_time)
+            
+            print()  # 空行分隔
+            
+        except Exception as e:
+            logger.error(f"处理{agent_name}聊天消息异常: {e}")
+            print(f"  {agent.color}{agent.emoji} {agent_name}: {TerminalColors.END}{TerminalColors.RED}*系统异常，无法回应*{TerminalColors.END}")
+        finally:
+            # 确保取消未完成的future
+            if response_future and not response_future.done():
+                response_future.cancel()
+    
+    def _get_agent_response(self, agent, agent_name: str, message: str) -> str:
+        """获取Agent回应（在线程池中执行）"""
+        try:
+            # 构建情境
+            current_location = getattr(agent, 'location', '未知位置')
+            situation = f"用户对我说：'{message}'"
+            
+            # 获取AI回应
+            response = agent.respond(message)
+            
+            # 清理回应
+            cleaned_response = self._clean_response(response)
+            
+            return cleaned_response
+            
+        except Exception as e:
+            logger.error(f"{agent_name}生成回应异常: {e}")
+            return f"*{agent_name}遇到了技术问题，暂时无法回应*"
+    
+    def _async_save_chat_record(self, agent_name: str, user_message: str, 
+                              agent_response: str, response_time: float):
+        """异步保存聊天记录"""
+        try:
+            # 创建聊天记录
+            chat_entry = {
+                'time': datetime.now().strftime("%H:%M:%S"),
+                'agent': agent_name,
+                'user': user_message,
+                'response': agent_response,
+                'response_time': response_time,
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            # 线程安全地添加到历史记录
+            self._safe_chat_append(chat_entry)
+            
+            # 异步保存到向量数据库
+            memory_task = {
+                'type': 'user_chat',
+                'agent_name': agent_name,
+                'user_message': user_message,
+                'agent_response': agent_response,
+                'timestamp': datetime.now().isoformat(),
+                'response_time': response_time
+            }
+            
+            # 非阻塞地添加到队列
+            try:
+                self._memory_save_queue.put_nowait(memory_task)
+            except queue.Full:
+                logger.warning("内存保存队列已满，跳过此次保存")
+                
+        except Exception as e:
+            logger.error(f"异步保存聊天记录失败: {e}")
+    
+    def _process_memory_save_batch(self, tasks: List[dict]):
+        """批量处理内存保存任务"""
+        try:
+            with self._vector_db_lock:
+                for task in tasks:
+                    if task['type'] == 'user_chat':
+                        self._save_user_chat_to_vector_db(
+                            task['agent_name'],
+                            task['user_message'], 
+                            task['agent_response']
+                        )
+                    elif task['type'] == 'interaction':
+                        self._save_interaction_to_vector_db(**task['data'])
+                        
+        except Exception as e:
+            logger.error(f"批量保存内存任务失败: {e}")
+    
+    def _process_interaction_async(self, interaction_data: dict):
+        """异步处理交互数据"""
+        try:
+            # 更新社交网络
+            relationship_info = self._safe_social_update(
+                interaction_data['agent1_name'],
+                interaction_data['agent2_name'],
+                interaction_data['interaction_type'],
+                interaction_data.get('context', {})
+            )
+            
+            # 保存交互记录
+            memory_task = {
+                'type': 'interaction',
+                'data': {
+                    **interaction_data,
+                    'relationship_info': relationship_info
+                }
+            }
+            
+            try:
+                self._memory_save_queue.put_nowait(memory_task)
+            except queue.Full:
+                logger.warning("内存保存队列已满，跳过交互记录保存")
+                
+        except Exception as e:
+            logger.error(f"异步处理交互数据失败: {e}")
+
     def _process_chat_message(self, agent, agent_name: str, message: str):
         """处理聊天消息"""
         start_time = time.time()
@@ -292,37 +564,547 @@ class TerminalTown:
             logger.warning(f"保存用户对话到向量数据库失败: {e}")
     
     def move_agent(self, agent_name: str, location: str):
-        """移动Agent"""
-        if agent_name not in self.agents:
-            print(f"{TerminalColors.RED}❌ 找不到Agent: {agent_name}{TerminalColors.END}")
-            return
-        
-        if location not in self.buildings:
-            print(f"{TerminalColors.RED}❌ 找不到地点: {location}{TerminalColors.END}")
-            print(f"可用地点: {', '.join(self.buildings.keys())}")
-            return
-        
-        agent = self.agents[agent_name]
-        old_location = agent.location
-        agent.location = location
-        
-        # 更新真实Agent的位置
-        if hasattr(agent, 'real_agent'):
-            agent.real_agent.current_location = location
-        
-        print(f"{TerminalColors.GREEN}🚶 {agent.emoji} {agent_name} 从 {old_location} 移动到 {location}{TerminalColors.END}")
+        """移动Agent - 线程安全版本"""
+        try:
+            # 验证参数
+            if location not in self.buildings:
+                print(f"{TerminalColors.RED}❌ 找不到地点: {location}{TerminalColors.END}")
+                print(f"可用地点: {', '.join(self.buildings.keys())}")
+                return False
+            
+            # 线程安全地访问和修改Agent
+            with self._safe_agent_access(agent_name) as agent:
+                old_location = agent.location
+                
+                # 原子性地更新位置
+                with self._agents_lock:
+                    agent.location = location
+                    
+                    # 更新真实Agent的位置
+                    if hasattr(agent, 'real_agent'):
+                        agent.real_agent.current_location = location
+                
+                # 更新建筑物状态
+                self._safe_building_update(agent_name, old_location, location)
+                
+                # 异步更新地点热度
+                self._async_update_location_popularity(old_location, location)
+                
+                print(f"{TerminalColors.GREEN}🚶 {agent.emoji} {agent_name} 从 {old_location} 移动到 {location}{TerminalColors.END}")
+                
+                # 记录移动事件
+                self._record_movement_event(agent_name, old_location, location)
+                
+                return True
+                
+        except ValueError as e:
+            print(f"{TerminalColors.RED}❌ {e}{TerminalColors.END}")
+            return False
+        except Exception as e:
+            logger.error(f"移动Agent异常: {e}")
+            print(f"{TerminalColors.RED}❌ 移动操作失败{TerminalColors.END}")
+            return False
     
+    def _async_update_location_popularity(self, old_location: str, new_location: str):
+        """异步更新地点热度"""
+        try:
+            def update_popularity():
+                with self._social_lock:
+                    # 降低旧地点热度
+                    if old_location in self.behavior_manager.location_popularity:
+                        current = self.behavior_manager.location_popularity[old_location]
+                        self.behavior_manager.location_popularity[old_location] = max(0, current - 2)
+                    
+                    # 提高新地点热度
+                    if new_location not in self.behavior_manager.location_popularity:
+                        self.behavior_manager.location_popularity[new_location] = 50
+                    current = self.behavior_manager.location_popularity[new_location]
+                    self.behavior_manager.location_popularity[new_location] = min(100, current + 3)
+            
+            # 在线程池中执行
+            self._thread_pool.submit(update_popularity)
+            
+        except Exception as e:
+            logger.error(f"异步更新地点热度失败: {e}")
+    
+    def _record_movement_event(self, agent_name: str, old_location: str, new_location: str):
+        """记录移动事件到向量数据库"""
+        try:
+            movement_task = {
+                'type': 'movement',
+                'agent_name': agent_name,
+                'old_location': old_location,
+                'new_location': new_location,
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            # 非阻塞添加到队列
+            try:
+                self._memory_save_queue.put_nowait(movement_task)
+            except queue.Full:
+                logger.warning("内存保存队列已满，跳过移动事件记录")
+                
+        except Exception as e:
+            logger.error(f"记录移动事件失败: {e}")
+
     def toggle_auto_simulation(self):
-        """切换自动模拟"""
-        self.auto_simulation = not self.auto_simulation
-        
-        if self.auto_simulation:
-            print(f"{TerminalColors.GREEN}🤖 自动模拟已开启！Agent将开始自主行动{TerminalColors.END}")
-            self.simulation_thread = threading.Thread(target=self._auto_simulation_loop, daemon=True)
-            self.simulation_thread.start()
-        else:
-            print(f"{TerminalColors.YELLOW}⏸️  自动模拟已暂停{TerminalColors.END}")
+        """切换自动模拟 - 线程安全版本"""
+        with self._simulation_condition:
+            self.auto_simulation = not self.auto_simulation
+            
+            if self.auto_simulation:
+                print(f"{TerminalColors.GREEN}🤖 自动模拟已开启！Agent将开始自主行动{TerminalColors.END}")
+                if self.simulation_thread is None or not self.simulation_thread.is_alive():
+                    self.simulation_thread = threading.Thread(
+                        target=self._auto_simulation_loop_safe, 
+                        name="AutoSimulation",
+                        daemon=True
+                    )
+                    self.simulation_thread.start()
+                self._simulation_condition.notify_all()
+            else:
+                print(f"{TerminalColors.YELLOW}⏸️  自动模拟已暂停{TerminalColors.END}")
+                self._simulation_condition.notify_all()
     
+    def _auto_simulation_loop_safe(self):
+        """线程安全的自动模拟循环"""
+        logger.info("自动模拟循环启动（线程安全版本）")
+        retry_count = 0
+        max_retries = 3
+        
+        while self.running and not self._shutdown_event.is_set():
+            try:
+                with self._simulation_condition:
+                    # 等待自动模拟开启
+                    while not self.auto_simulation and not self._shutdown_event.is_set():
+                        self._simulation_condition.wait()
+                    
+                    if self._shutdown_event.is_set():
+                        break
+                
+                # 执行一轮模拟
+                success = self._execute_simulation_step_safe()
+                
+                if success:
+                    retry_count = 0  # 重置重试计数
+                else:
+                    retry_count += 1
+                    if retry_count >= max_retries:
+                        logger.error("模拟步骤连续失败，暂停自动模拟")
+                        with self._simulation_condition:
+                            self.auto_simulation = False
+                        break
+                
+                # 动态调整休眠时间
+                sleep_time = random.uniform(2, 5) if success else min(10, 2 ** retry_count)
+                time.sleep(sleep_time)
+                
+            except Exception as e:
+                retry_count += 1
+                logger.error(f"自动模拟循环异常 (重试 {retry_count}/{max_retries}): {e}")
+                
+                if retry_count >= max_retries:
+                    logger.critical("自动模拟多次失败，停止模拟")
+                    with self._simulation_condition:
+                        self.auto_simulation = False
+                    break
+                    
+                time.sleep(min(30, 5 * retry_count))  # 指数退避
+        
+        logger.info("自动模拟循环结束")
+    
+    def _execute_simulation_step_safe(self) -> bool:
+        """执行一个安全的模拟步骤"""
+        try:
+            with self._agents_lock:
+                agent_names = list(self.agents.keys())
+            
+            if not agent_names:
+                logger.warning("没有可用的Agent进行模拟")
+                return False
+            
+            # 随机选择Agent
+            agent_name = random.choice(agent_names)
+            
+            try:
+                with self._safe_agent_access(agent_name) as agent:
+                    # 选择行动类型
+                    action_type = self._choose_agent_action(agent, agent_name)
+                    
+                    # 执行行动
+                    return self._execute_agent_action_safe(agent, agent_name, action_type)
+                    
+            except ValueError:
+                # Agent不存在，跳过此次模拟
+                return True
+                
+        except Exception as e:
+            logger.error(f"执行模拟步骤失败: {e}")
+            return False
+    
+    def _choose_agent_action(self, agent, agent_name: str) -> str:
+        """选择Agent行动类型"""
+        # 智能行动选择权重
+        action_weights = {
+            'social': 35,
+            'group_discussion': 20,
+            'move': 20,
+            'think': 10,
+            'work': 10,
+            'relax': 5
+        }
+        
+        # 根据Agent状态调整权重
+        energy = getattr(agent, 'energy', 80)
+        if energy < 30:
+            action_weights['relax'] += 20
+            action_weights['work'] -= 5
+        
+        # 根据位置调整权重
+        location = getattr(agent, 'location', '家')
+        if location in ['办公室', '修理店']:
+            action_weights['work'] += 15
+        elif location in ['公园', '家']:
+            action_weights['relax'] += 10
+        elif location in ['咖啡厅', '图书馆']:
+            action_weights['social'] += 10
+        
+        # 加权随机选择
+        actions = []
+        for action, weight in action_weights.items():
+            actions.extend([action] * max(1, weight))
+        
+        return random.choice(actions)
+    
+    def _execute_agent_action_safe(self, agent, agent_name: str, action_type: str) -> bool:
+        """安全地执行Agent行动"""
+        try:
+            if action_type == 'social':
+                return self._execute_social_action_safe(agent, agent_name)
+            elif action_type == 'group_discussion':
+                return self._execute_group_discussion_safe(agent, agent_name)
+            elif action_type == 'move':
+                return self._execute_move_action_safe(agent, agent_name)
+            elif action_type == 'think':
+                return self._execute_think_action_safe(agent, agent_name)
+            elif action_type == 'work':
+                return self._execute_work_action_safe(agent, agent_name)
+            elif action_type == 'relax':
+                return self._execute_relax_action_safe(agent, agent_name)
+            else:
+                logger.warning(f"未知行动类型: {action_type}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"执行{agent_name}的{action_type}行动失败: {e}")
+            return False
+    
+    def _execute_social_action_safe(self, agent, agent_name: str) -> bool:
+        """安全执行社交行动"""
+        try:
+            current_location = getattr(agent, 'location', '家')
+            
+            # 线程安全地找到同位置的其他Agent
+            with self._agents_lock:
+                other_agents = [
+                    name for name, other_agent in self.agents.items()
+                    if name != agent_name and getattr(other_agent, 'location', '家') == current_location
+                ]
+            
+            if not other_agents:
+                # 没有其他Agent，执行独自思考
+                return self._execute_solo_thinking(agent, agent_name, current_location)
+            
+            # 选择交互对象
+            target_agent_name = random.choice(other_agents)
+            
+            # 异步处理社交交互
+            interaction_data = {
+                'agent1_name': agent_name,
+                'agent2_name': target_agent_name,
+                'interaction_type': 'friendly_chat',
+                'location': current_location,
+                'context': {
+                    'same_location': True,
+                    'initiated_by': agent_name
+                }
+            }
+            
+            try:
+                self._interaction_queue.put_nowait(interaction_data)
+            except queue.Full:
+                logger.warning("交互队列已满，跳过此次社交")
+                
+            # 显示交互信息
+            print(f"\n{TerminalColors.BOLD}━━━ 💬 社交互动 ━━━{TerminalColors.END}")
+            print(f"  📍 {current_location}: {agent.emoji} {agent_name} 与 {self.agents[target_agent_name].emoji} {target_agent_name} 交流")
+            print()
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"执行社交行动异常: {e}")
+            return False
+    
+    def _execute_solo_thinking(self, agent, agent_name: str, location: str) -> bool:
+        """执行独自思考"""
+        try:
+            think_prompt = f"在{location}独自思考："
+            
+            # 异步获取思考内容
+            def get_thought():
+                if hasattr(agent, 'real_agent'):
+                    return agent.real_agent.think_and_respond(think_prompt)
+                return "在安静地思考..."
+            
+            future = self._thread_pool.submit(get_thought)
+            try:
+                thought = future.result(timeout=10.0)
+                cleaned_thought = self._clean_response(thought)
+            except concurrent.futures.TimeoutError:
+                cleaned_thought = "在深度思考中..."
+            
+            print(f"\n{TerminalColors.BOLD}━━━ 💭 独自思考 ━━━{TerminalColors.END}")
+            print(f"  {agent.emoji} {TerminalColors.YELLOW}{agent_name}{TerminalColors.END}: {cleaned_thought}")
+            print()
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"执行独自思考异常: {e}")
+            return False
+    
+    def _execute_move_action_safe(self, agent, agent_name: str) -> bool:
+        """安全执行移动行动"""
+        try:
+            with self._buildings_lock:
+                locations = list(self.buildings.keys())
+            
+            current_location = getattr(agent, 'location', '家')
+            available_locations = [loc for loc in locations if loc != current_location]
+            
+            if not available_locations:
+                return False
+            
+            new_location = random.choice(available_locations)
+            
+            # 使用已有的线程安全移动方法
+            success = self.move_agent(agent_name, new_location)
+            
+            if success:
+                print(f"\n{TerminalColors.BOLD}━━━ 🚶 移动 ━━━{TerminalColors.END}")
+                print(f"  {agent.emoji} {TerminalColors.CYAN}{agent_name}{TerminalColors.END}: {current_location} → {new_location}")
+                print()
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"执行移动行动异常: {e}")
+            return False
+    
+    def _execute_think_action_safe(self, agent, agent_name: str) -> bool:
+        """安全执行思考行动"""
+        try:
+            current_location = getattr(agent, 'location', '家')
+            think_prompt = f"在{current_location}思考当前的情况："
+            
+            def get_thought():
+                if hasattr(agent, 'real_agent'):
+                    return agent.real_agent.think_and_respond(think_prompt)
+                return "在思考人生..."
+            
+            future = self._thread_pool.submit(get_thought)
+            try:
+                thought = future.result(timeout=15.0)
+                cleaned_thought = self._clean_response(thought)
+            except concurrent.futures.TimeoutError:
+                cleaned_thought = "陷入了深度思考..."
+            
+            print(f"\n{TerminalColors.BOLD}━━━ 💭 思考 ━━━{TerminalColors.END}")
+            print(f"  {agent.emoji} {TerminalColors.YELLOW}{agent_name}{TerminalColors.END}: {cleaned_thought}")
+            print()
+            
+            # 思考后可能更新Agent状态
+            if hasattr(agent, 'update_status'):
+                self._thread_pool.submit(agent.update_status)
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"执行思考行动异常: {e}")
+            return False
+    
+    def _execute_work_action_safe(self, agent, agent_name: str) -> bool:
+        """安全执行工作行动"""
+        try:
+            profession = getattr(agent, 'profession', '通用')
+            
+            profession_works = {
+                '程序员': ["编写代码", "测试程序", "修复bug", "优化性能"],
+                '艺术家': ["绘画创作", "设计作品", "调色练习", "构图研究"],
+                '老师': ["备课", "批改作业", "制作课件", "研究教法"],
+                '医生': ["查看病历", "诊断病情", "制定治疗方案", "学习医学资料"],
+                '学生': ["做作业", "复习笔记", "预习课程", "准备考试"],
+                '商人': ["分析报表", "联系客户", "制定计划", "市场调研"],
+                '厨师': ["准备食材", "烹饪美食", "试验新菜", "清理厨房"],
+                '机械师': ["检修设备", "更换零件", "调试机器", "保养工具"],
+                '退休人员': ["整理家务", "阅读书籍", "园艺活动", "锻炼身体"]
+            }
+            
+            works = profession_works.get(profession, ["专注工作"])
+            work_activity = random.choice(works)
+            
+            print(f"\n{TerminalColors.BOLD}━━━ 💼 工作 ━━━{TerminalColors.END}")
+            print(f"  {agent.emoji} {TerminalColors.BLUE}{agent_name}{TerminalColors.END}: {work_activity}")
+            print()
+            
+            # 工作后恢复精力（线程安全）
+            def update_energy():
+                with self._agents_lock:
+                    if hasattr(agent, 'energy_level'):
+                        agent.energy_level = min(100, agent.energy_level + random.randint(5, 15))
+                    elif hasattr(agent, 'energy'):
+                        agent.energy = min(100, agent.energy + random.randint(5, 15))
+            
+            self._thread_pool.submit(update_energy)
+            return True
+            
+        except Exception as e:
+            logger.error(f"执行工作行动异常: {e}")
+            return False
+    
+    def _execute_relax_action_safe(self, agent, agent_name: str) -> bool:
+        """安全执行放松行动"""
+        try:
+            relax_activities = [
+                "散步放松", "听音乐休息", "喝茶思考", "看书充电",
+                "晒太阳", "呼吸新鲜空气", "欣赏风景", "静坐冥想"
+            ]
+            relax_activity = random.choice(relax_activities)
+            
+            print(f"\n{TerminalColors.BOLD}━━━ 🌸 放松 ━━━{TerminalColors.END}")
+            print(f"  {agent.emoji} {TerminalColors.GREEN}{agent_name}{TerminalColors.END}: {relax_activity}")
+            print()
+            
+            # 放松后恢复精力和改善心情（线程安全）
+            def update_wellness():
+                with self._agents_lock:
+                    if hasattr(agent, 'energy_level'):
+                        agent.energy_level = min(100, agent.energy_level + random.randint(10, 20))
+                        if hasattr(agent, 'current_mood') and agent.current_mood in ["疲惫", "焦虑", "紧张"]:
+                            agent.current_mood = random.choice(["平静", "愉快", "舒适"])
+                    elif hasattr(agent, 'energy'):
+                        agent.energy = min(100, agent.energy + random.randint(10, 20))
+            
+            self._thread_pool.submit(update_wellness)
+            return True
+            
+        except Exception as e:
+            logger.error(f"执行放松行动异常: {e}")
+            return False
+    
+    def _execute_group_discussion_safe(self, agent, agent_name: str) -> bool:
+        """安全执行群体讨论"""
+        try:
+            current_location = getattr(agent, 'location', '家')
+            
+            # 线程安全地找到同位置的Agent
+            with self._agents_lock:
+                agents_same_location = [
+                    name for name, other_agent in self.agents.items()
+                    if name != agent_name and getattr(other_agent, 'location', '家') == current_location
+                ]
+            
+            if len(agents_same_location) < 1:
+                # 没有足够的Agent，转为独自思考
+                return self._execute_solo_thinking(agent, agent_name, current_location)
+            
+            # 选择参与者（最多3人）
+            participants = random.sample(agents_same_location, min(2, len(agents_same_location)))
+            
+            # 生成讨论话题
+            topics = [
+                "最近的工作", "天气真不错", "这个地方很棒",
+                "有什么新鲜事", "周末计划", "兴趣爱好"
+            ]
+            topic = random.choice(topics)
+            
+            print(f"\n{TerminalColors.BOLD}━━━ 👥 群体讨论 ━━━{TerminalColors.END}")
+            print(f"  📍 {current_location}: 关于'{topic}'的讨论")
+            print(f"  🗣️  发起者: {agent.emoji} {agent_name}")
+            print(f"  👥 参与者: {', '.join([f'{self.agents[p].emoji} {p}' for p in participants])}")
+            print()
+            
+            # 异步处理群体交互
+            for participant in participants:
+                interaction_data = {
+                    'agent1_name': agent_name,
+                    'agent2_name': participant,
+                    'interaction_type': 'group_discussion',
+                    'location': current_location,
+                    'context': {
+                        'topic': topic,
+                        'discussion_type': 'group',
+                        'participants': [agent_name] + participants
+                    }
+                }
+                
+                try:
+                    self._interaction_queue.put_nowait(interaction_data)
+                except queue.Full:
+                    logger.warning("交互队列已满，跳过群体讨论交互")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"执行群体讨论异常: {e}")
+            return False
+    
+    def shutdown(self):
+        """优雅关闭系统"""
+        logger.info("开始关闭AI小镇系统...")
+        
+        # 设置关闭信号
+        self._shutdown_event.set()
+        
+        # 停止自动模拟
+        with self._simulation_condition:
+            self.auto_simulation = False
+            self.running = False
+            self._simulation_condition.notify_all()
+        
+        # 停止后台工作线程
+        try:
+            self._memory_save_queue.put_nowait(None)  # 发送关闭信号
+            self._interaction_queue.put_nowait(None)
+        except queue.Full:
+            pass
+        
+        # 等待工作线程结束
+        if hasattr(self, '_memory_worker') and self._memory_worker.is_alive():
+            self._memory_worker.join(timeout=5.0)
+        
+        if hasattr(self, '_interaction_worker') and self._interaction_worker.is_alive():
+            self._interaction_worker.join(timeout=5.0)
+        
+        # 等待模拟线程结束
+        if self.simulation_thread and self.simulation_thread.is_alive():
+            self.simulation_thread.join(timeout=10.0)
+        
+        # 关闭线程池
+        try:
+            self._thread_pool.shutdown(wait=True, timeout=10.0)
+        except Exception as e:
+            logger.warning(f"关闭线程池异常: {e}")
+        
+        # 保存最终数据
+        try:
+            self.save_persistent_data()
+        except Exception as e:
+            logger.error(f"保存最终数据失败: {e}")
+        
+        logger.info("AI小镇系统已安全关闭")
+
     def _auto_simulation_loop(self):
         """自动模拟循环"""
         print(f"{TerminalColors.GREEN}🔄 自动模拟循环启动{TerminalColors.END}")
@@ -2097,11 +2879,9 @@ class TerminalTown:
                 cmd = parts[0]
                 
                 if cmd in ['quit', 'exit', '退出']:
-                    print(f"{TerminalColors.CYAN}💾 正在保存数据...{TerminalColors.END}")
-                    self.save_persistent_data()
+                    print(f"{TerminalColors.CYAN}💾 正在安全关闭系统...{TerminalColors.END}")
+                    self.shutdown()  # 使用优雅关闭
                     print(f"{TerminalColors.GREEN}👋 再见！感谢使用AI Agent虚拟小镇{TerminalColors.END}")
-                    self.running = False
-                    self.auto_simulation = False
                     break
                 
                 elif cmd == 'map':
@@ -2262,12 +3042,24 @@ class TerminalAgent:
         return random.choice(greetings)
 
 def main():
-    """主函数"""
+    """主函数 - 线程安全版本"""
+    town = None
     try:
+        print(f"{TerminalColors.GREEN}🏘️ 启动AI Agent虚拟小镇（线程安全版本）...{TerminalColors.END}")
         town = TerminalTown()
         town.run()
+    except KeyboardInterrupt:
+        print(f"\n{TerminalColors.YELLOW}⚠️ 收到中断信号，正在安全关闭...{TerminalColors.END}")
     except Exception as e:
-        print(f"{TerminalColors.RED}❌ 程序启动失败: {e}{TerminalColors.END}")
+        print(f"{TerminalColors.RED}❌ 程序运行异常: {e}{TerminalColors.END}")
+        logger.error(f"程序运行异常: {e}", exc_info=True)
+    finally:
+        if town:
+            try:
+                town.shutdown()
+            except Exception as e:
+                print(f"{TerminalColors.RED}❌ 关闭系统异常: {e}{TerminalColors.END}")
+        print(f"{TerminalColors.GREEN}✅ 系统已安全退出{TerminalColors.END}")
 
 if __name__ == "__main__":
     main()
