@@ -54,19 +54,40 @@ VECTOR_DB_CONFIG = {
     "timeout": 30,
     "collection_prefix": "agent_memories",
     
-    # 重试配置 - 添加缺失的参数
+    # 重试配置
     "retry_attempts": 3,
     "retry_delay": 1.0,
     "connection_timeout": 10,
     "max_retries": 5,
     
     # 集合配置
-    "vector_size": 512,  # 向量维度
-    "distance_metric": "cosine",  # 距离度量
+    "vector_size": 384,  # BGE嵌入维度
+    "distance_metric": "cosine",
     
     # 性能配置
     "batch_size": 100,
     "max_connections": 10,
+}
+
+# Redis配置
+REDIS_CONFIG = {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0,
+    "password": None,
+    "max_connections": 20,
+    "socket_timeout": 5,
+    "socket_connect_timeout": 5,
+    "decode_responses": True
+}
+
+# 异步任务配置
+ASYNC_CONFIG = {
+    "max_workers": 10,
+    "max_queue_size": 1000,
+    "task_timeout": 30,
+    "retry_attempts": 3,
+    "enable_task_monitoring": True
 }
 
 # Agent配置

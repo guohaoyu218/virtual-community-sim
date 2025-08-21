@@ -1256,3 +1256,75 @@
 2025-08-15 17:23:23,612 - memory.vector_store - INFO - 创建集合成功: social_network_data
 2025-08-15 17:23:27,516 - __main__ - INFO - 社交网络数据已保存到向量数据库
 2025-08-15 17:23:27,517 - __main__ - INFO - 已保存9个Agent的记忆数据到向量数据库
+2025-08-21 13:23:40,560 - root - INFO - 日志系统初始化完成
+2025-08-21 13:23:40,561 - __main__ - INFO - 🏘️ 初始化异步AI小镇...
+2025-08-21 13:23:44,659 - utils.redis_manager - ERROR - Redis连接失败: Error 10061 connecting to localhost:6379. 由于目标计算机积极拒绝，无法连接。.
+2025-08-21 13:23:44,660 - utils.async_task_manager - INFO - 异步任务管理器初始化完成: 10个工作线程
+2025-08-21 13:23:44,661 - utils.async_task_manager - INFO - 任务管理器已启动，10个工作线程运行中
+2025-08-21 13:23:44,661 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-21 13:23:49,495 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-08-21 13:23:51,552 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-08-21 13:23:51,553 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-21 13:23:55,642 - memory.vector_store - ERROR - 连接测试失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-08-21 13:23:55,642 - memory.vector_store - WARNING - 连接尝试 1 失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-08-21 13:23:56,644 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-21 13:24:01,169 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-21 13:24:05,263 - memory.vector_store - ERROR - 连接测试失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-08-21 13:24:05,264 - memory.vector_store - WARNING - 连接尝试 2 失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-08-21 13:24:06,265 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-08-21 13:24:10,943 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-08-21 13:24:10,972 - memory.vector_store - ERROR - 连接测试失败: Server disconnected without sending a response.
+2025-08-21 13:24:10,972 - memory.vector_store - WARNING - 连接尝试 3 失败: Server disconnected without sending a response.
+2025-08-21 13:24:10,973 - memory.vector_store - ERROR - 所有连接尝试都失败，使用内存模式作为备用
+2025-08-21 13:24:10,973 - memory.vector_store - WARNING - 使用内存模式Qdrant (数据不会持久化)
+2025-08-21 13:24:10,985 - memory.vector_store - INFO - 创建集合成功: agent_alex_memories
+2025-08-21 13:24:10,986 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-08-21 13:24:10,986 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-08-21 13:24:26,361 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-08-21 13:24:26,372 - agents.async_base_agent - INFO - 异步Agent Alex (程序员) 创建成功
+2025-08-21 13:24:26,430 - memory.vector_store - INFO - 创建集合成功: agent_emma_memories
+2025-08-21 13:24:26,430 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-08-21 13:24:26,432 - agents.async_base_agent - INFO - 异步Agent Emma (艺术家) 创建成功
+2025-08-21 13:24:26,435 - memory.vector_store - INFO - 创建集合成功: agent_sarah_memories
+2025-08-21 13:24:26,435 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-08-21 13:24:26,436 - agents.async_base_agent - INFO - 异步Agent Sarah (教师) 创建成功
+2025-08-21 13:24:26,449 - utils.async_task_manager - INFO - 工作线程 worker-0 已启动
+2025-08-21 13:24:26,452 - utils.async_task_manager - INFO - 工作线程 worker-1 已启动
+2025-08-21 13:24:26,454 - utils.async_task_manager - INFO - 工作线程 worker-2 已启动
+2025-08-21 13:24:26,455 - utils.async_task_manager - INFO - 工作线程 worker-3 已启动
+2025-08-21 13:24:26,456 - utils.async_task_manager - INFO - 工作线程 worker-4 已启动
+2025-08-21 13:24:26,456 - utils.async_task_manager - INFO - 工作线程 worker-5 已启动
+2025-08-21 13:24:26,457 - utils.async_task_manager - INFO - 工作线程 worker-6 已启动
+2025-08-21 13:24:26,458 - utils.async_task_manager - INFO - 工作线程 worker-7 已启动
+2025-08-21 13:24:26,459 - utils.async_task_manager - INFO - 工作线程 worker-8 已启动
+2025-08-21 13:24:26,460 - utils.async_task_manager - INFO - 工作线程 worker-9 已启动
+2025-08-21 13:24:28,121 - agents.async_base_agent - INFO - 异步Agent Alex 初始化完成
+2025-08-21 13:24:28,123 - agents.async_base_agent - INFO - 异步Agent Sarah 初始化完成
+2025-08-21 13:24:28,125 - agents.async_base_agent - INFO - 异步Agent Emma 初始化完成
+2025-08-21 13:24:28,125 - agents.async_specific_agents - INFO - 已创建并初始化 3 个异步Agent
+2025-08-21 13:24:28,203 - __main__ - INFO - ✅ 异步AI小镇初始化完成，共有 3 个Agent
+2025-08-21 13:24:28,204 - __main__ - INFO - 🚀 启动异步仿真，预计运行 100 个周期
+2025-08-21 13:24:28,204 - __main__ - INFO - 🔄 仿真周期 1/100
+2025-08-21 13:24:28,207 - __main__ - INFO - 
+📊 系统状态 (第 0 周期):
+  🤖 任务队列: 0 待处理
+  ⚡ 已完成任务: 0
+  🗄️ Redis连接: ❌
+  🔄 总交互数: 0
+  📍 总移动数: 0
+
+2025-08-21 13:24:29,922 - __main__ - INFO - 🛑 正在停止异步仿真...
+2025-08-21 13:24:29,923 - agents.async_base_agent - INFO - 异步Agent Alex 清理完成
+2025-08-21 13:24:29,924 - agents.async_base_agent - INFO - 异步Agent Emma 清理完成
+2025-08-21 13:24:29,924 - agents.async_base_agent - INFO - 异步Agent Sarah 清理完成
+2025-08-21 13:24:29,925 - utils.async_task_manager - INFO - 工作线程 worker-0 已停止
+2025-08-21 13:24:29,925 - utils.async_task_manager - INFO - 工作线程 worker-1 已停止
+2025-08-21 13:24:29,925 - utils.async_task_manager - INFO - 工作线程 worker-2 已停止
+2025-08-21 13:24:29,926 - utils.async_task_manager - INFO - 工作线程 worker-3 已停止
+2025-08-21 13:24:29,926 - utils.async_task_manager - INFO - 工作线程 worker-4 已停止
+2025-08-21 13:24:29,926 - utils.async_task_manager - INFO - 工作线程 worker-5 已停止
+2025-08-21 13:24:29,927 - utils.async_task_manager - INFO - 工作线程 worker-6 已停止
+2025-08-21 13:24:29,927 - utils.async_task_manager - INFO - 工作线程 worker-7 已停止
+2025-08-21 13:24:29,927 - utils.async_task_manager - INFO - 工作线程 worker-8 已停止
+2025-08-21 13:24:29,928 - utils.async_task_manager - INFO - 工作线程 worker-9 已停止
+2025-08-21 13:24:29,929 - utils.async_task_manager - INFO - 任务管理器已停止

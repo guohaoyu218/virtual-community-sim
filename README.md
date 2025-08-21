@@ -1,53 +1,55 @@
-# 🏘️ AI Agent虚拟小镇 - Web版
+# 🏘️ AI Agent虚拟小镇 - 异步版
 
-一个基于Streamlit的AI Agent虚拟小镇项目，支持真实AI驱动的自主角色和交互式Web界面。
+一个基于异步架构的AI Agent虚拟小镇项目，支持高并发、Redis缓存和智能任务调度。
 
 ## 🎯 项目特色
 
-- **9个独特AI角色**: Alex程序员、Emma艺术家、Sarah教师、David商人、Lisa学生、Mike退休人员、John医生、Anna厨师、Tom机械师
-- **真实AI驱动**: 集成本地Qwen2.5-3B模型和DeepSeek API
-- **智能行为系统**: 类似斯坦福小镇的AI Agent自主决策和复杂交互
-- **社交网络管理**: 动态关系建立、友谊度评分、智能互动建议
-- **群体活动系统**: 自动组织聚会、读书会、技术交流等活动
-- **小镇事件机制**: 集市、讲座、展览等随机事件影响Agent行为
-- **实时统计分析**: 位置热度、职业分布、社交网络分析
-- **双模式界面**: 高性能终端模式 + 可视化Web界面
-- **记忆系统**: AI Agent具备长期记忆和关系管理
-- **自动模拟**: 24/7无人值守智能运行
-
-<img width="956" height="601" alt="image" src="https://github.com/user-attachments/assets/07e29578-4e03-4f1e-b220-8700fa93b9c5" />
-<img width="1264" height="560" alt="image" src="https://github.com/user-attachments/assets/9b33a750-58e4-4bc3-b343-8c90a2f3e8c8" />
-<img width="1903" height="1038" alt="image" src="https://github.com/user-attachments/assets/3f1999cc-c0b8-4182-8178-52726fd2bbc9" />
-
-
-
-
+- **异步架构**: 支持高并发Agent操作，提升系统性能
+- **Redis缓存**: 智能缓存Agent状态、记忆和交互历史
+- **任务调度**: 智能任务优先级管理和异步执行
+- **9个独特AI角色**: Alex程序员、Emma艺术家、Sarah教师等
+- **混合模型架构**: 本地Qwen2.5-3B + 云端DeepSeek API动态分流
+- **向量记忆系统**: Qdrant + BGE-small-zh-v1.5 语义检索
+- **社交网络管理**: 动态关系建立、友谊度评分、智能互动
+- **实时性能监控**: 任务队列、缓存状态、系统负载监控
 
 ## 🚀 快速开始
 
-### 方式1: 终端模式 (推荐)
+### 1. 安装依赖
 
 ```bash
-# 一键启动 (Windows)
-双击 终端启动.bat
-
-# 或命令行启动
-python terminal_town.py
+# 安装所有依赖
+pip install -r requirements.txt
 ```
 
-### 方式2: Web界面模式
+### 2. 启动Redis (可选但推荐)
 
 ```bash
-# 安装依赖
-pip install -r requirements.txt
+# Windows用户
+双击 start_redis.bat
 
-# 启动Web界面
+# 或使用Docker
+docker run -d -p 6379:6379 redis:latest
+
+# 或使用WSL
+sudo apt install redis-server && redis-server
+```
+
+### 3. 启动系统
+
+```bash
+# 使用启动脚本选择模式
+python run_town.py
+
+# 或直接启动异步模式
+python async_terminal_town.py
+
+# 或传统模式
+python terminal_town.py
+
+# 或Web界面
 python main.py
 ```
-
-### 3. 访问界面
-
-- **终端模式**: 直接在命令行中交互
 - **Web模式**: 浏览器访问 `http://localhost:8501`
 
 ## 🤖 AI Agent介绍
