@@ -23,10 +23,15 @@ model/
 *.safetensors
 *.onnx
 
-# 数据文件
-data/
+# 数据文件（保留配置文件，排除运行时数据）
+data/cache/
+data/backup/
+data/interactions/
+data/qdrant_db/
+data/agent_profiles/
 *.json
 !config/*.json
+!docs/*.json
 
 # 临时文件
 *.tmp
@@ -47,7 +52,19 @@ Thumbs.db
 # Qdrant 数据库文件
 qdrant_db/
 
-# 测试文件
+# 测试文件和临时脚本
 test_*.py
 *_test.py
+test_enhanced_features.py
+启动增强版.bat
+
+# 敏感信息
+.env
+.env.local
+*.key
+config/api_keys.py
+
+# 启动脚本（用户自定义）
+start_*.bat
+run_*.sh
 
