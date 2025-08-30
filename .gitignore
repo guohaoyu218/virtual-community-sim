@@ -55,8 +55,7 @@ qdrant_db/
 # 测试文件和临时脚本
 test_*.py
 *_test.py
-test_enhanced_features.py
-启动增强版.bat
+temp_*.py
 
 # 敏感信息
 .env

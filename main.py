@@ -100,9 +100,9 @@ def show_help():
 🏘️ AI Agent虚拟小镇 - 帮助
 
 📖 使用方法：
-  python main.py          启动Web界面
-  python main.py --help   显示此帮助
-  python terminal_town.py 启动终端版本
+  python main.py            启动Web界面
+  python main.py --terminal 启动终端版本
+  python main.py --help     显示此帮助
 
 � Web界面功能：
 • 3D地图可视化

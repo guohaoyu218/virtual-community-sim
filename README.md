@@ -60,13 +60,13 @@ cp .env.example .env
 
 4. **启动系统**
 ```bash
-# 基础版本
+# Web界面版本（推荐）
 python main.py
 
-# 增强版本（推荐）
-python terminal_town_enhanced.py
+# 终端界面版本
+python main.py --terminal
 
-# 重构版本（最新）
+# 直接启动终端版本
 python terminal_town_refactored.py
 ```
 
