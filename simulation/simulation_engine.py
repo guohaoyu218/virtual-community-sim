@@ -106,92 +106,38 @@ class SimulationEngine:
         return False
     
     def choose_agent_action(self, agent, agent_name: str) -> str:
-        """选择Agent行动类型 - 改进版本，确保行为多样性"""
-        # 基础行动权重 - 平衡各种行为
+        """选择Agent行动类型"""
+        # 智能行动选择权重
         action_weights = {
-            'social': 25,           # 社交对话
-            'group_discussion': 15, # 群体讨论  
-            'move': 25,            # 移动
-            'think': 15,           # 思考
-            'work': 15,            # 工作
-            'relax': 5             # 放松
+            'social': 35,
+            'group_discussion': 20,
+            'move': 20,
+            'think': 10,
+            'work': 10,
+            'relax': 5
         }
         
         # 根据Agent状态调整权重
         energy = getattr(agent, 'energy', 80)
         if energy < 30:
-            # 低能量时更倾向于放松和思考
-            action_weights['relax'] += 25
-            action_weights['think'] += 10
-            action_weights['social'] -= 10
-            action_weights['work'] -= 15
-        elif energy > 70:
-            # 高能量时更倾向于社交和工作
-            action_weights['social'] += 10
-            action_weights['work'] += 10
-            action_weights['move'] += 5
+            action_weights['relax'] += 20
+            action_weights['work'] -= 5
         
         # 根据位置调整权重
         location = getattr(agent, 'location', '家')
         if location in ['办公室', '修理店']:
-            action_weights['work'] += 20
-            action_weights['social'] += 5  # 工作场所也可能有社交
-            action_weights['move'] -= 10
+            action_weights['work'] += 15
         elif location in ['公园', '家']:
-            action_weights['relax'] += 15
-            action_weights['think'] += 10
-            action_weights['move'] -= 5
+            action_weights['relax'] += 10
         elif location in ['咖啡厅', '图书馆']:
-            action_weights['social'] += 15
-            action_weights['group_discussion'] += 10
-            action_weights['think'] += 5
-        elif location in ['餐厅']:
-            action_weights['social'] += 20
-            action_weights['group_discussion'] += 15
-        
-        # 根据时间和交互历史调整
-        interaction_count = getattr(agent, 'interaction_count', 0)
-        
-        # 如果最近社交较少，增加社交权重
-        if interaction_count < 3:
-            action_weights['social'] += 15
-            action_weights['group_discussion'] += 10
-        
-        # 如果很久没移动，增加移动权重
-        if not hasattr(agent, '_last_move_time') or True:  # 简化处理
-            action_weights['move'] += 10
-        
-        # 职业相关的行为偏好
-        profession = getattr(agent.real_agent, 'profession', '通用') if hasattr(agent, 'real_agent') else '通用'
-        if profession in ['程序员', '医生', '老师']:
-            action_weights['work'] += 10
-            action_weights['think'] += 5
-        elif profession in ['艺术家', '学生']:
-            action_weights['think'] += 10
-            action_weights['relax'] += 5
-        elif profession in ['商人', '厨师']:
             action_weights['social'] += 10
-            action_weights['work'] += 5
-        elif profession == '退休人员':
-            action_weights['relax'] += 15
-            action_weights['social'] += 10
-            action_weights['work'] -= 10
         
-        # 确保所有权重为正数
-        for action in action_weights:
-            action_weights[action] = max(1, action_weights[action])
-        
-        # 创建加权列表
+        # 加权随机选择
         actions = []
         for action, weight in action_weights.items():
-            actions.extend([action] * weight)
+            actions.extend([action] * max(1, weight))
         
-        selected_action = random.choice(actions)
-        
-        # 记录选择的行动类型（用于调试）
-        logger.debug(f"{agent_name} 选择行动: {selected_action} (权重: {action_weights})")
-        
-        return selected_action
+        return random.choice(actions)
     
     def execute_solo_thinking(self, agent, agent_name: str, location: str) -> bool:
         """执行独自思考"""

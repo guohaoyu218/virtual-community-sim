@@ -100,15 +100,9 @@ class SocialInteractionHandler:
             print(f"  {agent1.emoji} {feedback_color}{agent1_name} → {agent2_name}{TerminalColors.END}: {feedback}")
             
             # 更新社交网络并立即显示关系变化
-            context = {
-                'location': location,
-                'same_location': True,
-                'agent1_profession': getattr(agent1.real_agent, 'profession', '通用') if hasattr(agent1, 'real_agent') else '通用',
-                'agent2_profession': getattr(agent2.real_agent, 'profession', '通用') if hasattr(agent2, 'real_agent') else '通用'
-            }
-            
             relationship_info = self.behavior_manager.update_social_network(
-                agent1_name, agent2_name, interaction_type, context
+                agent1_name, agent2_name, interaction_type, 
+                f"在{location}的{interaction_type}互动"
             )
             
             # 显示关系变化
@@ -409,18 +403,10 @@ class SocialInteractionHandler:
             
             for participant in participants:
                 try:
-                    # 构建上下文信息
-                    context = {
-                        'location': current_location,
-                        'same_location': True,
-                        'interaction_topic': topic,
-                        'agent1_profession': getattr(agent.real_agent, 'profession', '通用') if hasattr(agent, 'real_agent') else '通用',
-                        'agent2_profession': getattr(agents[participant].real_agent, 'profession', '通用') if hasattr(agents[participant], 'real_agent') else '通用'
-                    }
-                    
                     # 立即更新关系
                     relationship_info = self.behavior_manager.update_social_network(
-                        agent_name, participant, 'group_discussion', context
+                        agent_name, participant, 'group_discussion', 
+                        f"群体讨论: {topic}"
                     )
                     
                     # 显示关系变化
