@@ -113,7 +113,61 @@ class BaseAgent:
             return self.get_recent_memories(limit)
     
     def build_personality_prompt(self, context: str) -> str:
-        """构建更自然的个性化prompt"""
+        """使用先进的上下文工程构建prompt"""
+        try:
+            # 导入上下文引擎
+            import sys
+            import os
+            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            from core.context_engine import context_engine
+            
+            # 确定Agent类型
+            agent_type = self._get_agent_type()
+            
+            # 检测互动类型
+            interaction_type = self._detect_interaction_type(context)
+            
+            # 获取相关记忆
+            recent_memories = self.get_recent_memories(3)
+            
+            # 使用上下文引擎构建高质量prompt
+            return context_engine.build_context(
+                agent_type=agent_type,
+                situation=context,
+                interaction_type=interaction_type,
+                recent_memories=recent_memories
+            )
+            
+        except Exception as e:
+            logger.warning(f"上下文引擎失败，使用备用方案: {e}")
+            return self._build_fallback_prompt(context)
+    
+    def _get_agent_type(self) -> str:
+        """确定Agent类型"""
+        profession_mapping = {
+            '程序员': 'programmer',
+            '厨师': 'chef', 
+            '老师': 'teacher',
+            '医生': 'doctor',
+            '艺术家': 'artist',
+            '机械师': 'mechanic'
+        }
+        return profession_mapping.get(self.profession, 'default')
+    
+    def _detect_interaction_type(self, context: str) -> str:
+        """检测互动类型"""
+        negative_keywords = ['不同意', '反对', '困惑', '质疑', '失望', '坚持立场', '负面立场', '不要缓解气氛']
+        positive_keywords = ['友好', '赞同', '支持', '同意', '开心', '积极']
+        
+        if any(keyword in context for keyword in negative_keywords):
+            return 'negative'
+        elif any(keyword in context for keyword in positive_keywords):
+            return 'positive'
+        else:
+            return 'neutral'
+    
+    def _build_fallback_prompt(self, context: str) -> str:
+        """构建备用prompt"""
         # 检测是否是负面互动，如果是则添加特殊指令
         negative_keywords = ['不同意', '反对', '困惑', '质疑', '失望', '坚持立场', '负面立场', '不要缓解气氛']
         is_negative_interaction = any(keyword in context for keyword in negative_keywords)
@@ -160,20 +214,60 @@ class BaseAgent:
             # 智能路由：根据复杂度选择模型
             if self.should_use_advanced_model(situation):
                 logger.debug(f"{self.name} 使用DeepSeek高级推理")
-                response = self._advanced_thinking_with_api(situation)
+                raw_response = self._advanced_thinking_with_api(situation)
             else:
                 logger.debug(f"{self.name} 使用本地模型回应")
-                response = self._simple_thinking(situation)
+                raw_response = self._simple_thinking(situation)
+            
+            # 使用上下文引擎清理回应
+            try:
+                from core.context_engine import context_engine
+                agent_type = self._get_agent_type()
+                cleaned_response = context_engine.clean_response(raw_response, agent_type)
+            except Exception as e:
+                logger.warning(f"上下文引擎清理失败，使用传统方法: {e}")
+                cleaned_response = self._fallback_clean_response(raw_response)
             
             # 记录这次交互
-            memory_content = f"面对'{situation}'时，我回应：{response}"
+            memory_content = f"面对'{situation}'时，我回应：{cleaned_response}"
             self.add_memory(memory_content, importance=6, memory_type="experience")
             
-            return response
+            return cleaned_response
             
         except Exception as e:
             logger.error(f"{self.name} 回应时出错: {e}")
             return f"*{self.name}似乎在思考什么，暂时没有说话*"
+    
+    def _fallback_clean_response(self, response: str) -> str:
+        """备用响应清理方法"""
+        if not response:
+            return "嗯。"
+        
+        # 基本清理
+        import re
+        
+        # 移除常见提示词残留
+        unwanted_patterns = [
+            r'Human=\d+', r'Woman=\d+', r'Student=\d+', r'Teacher=\d+',
+            r'字数.*?', r'不少于.*?', r'控制在.*?',
+            r'[Hh]i\s+\w+.*?', r'"[^"]*[A-Za-z]{10,}[^"]*"'
+        ]
+        
+        for pattern in unwanted_patterns:
+            response = re.sub(pattern, '', response, flags=re.IGNORECASE)
+        
+        # 移除多余空格
+        response = re.sub(r'\s+', ' ', response).strip()
+        
+        # 限制长度
+        if len(response) > 100:
+            first_period = response.find('。')
+            if first_period > 10:
+                response = response[:first_period + 1]
+            else:
+                response = response[:50] + '。'
+        
+        return response if response else "嗯。"
     
     def _simple_thinking(self, situation: str) -> str:
         """简单思考模式 - 使用本地模型"""

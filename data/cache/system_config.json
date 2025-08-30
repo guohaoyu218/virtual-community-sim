@@ -1,24 +1,11 @@
 {
-  "location_popularity": {
-    "医院": 52,
-    "家": 47,
-    "办公室": 52,
-    "图书馆": 52
-  },
-  "agent_positions": {
-    "Alex": "医院",
-    "Emma": "家",
-    "Sarah": "家",
-    "David": "家",
-    "Lisa": "办公室",
-    "Mike": "家",
-    "John": "家",
-    "Anna": "家",
-    "Tom": "家"
-  },
-  "system_status": {
-    "last_save_time": "2025-08-15T17:23:27.518708",
-    "auto_simulation": true,
-    "agent_count": 9
+  "auto_simulation": true,
+  "system_version": "1.0",
+  "last_active": "2025-08-31T01:44:10.951357",
+  "last_updated": "2025-08-31T01:44:10.951357",
+  "persistence_config": {
+    "auto_save_interval": 300,
+    "backup_retention_days": 7,
+    "max_interaction_files": 100
   }
 }

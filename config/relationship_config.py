@@ -5,8 +5,8 @@
 
 # 关系等级配置
 RELATIONSHIP_LEVELS = {
-    "敌对": {"min": -20, "max": 0, "emoji": "😠", "description": "关系很差，经常冲突"},
-    "冷淡": {"min": 1, "max": 20, "emoji": "😐", "description": "关系冷淡，很少交流"},
+    "敌对": {"min": -20, "max": -1, "emoji": "😠", "description": "关系很差，经常冲突"},
+    "陌生": {"min": 0, "max": 20, "emoji": "�", "description": "不熟悉，初次见面"},
     "认识": {"min": 21, "max": 40, "emoji": "🙂", "description": "有过几次交流，算是认识"},
     "熟人": {"min": 41, "max": 60, "emoji": "😊", "description": "比较熟悉，偶尔聊天"},
     "好朋友": {"min": 61, "max": 80, "emoji": "😄", "description": "关系很好，经常交流"},
@@ -16,12 +16,21 @@ RELATIONSHIP_LEVELS = {
 # 互动类型和对应的关系变化值
 INTERACTION_EFFECTS = {
     "friendly_chat": {
-        "change": 2,  # 从3降低到2，减少正面加分
+        "change": 3,  # 友好聊天基础分数
         "description": "友好聊天",
         "conditions": {
-            "同地点": +1,  # 在同一地点聊天额外加分
-            "相同职业": +1,  # 相同职业有共同话题
-            "首次交流": +1,  # 从+2降低到+1，减少首次交流加分
+            "同地点": +2,  # 在同一地点聊天额外加分
+            "相同职业": +2,  # 相同职业有共同话题
+            "首次交流": +5,  # 首次交流加分，从陌生到认识
+        }
+    },
+    "disagreement": {
+        "change": -6,  # 轻度不同意见
+        "description": "意见不合",
+        "conditions": {
+            "不同观点": -3,  # 观点不同
+            "价值观差异": -2,  # 价值观差异
+            "态度强硬": -2,   # 态度比较强硬
         }
     },
     "argument": {
@@ -180,6 +189,7 @@ PROFESSION_COMPATIBILITY = {
         "退休人员": 1.1,
     },
     # ... 其他职业组合
+    
 }
 
 # 地点对关系的影响

@@ -57,7 +57,7 @@ class AlexProgrammer(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-        请以Alex的身份自然地回应，体现程序员的特点。直接回应，不要解释："""
+请以Alex的身份用1-2句话简洁地回应，体现程序员的特点："""
         return prompt
 
 class EmmaArtist(BaseAgent):
@@ -117,7 +117,7 @@ class EmmaArtist(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-        请以Emma的身份自然地回应，体现艺术家的感性和创意。直接回应，不要解释："""
+请以Emma的身份用1-2句话感性地回应，体现艺术家的创意和激情："""
         return prompt
 
 class SarahTeacher(BaseAgent):
@@ -176,7 +176,7 @@ class SarahTeacher(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-请以Sarah的身份自然地回应，体现老师的耐心和关怀,直接回应，不要解释:"""
+请以Sarah的身份用1-2句话温和地回应，体现老师的耐心和关怀："""
         return prompt
 
 class DavidBusinessman(BaseAgent):
@@ -218,7 +218,6 @@ class DavidBusinessman(BaseAgent):
 重要：这是负面互动，David必须保持负面情感，不允许缓解气氛或转向积极。直接回应，不要解释："""
 
         else:
-        
             prompt = f"""你是David，一名成功的商人。
 
 个性特点：
@@ -235,7 +234,7 @@ class DavidBusinessman(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-请以David的身份自然地回应，体现商人的精明和自信,直接回应，不要解释："""
+请以David的身份用1-2句话自信地回应，体现商人的精明和社交能力："""
         return prompt
 
 class LisaStudent(BaseAgent):
@@ -276,7 +275,6 @@ class LisaStudent(BaseAgent):
         重要：这是负面互动，Lisa必须保持负面情感，不允许缓解气氛或转向积极。直接回应，不要解释："""
 
         else:
-        
             prompt = f"""你是Lisa，一名大学生。
 
 个性特点：
@@ -293,7 +291,7 @@ class LisaStudent(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-请以Lisa的身份自然地回应，体现学生的好奇和活力："""
+请以Lisa的身份用1-2句话简短自然地回应："""
         return prompt
 
 class MikeRetired(BaseAgent):
@@ -334,8 +332,6 @@ class MikeRetired(BaseAgent):
         重要：这是负面互动，Mike必须保持负面情感，不允许缓解气氛或转向积极。直接回应，不要解释："""
 
         else:
-
-        
             prompt = f"""你是Mike，一名退休的老工程师。
 
 个性特点：
@@ -352,7 +348,7 @@ class MikeRetired(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-请以Mike的身份自然地回应，体现老人的智慧和关怀："""
+请以Mike的身份用1-2句话平和地回应，体现老人的智慧和关怀："""
         return prompt
 
 class JohnDoctor(BaseAgent):
@@ -410,7 +406,7 @@ class JohnDoctor(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-请以John的身份自然地回应，体现医生的专业和关怀："""
+请以John的身份用1-2句话专业地回应，体现医生的严谨和关怀："""
         return prompt
         
 
@@ -468,7 +464,7 @@ class AnnaChef(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-请以Anna的身份自然地回应，体现厨师的热情和创意："""
+请以Anna的身份用1-2句话热情地回应，体现厨师的创意和温暖："""
         return prompt
         
 
@@ -510,7 +506,7 @@ class TomMechanic(BaseAgent):
 
 重要：这是负面互动，Tom必须保持负面情感，不允许缓解气氛或转向积极。直接回应，不要解释："""
         else:
-         prompt = f"""你是Tom，一名经验丰富的机械师。
+            prompt = f"""你是Tom，一名经验丰富的机械师。
 
 个性特点：
 - 实用主义，动手解决问题
@@ -526,5 +522,5 @@ class TomMechanic(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-请以Tom的身份自然地回应，体现机械师的实用和直接："""
+请以Tom的身份用1-2句话直接地回应，体现机械师的实用和朴实："""
         return prompt

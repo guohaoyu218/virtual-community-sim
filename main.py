@@ -3,6 +3,18 @@
 
 运行方式：
 python main.py - 启动Web界面
+python main.py --termin🏘️ AI Agent虚拟小镇 - 帮助
+
+📖 使用方法：
+  python main.py              启动Web界面
+  python main.py --help       显示此帮助
+  python main.py --terminal   启动终端版本
+
+🌐 Web界面功能：
+• 3D地图可视化
+• Agent智能交互
+• 实时聊天对话（重构版）
+python main.py --terminal-old - 启动终端界面（原版）
 """
 
 import os
@@ -117,8 +129,26 @@ def show_help():
 📞 如需帮助，请查看README.md
 """)
 
+def run_terminal_refactored():
+    """运行终端界面"""
+    try:
+        from terminal_town_refactored import main as terminal_main
+        terminal_main()
+    except ImportError as e:
+        print(f"❌ 无法导入终端模块: {e}")
+        print("请确保所有模块都已正确安装")
+    except Exception as e:
+        print(f"❌ 终端启动失败: {e}")
+
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] in ['--help', '-h']:
-        show_help()
+    if len(sys.argv) > 1:
+        if sys.argv[1] in ['--help', '-h']:
+            show_help()
+        elif sys.argv[1] == '--terminal':
+            print("🏘️ 启动终端界面...")
+            run_terminal_refactored()
+        else:
+            print(f"❌ 未知参数: {sys.argv[1]}")
+            print("使用 --help 查看帮助")
     else:
         start_web_server()

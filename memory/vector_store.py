@@ -141,11 +141,227 @@ class VectorStore:
         except:
             return False
     
+    def get_connection_status(self) -> Dict[str, Any]:
+        """获取详细的连接状态信息"""
+        try:
+            if self.client is None:
+                return {
+                    'connected': False,
+                    'error': 'Client not initialized'
+                }
+            
+            # 测试连接
+            collections = self.client.get_collections()
+            
+            # 获取数据库信息
+            total_collections = len(collections.collections)
+            total_points = 0
+            
+            for collection in collections.collections:
+                try:
+                    info = self.client.get_collection(collection.name)
+                    if hasattr(info, 'points_count'):
+                        total_points += info.points_count
+                except:
+                    continue
+            
+            return {
+                'connected': True,
+                'host': VECTOR_DB_CONFIG.get("host", "unknown"),
+                'port': VECTOR_DB_CONFIG.get("port", "unknown"),
+                'total_collections': total_collections,
+                'total_points': total_points,
+                'embedding_dimension': self.dimension,
+                'client_type': 'persistent' if ':memory:' not in str(self.client) else 'memory'
+            }
+            
+        except Exception as e:
+            return {
+                'connected': False,
+                'error': str(e)
+            }
+    
     def reconnect_if_needed(self):
         """在需要时重新连接"""
         if not self.is_connected():
             logger.warning("检测到连接断开，尝试重新连接...")
             self._connect_with_retry()
+    
+    def cleanup_old_memories(self, 
+                           collection_name: str,
+                           max_age_days: int = 30,
+                           max_memories: int = 10000,
+                           min_importance: float = 0.3) -> Dict[str, int]:
+        """清理旧记忆"""
+        try:
+            # 获取所有记忆
+            scroll_result = self.client.scroll(
+                collection_name=collection_name,
+                with_payload=True,
+                limit=max_memories + 1000  # 稍微多获取一些
+            )
+            
+            memories = scroll_result[0] if scroll_result else []
+            if not memories:
+                return {'deleted': 0, 'total': 0}
+            
+            # 找出需要删除的记忆
+            to_delete = []
+            current_time = datetime.now()
+            
+            for memory in memories:
+                should_delete = False
+                
+                # 检查年龄
+                timestamp_str = memory.payload.get('timestamp', '')
+                if timestamp_str:
+                    try:
+                        memory_time = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+                        age_days = (current_time - memory_time.replace(tzinfo=None)).days
+                        
+                        # 删除过旧且低重要性的记忆
+                        importance = memory.payload.get('importance', 0.5)
+                        if age_days > max_age_days and importance < min_importance:
+                            should_delete = True
+                    except:
+                        # 无法解析时间戳，认为是旧记忆
+                        should_delete = True
+                
+                # 检查访问频率
+                access_count = memory.payload.get('access_count', 0)
+                importance = memory.payload.get('importance', 0.5)
+                
+                # 删除从未访问且重要性极低的记忆
+                if access_count == 0 and importance < 0.1:
+                    should_delete = True
+                
+                if should_delete:
+                    to_delete.append(memory.id)
+            
+            # 如果记忆总数超过限制，删除最旧的
+            if len(memories) > max_memories:
+                # 按时间戳和重要性排序
+                sorted_memories = sorted(memories, 
+                                       key=lambda m: (
+                                           m.payload.get('timestamp', ''),
+                                           m.payload.get('importance', 0.5)
+                                       ))
+                
+                excess_count = len(memories) - max_memories
+                for memory in sorted_memories[:excess_count]:
+                    if memory.id not in to_delete:
+                        to_delete.append(memory.id)
+            
+            # 执行删除
+            deleted_count = 0
+            if to_delete:
+                # 批量删除，避免一次删除过多
+                batch_size = 1000
+                for i in range(0, len(to_delete), batch_size):
+                    batch = to_delete[i:i+batch_size]
+                    self.client.delete(
+                        collection_name=collection_name,
+                        points_selector=batch
+                    )
+                    deleted_count += len(batch)
+                
+                logger.info(f"从 {collection_name} 删除了 {deleted_count} 条旧记忆")
+            
+            return {
+                'deleted': deleted_count,
+                'total': len(memories),
+                'remaining': len(memories) - deleted_count
+            }
+            
+        except Exception as e:
+            logger.error(f"清理旧记忆失败: {e}")
+            return {'deleted': 0, 'total': 0, 'error': str(e)}
+    
+    def optimize_collection(self, collection_name: str):
+        """优化集合性能"""
+        try:
+            # 如果支持优化操作
+            if hasattr(self.client, 'optimize'):
+                self.client.optimize(collection_name)
+                logger.info(f"集合 {collection_name} 优化完成")
+        except Exception as e:
+            logger.warning(f"优化集合 {collection_name} 失败: {e}")
+    
+    def get_collection_stats(self, collection_name: str) -> Dict[str, Any]:
+        """获取集合统计信息"""
+        try:
+            info = self.client.get_collection(collection_name)
+            
+            # 获取详细统计
+            scroll_result = self.client.scroll(
+                collection_name=collection_name,
+                with_payload=True,
+                limit=1000  # 样本数量
+            )
+            
+            memories = scroll_result[0] if scroll_result else []
+            
+            if not memories:
+                return {
+                    'total_points': 0,
+                    'dimension': getattr(info, 'config', {}).get('params', {}).get('size', 0)
+                }
+            
+            # 分析样本
+            importance_sum = 0
+            access_count_sum = 0
+            memory_types = {}
+            oldest_timestamp = None
+            newest_timestamp = None
+            
+            for memory in memories:
+                importance_sum += memory.payload.get('importance', 0.5)
+                access_count_sum += memory.payload.get('access_count', 0)
+                
+                mem_type = memory.payload.get('memory_type', 'unknown')
+                memory_types[mem_type] = memory_types.get(mem_type, 0) + 1
+                
+                timestamp = memory.payload.get('timestamp', '')
+                if timestamp:
+                    if oldest_timestamp is None or timestamp < oldest_timestamp:
+                        oldest_timestamp = timestamp
+                    if newest_timestamp is None or timestamp > newest_timestamp:
+                        newest_timestamp = timestamp
+            
+            # 安全获取配置信息
+            config = getattr(info, 'config', None)
+            dimension = self.dimension or 0
+            if config:
+                if hasattr(config, 'params') and hasattr(config.params, 'vectors'):
+                    # 新版本Qdrant的结构
+                    if hasattr(config.params.vectors, 'size'):
+                        dimension = config.params.vectors.size
+                    elif isinstance(config.params.vectors, dict) and 'size' in config.params.vectors:
+                        dimension = config.params.vectors['size']
+                elif hasattr(config, 'params') and hasattr(config.params, 'size'):
+                    # 兼容旧版本
+                    dimension = config.params.size
+
+            stats = {
+                'total_points': getattr(info, 'points_count', len(memories)),
+                'dimension': dimension,
+                'sample_size': len(memories),
+                'average_importance': importance_sum / len(memories) if memories else 0,
+                'average_access_count': access_count_sum / len(memories) if memories else 0,
+                'memory_types': memory_types,
+                'oldest_memory': oldest_timestamp,
+                'newest_memory': newest_timestamp,
+                'collection_info': {
+                    'name': collection_name,
+                    'status': getattr(info, 'status', 'unknown')
+                }
+            }
+            
+            return stats
+            
+        except Exception as e:
+            logger.error(f"获取集合统计失败: {e}")
+            return {'error': str(e)}
     
     def create_collection(self, collection_name: str, recreate: bool = False):
         """创建集合"""
