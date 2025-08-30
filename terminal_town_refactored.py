@@ -21,7 +21,6 @@ from core.agent_manager import AgentManager
 from core.terminal_agent import TerminalAgent
 from core.persistence_manager import PersistenceManager
 from core.error_handler import ErrorHandler, ErrorCategory, ErrorSeverity, initialize_error_handler
-from core.smart_cleanup_manager import get_smart_cleanup_manager, CleanupThresholds
 from display.terminal_ui import TerminalUI
 from display.terminal_colors import TerminalColors
 from chat.chat_handler import ChatHandler
@@ -62,22 +61,6 @@ class TerminalTownRefactored:
         self.error_handler = initialize_error_handler()  # 初始化错误处理系统
         self.memory_cleaner = get_memory_cleaner()  # 初始化内存清理器
         self.vector_optimizer = get_vector_optimizer()  # 初始化向量优化器
-        
-        # 初始化智能清理管理器
-        self.smart_cleanup_manager = get_smart_cleanup_manager(
-            self.memory_cleaner, 
-            self.vector_optimizer,
-            custom_thresholds={
-                'memory_warning': 65.0,    # 降低警告阈值，更早介入
-                'memory_cleanup': 75.0,    # 降低清理阈值，更积极清理
-                'memory_emergency': 85.0,  # 降低紧急阈值，更早紧急清理
-                'vector_memories_per_agent': 300,  # 每个Agent最多300条记忆
-                'vector_cleanup_interval': 4 * 3600,  # 4小时清理一次
-                'chat_history_max': 800,   # 降低聊天历史保留数量
-                'old_memory_days': 5       # 5天前的记忆视为过期
-            }
-        )
-        
         self.agent_manager = AgentManager(self.thread_manager)
         self.chat_handler = ChatHandler(self.thread_manager, self._clean_response)
         self.simulation_engine = SimulationEngine(
@@ -102,11 +85,8 @@ class TerminalTownRefactored:
         # 启动自动保存
         self.persistence_manager.start_auto_save(self.get_system_data_for_persistence)
         
-        # 启动内存清理（原有的基础清理）
+        # 启动内存清理
         self.memory_cleaner.start_background_cleanup()
-        
-        # 启动智能清理监控（新增的智能清理）
-        self.smart_cleanup_manager.start_monitoring(check_interval=120)  # 每2分钟检查一次
         
         # 初始化Agent
         self.agents = self.agent_manager.init_agents()
@@ -146,23 +126,12 @@ class TerminalTownRefactored:
             r".*我是\w+.*",
             r".*作为\w+.*",
             r".*我叫\w+.*",
-            # 移除非对话内容 - 增强版
+            # 移除非对话内容
             r"你正在与.+?交谈。?",
             r".*正在与.*交谈.*",
             r"你是.+?，.*",
             r"在这种情况下.*",
             r"根据.*情况.*",
-            r"根据你的描述.*?",
-            r".*你觉得.*?可以做？.*",
-            r".*或者.*我也是.*",
-            r".*看起来你.*",
-            r".*希望你过得愉快.*",
-            r".*最近怎么样.*希望.*",
-            # 移除指向性描述
-            r".*描述.*",
-            r".*根据.*",
-            r".*看起来.*心情.*",
-            r".*你今天.*",
         ]
         
         cleaned = response.strip()
@@ -193,26 +162,22 @@ class TerminalTownRefactored:
                 continue
             
             # 移除明显的指令性开头和非对话内容
-            if sentence.startswith(('请注意', '请记住', '如果', '当然可以', '好的我来', '我会帮助', '你正在', '根据', '看起来', '希望你', '描述')):
+            if sentence.startswith(('请注意', '请记住', '如果', '当然可以', '好的我来', '我会帮助', '你正在', '根据')):
                 continue
             
             # 移除包含特定非对话关键词的句子
-            if any(keyword in sentence for keyword in ['交谈', '对话', '情况下', '根据', '描述', '看起来', '心情', '你觉得', '可以做', '或者我也是']):
+            if any(keyword in sentence for keyword in ['交谈', '对话', '情况下', '根据']):
                 continue
             
             # 移除代码相关内容
             if any(keyword in sentence for keyword in ['```', 'def ', 'import ', 'python', 'def(', 'pass']):
                 continue
             
-            # 移除过长的句子（可能包含多个合并的句子）
-            if len(sentence) > 50:
-                continue
-            
             # 避免重复句子，但保留技术内容
             if sentence not in valid_sentences and len(sentence) > 2:
                 valid_sentences.append(sentence)
         
-        # 保留前1-2句，确保对话内容简洁
+        # 保留前2句，确保对话内容简洁
         if valid_sentences:
             result_sentences = valid_sentences[:2]
             cleaned = '。'.join(result_sentences)
@@ -223,18 +188,14 @@ class TerminalTownRefactored:
             chinese_only = re.sub(r'[a-zA-Z]{20,}', '', response)
             # 移除非对话标识
             chinese_only = re.sub(r'你正在与.+?交谈。?', '', chinese_only)
-            chinese_only = re.sub(r'根据.*?', '', chinese_only)
-            chinese_only = re.sub(r'看起来.*?', '', chinese_only)
-            chinese_only = re.sub(r'希望.*?愉快。?', '', chinese_only)
-            
             if len(chinese_only.strip()) > 8:
-                cleaned = chinese_only.strip()[:50] + ('。' if not chinese_only.strip().endswith(('。', '！', '？')) else '')
+                cleaned = chinese_only.strip()[:80] + ('。' if not chinese_only.strip().endswith(('。', '！', '？')) else '')
             else:
-                cleaned = "好的。"
+                cleaned = "嗯，我明白了。"
         
         # 最终长度限制
-        if len(cleaned) > 80:
-            cleaned = cleaned[:77] + "..."
+        if len(cleaned) > 100:
+            cleaned = cleaned[:97] + "..."
         
         return cleaned.strip()
     
@@ -251,58 +212,38 @@ class TerminalTownRefactored:
         try:
             print(f"\n{TerminalColors.BOLD}━━━ 👥 社交网络状态 ━━━{TerminalColors.END}")
             
-            # 显示Agent关系 - 修复：使用social_network而不是relationships
-            if hasattr(self.behavior_manager, 'social_network') and self.behavior_manager.social_network:
+            # 显示Agent关系
+            if hasattr(self.behavior_manager, 'relationships') and self.behavior_manager.relationships:
                 print(f"🤝 Agent关系网络:")
                 
-                # 遍历社交网络
-                processed_pairs = set()
-                for agent1_name, relationships in self.behavior_manager.social_network.items():
-                    for agent2_name, relationship_score in relationships.items():
-                        # 避免重复显示（A-B 和 B-A 是同一对关系）
-                        pair_key = tuple(sorted([agent1_name, agent2_name]))
-                        if pair_key in processed_pairs:
-                            continue
-                        processed_pairs.add(pair_key)
-                        
-                        # 根据关系分数显示不同颜色和状态
-                        if relationship_score >= 80:
-                            color = TerminalColors.GREEN
-                            status = "亲密"
-                            emoji = "💝"
-                        elif relationship_score >= 60:
-                            color = TerminalColors.CYAN
-                            status = "友好"
-                            emoji = "😊"
-                        elif relationship_score >= 40:
-                            color = TerminalColors.YELLOW
-                            status = "中性"
-                            emoji = "😐"
-                        elif relationship_score >= 20:
-                            color = TerminalColors.MAGENTA
-                            status = "冷淡"
-                            emoji = "😕"
-                        else:
-                            color = TerminalColors.RED
-                            status = "疏远"
-                            emoji = "😞"
-                        
-                        print(f"  {emoji} {agent1_name} ↔ {agent2_name}: {color}{status}({relationship_score}){TerminalColors.END}")
-                
+                for agent_pair, relationship in self.behavior_manager.relationships.items():
+                    agent1, agent2 = agent_pair.split('_', 1)
+                    relationship_score = relationship.get('relationship_score', 0)
+                    interaction_count = relationship.get('interaction_count', 0)
+                    last_interaction = relationship.get('last_interaction_time', 'Unknown')
+                    
+                    # 根据关系分数显示不同颜色
+                    if relationship_score > 0.7:
+                        color = TerminalColors.GREEN
+                        status = "亲密"
+                    elif relationship_score > 0.3:
+                        color = TerminalColors.CYAN
+                        status = "友好"
+                    elif relationship_score > -0.3:
+                        color = TerminalColors.YELLOW
+                        status = "中性"
+                    else:
+                        color = TerminalColors.RED
+                        status = "冷淡"
+                    
+                    print(f"  • {agent1} ↔ {agent2}: {color}{status}({relationship_score:.2f}){TerminalColors.END}")
+                    print(f"    交互次数: {interaction_count}, 最近交互: {last_interaction[:19] if isinstance(last_interaction, str) else 'N/A'}")
             else:
                 print(f"📊 暂无Agent关系记录")
             
-            # 显示交互历史统计 - 使用备用属性名
-            interaction_history = getattr(self.behavior_manager, 'interaction_history', [])
-            if not interaction_history:
-                # 尝试其他可能的属性名
-                for attr_name in ['interactions', 'history', 'recent_interactions']:
-                    if hasattr(self.behavior_manager, attr_name):
-                        interaction_history = getattr(self.behavior_manager, attr_name, [])
-                        break
-            
-            if interaction_history:
-                recent_interactions = interaction_history[-10:]  # 最近10次
+            # 显示交互历史统计
+            if hasattr(self.behavior_manager, 'interaction_history') and self.behavior_manager.interaction_history:
+                recent_interactions = self.behavior_manager.interaction_history[-10:]  # 最近10次
                 print(f"\n💬 最近交互记录 (最多10条):")
                 
                 for interaction in recent_interactions:
@@ -351,180 +292,6 @@ class TerminalTownRefactored:
         except Exception as e:
             print(f"{TerminalColors.RED}❌ 获取社交网络状态失败: {e}{TerminalColors.END}")
             logger.error(f"显示社交网络状态失败: {e}")
-    
-    def show_system_stats(self):
-        """显示系统统计信息"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 📊 系统统计 ━━━{TerminalColors.END}")
-            
-            # Agent统计
-            print(f"👥 Agent统计:")
-            print(f"  • 总Agent数: {len(self.agents)}")
-            
-            # 按职业分类
-            profession_count = {}
-            for agent_name, agent in self.agents.items():
-                profession = getattr(agent.real_agent, 'profession', '未知') if hasattr(agent, 'real_agent') else '未知'
-                profession_count[profession] = profession_count.get(profession, 0) + 1
-            
-            print(f"  • 职业分布:")
-            for profession, count in sorted(profession_count.items()):
-                print(f"    - {profession}: {count} 人")
-            
-            # 位置统计
-            print(f"\n🏠 位置统计:")
-            location_stats = {}
-            for agent_name, agent in self.agents.items():
-                location = getattr(agent, 'location', '未知')
-                location_stats[location] = location_stats.get(location, 0) + 1
-            
-            for location, count in sorted(location_stats.items(), key=lambda x: x[1], reverse=True):
-                building_emoji = self.buildings.get(location, {}).get('emoji', '📍')
-                print(f"  • {building_emoji} {location}: {count} 人")
-            
-            # 社交统计
-            print(f"\n💬 社交统计:")
-            if hasattr(self.behavior_manager, 'social_network') and self.behavior_manager.social_network:
-                total_relationships = 0
-                for agent_relationships in self.behavior_manager.social_network.values():
-                    total_relationships += len(agent_relationships)
-                total_relationships = total_relationships // 2  # 避免重复计算
-                print(f"  • 关系总数: {total_relationships}")
-                
-                # 计算平均关系强度
-                total_strength = 0
-                count = 0
-                for agent_relationships in self.behavior_manager.social_network.values():
-                    for strength in agent_relationships.values():
-                        total_strength += strength
-                        count += 1
-                
-                avg_strength = total_strength / count if count > 0 else 0
-                print(f"  • 平均关系强度: {avg_strength:.1f}")
-            else:
-                print(f"  • 关系总数: 0")
-                print(f"  • 平均关系强度: 0.0")
-            
-            # 交互统计
-            total_interactions = sum(getattr(agent, 'interaction_count', 0) for agent in self.agents.values())
-            print(f"  • 总交互次数: {total_interactions}")
-            avg_interactions = total_interactions / len(self.agents) if self.agents else 0
-            print(f"  • 平均交互次数: {avg_interactions:.1f}")
-            
-            # 系统运行时间
-            print(f"\n⏰ 系统状态:")
-            auto_sim_status = getattr(self.simulation_engine, 'auto_simulation', False)
-            print(f"  • 自动模拟: {'🟢 运行中' if auto_sim_status else '🔴 已停止'}")
-            print(f"  • 建筑物数量: {len(self.buildings)}")
-            print(f"  • 聊天历史: {len(self.chat_history)} 条")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取系统统计失败: {e}{TerminalColors.END}")
-            logger.error(f"显示系统统计失败: {e}")
-    
-    def show_interaction_history(self):
-        """显示交互历史"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 📚 交互历史 ━━━{TerminalColors.END}")
-            
-            # 显示聊天历史
-            if self.chat_history:
-                print(f"💬 用户对话历史 (最近10条):")
-                recent_chats = self.chat_history[-10:]
-                for i, chat in enumerate(recent_chats, 1):
-                    timestamp = chat.get('timestamp', 'Unknown')[:19]
-                    agent_name = chat.get('agent_name', 'Unknown')
-                    user_msg = chat.get('user_message', '')[:50]
-                    agent_resp = chat.get('agent_response', '')[:50]
-                    
-                    print(f"  {i}. {timestamp} | 与 {agent_name} 对话")
-                    print(f"     👤 用户: {user_msg}{'...' if len(chat.get('user_message', '')) > 50 else ''}")
-                    print(f"     🤖 {agent_name}: {agent_resp}{'...' if len(chat.get('agent_response', '')) > 50 else ''}")
-                    print()
-            else:
-                print(f"💬 暂无用户对话历史")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取交互历史失败: {e}{TerminalColors.END}")
-            logger.error(f"显示交互历史失败: {e}")
-    
-    def show_popular_locations(self):
-        """显示热门位置和活动"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 🌟 热门位置与活动 ━━━{TerminalColors.END}")
-            
-            # 当前位置热度
-            current_popularity = {}
-            for agent_name, agent in self.agents.items():
-                location = getattr(agent, 'location', '未知')
-                current_popularity[location] = current_popularity.get(location, 0) + 1
-            
-            print(f"📍 当前位置热度:")
-            sorted_locations = sorted(current_popularity.items(), key=lambda x: x[1], reverse=True)
-            
-            for i, (location, count) in enumerate(sorted_locations, 1):
-                building_emoji = self.buildings.get(location, {}).get('emoji', '📍')
-                
-                # 根据人数显示热度等级
-                if count >= 4:
-                    heat_level = "🔥🔥🔥 超级热门"
-                    color = TerminalColors.RED
-                elif count >= 3:
-                    heat_level = "🔥🔥 很热门" 
-                    color = TerminalColors.YELLOW
-                elif count >= 2:
-                    heat_level = "🔥 热门"
-                    color = TerminalColors.GREEN
-                else:
-                    heat_level = "❄️ 冷清"
-                    color = TerminalColors.CYAN
-                
-                print(f"  {i}. {building_emoji} {color}{location}{TerminalColors.END}: {count} 人 {heat_level}")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取热门位置信息失败: {e}{TerminalColors.END}")
-            logger.error(f"显示热门位置失败: {e}")
-    
-    def show_system_events(self):
-        """显示系统事件"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 📰 系统事件 ━━━{TerminalColors.END}")
-            
-            # 显示模拟状态事件
-            print(f"🎯 模拟状态:")
-            auto_sim = getattr(self.simulation_engine, 'auto_simulation', False)
-            if auto_sim:
-                print(f"  • 🤖 自动模拟正在运行，Agent们正在自主活动")
-            else:
-                print(f"  • ⏸️ 自动模拟已暂停，等待手动操作")
-            
-            # 显示Agent位置分布
-            print(f"\n🚶 Agent动态:")
-            location_groups = {}
-            for agent_name, agent in self.agents.items():
-                location = getattr(agent, 'location', '家')
-                if location not in location_groups:
-                    location_groups[location] = []
-                location_groups[location].append(agent_name)
-            
-            # 显示聚集事件
-            for location, agents_list in location_groups.items():
-                if len(agents_list) >= 3:
-                    building_emoji = self.buildings.get(location, {}).get('emoji', '📍')
-                    agents_str = ', '.join(agents_list)
-                    print(f"  • {building_emoji} {location} 正在聚集: {agents_str}")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取系统事件失败: {e}{TerminalColors.END}")
-            logger.error(f"显示系统事件失败: {e}")
     
     def chat_with_agent(self, agent_name: str, message: str = None):
         """与Agent对话"""
@@ -1001,7 +768,6 @@ class TerminalTownRefactored:
     def show_memory_status(self):
         """显示内存状态"""
         try:
-            # 显示原有内存状态
             memory_status = self.memory_cleaner.get_memory_status()
             
             print(f"\n{TerminalColors.BOLD}━━━ 🧠 内存状态 ━━━{TerminalColors.END}")
@@ -1013,46 +779,40 @@ class TerminalTownRefactored:
             print(f"  • 已使用: {sys_mem.get('used_gb', 0):.1f} GB ({sys_mem.get('percent_used', 0):.1f}%)")
             print(f"  • 可用: {sys_mem.get('available_gb', 0):.1f} GB")
             
-            # 智能清理状态
-            smart_status = self.smart_cleanup_manager.get_cleanup_status()
-            print(f"\n🤖 智能清理状态:")
-            print(f"  • 监控状态: {'🟢 运行中' if smart_status['is_monitoring'] else '🔴 已停止'}")
-            print(f"  • 当前内存使用: {smart_status['current_memory_usage']}")
-            print(f"  • 内存状态: {smart_status['memory_status']}")
-            
-            print(f"\n⚙️ 清理阈值:")
-            thresholds = smart_status['thresholds']
-            print(f"  • 警告阈值: {thresholds['warning']}")
-            print(f"  • 清理阈值: {thresholds['cleanup']}")
-            print(f"  • 紧急阈值: {thresholds['emergency']}")
-            
             # 内存使用警告
             memory_percent = sys_mem.get('percent_used', 0)
             if memory_percent > 80:
-                print(f"  ⚠️  {TerminalColors.RED}内存使用率过高！系统将自动清理{TerminalColors.END}")
+                print(f"  ⚠️  {TerminalColors.RED}内存使用率过高！{TerminalColors.END}")
             elif memory_percent > 60:
-                print(f"  ⚠️  {TerminalColors.YELLOW}内存使用率较高，智能清理已就绪{TerminalColors.END}")
+                print(f"  ⚠️  {TerminalColors.YELLOW}内存使用率较高{TerminalColors.END}")
             else:
                 print(f"  ✅ {TerminalColors.GREEN}内存使用正常{TerminalColors.END}")
             
-            # 智能清理统计
-            stats = smart_status['statistics']
-            print(f"\n� 智能清理统计:")
-            print(f"  • 自动清理次数: {stats['auto_cleanups']}")
-            print(f"  • 内存清理次数: {stats['memory_cleanups']}")
-            print(f"  • 向量清理次数: {stats['vector_cleanups']}")
-            print(f"  • 紧急清理次数: {stats['emergency_cleanups']}")
+            # 进程内存
+            proc_mem = memory_status.get('process_memory', {})
+            print(f"🔬 进程内存:")
+            print(f"  • RSS: {proc_mem.get('rss_mb', 0):.1f} MB")
+            print(f"  • VMS: {proc_mem.get('vms_mb', 0):.1f} MB")
             
-            last_cleanup = stats.get('last_cleanup_time')
-            if last_cleanup:
-                print(f"  • 上次清理: {last_cleanup[:19]}")
+            # 向量数据库状态
+            vector_db = memory_status.get('vector_database', {})
+            if vector_db.get('connected', False):
+                print(f"🗄️  向量数据库:")
+                print(f"  • 集合数量: {vector_db.get('total_collections', 0)}")
+                print(f"  • 记忆总数: {vector_db.get('total_memories', 0)}")
+            else:
+                print(f"🗄️  向量数据库: {TerminalColors.RED}未连接{TerminalColors.END}")
             
-            # 显示传统清理统计
+            # 清理统计
             cleanup_stats = memory_status.get('cleanup_stats', {})
-            print(f"\n🧹 传统清理统计:")
+            print(f"🧹 清理统计:")
             print(f"  • 总清理次数: {cleanup_stats.get('total_cleanups', 0)}")
             print(f"  • 清理记忆数: {cleanup_stats.get('memories_cleaned', 0)}")
             print(f"  • 释放空间: {cleanup_stats.get('space_freed_mb', 0):.1f} MB")
+            
+            last_cleanup = cleanup_stats.get('last_cleanup_time')
+            if last_cleanup:
+                print(f"  • 上次清理: {last_cleanup[:19]}")
             
             print()
             
@@ -1060,88 +820,26 @@ class TerminalTownRefactored:
             print(f"{TerminalColors.RED}❌ 获取内存状态失败: {e}{TerminalColors.END}")
             logger.error(f"显示内存状态失败: {e}")
     
-    def show_smart_cleanup_status(self):
-        """显示智能清理详细状态"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 🤖 智能清理系统 ━━━{TerminalColors.END}")
-            
-            status = self.smart_cleanup_manager.get_cleanup_status()
-            
-            # 监控状态
-            monitoring = status['is_monitoring']
-            print(f"🔍 监控状态: {'🟢 活跃监控中' if monitoring else '🔴 未启动'}")
-            
-            # 当前系统状态
-            print(f"📊 当前系统状态:")
-            print(f"  • 内存使用率: {status['current_memory_usage']}")
-            print(f"  • 系统状态: {status['memory_status']}")
-            
-            # 清理策略
-            print(f"\n⚙️ 清理策略:")
-            thresholds = status['thresholds']
-            print(f"  • {thresholds['warning']} - 开始监控警告")
-            print(f"  • {thresholds['cleanup']} - 自动执行清理") 
-            print(f"  • {thresholds['emergency']} - 紧急清理模式")
-            
-            # 自动清理记录
-            print(f"\n📈 自动清理记录:")
-            times = status['last_cleanup_times']
-            print(f"  • 内存清理: {times['memory']}")
-            print(f"  • 向量清理: {times['vector']}")
-            print(f"  • 紧急清理: {times['emergency']}")
-            
-            # 清理效果
-            stats = status['statistics']
-            if stats['auto_cleanups'] > 0:
-                print(f"\n✅ 清理效果:")
-                print(f"  • 已自动清理 {stats['auto_cleanups']} 次")
-                print(f"  • 包括 {stats['memory_cleanups']} 次内存清理")
-                print(f"  • 包括 {stats['vector_cleanups']} 次向量清理")
-                if stats['emergency_cleanups'] > 0:
-                    print(f"  • ⚠️ 执行了 {stats['emergency_cleanups']} 次紧急清理")
-            else:
-                print(f"\n💡 系统运行良好，暂未触发自动清理")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取智能清理状态失败: {e}{TerminalColors.END}")
-            logger.error(f"显示智能清理状态失败: {e}")
-    
     def cleanup_memory(self, cleanup_type: str = 'normal'):
         """执行内存清理"""
         try:
             print(f"{TerminalColors.YELLOW}🧹 开始内存清理...{TerminalColors.END}")
             
-            if cleanup_type == 'smart':
-                # 使用智能清理
-                print(f"{TerminalColors.CYAN}🤖 使用智能清理策略{TerminalColors.END}")
-                self.smart_cleanup_manager.force_cleanup('all')
-                print(f"{TerminalColors.GREEN}✅ 智能清理完成{TerminalColors.END}")
-                
-            elif cleanup_type == 'emergency':
-                # 紧急清理（组合传统+智能）
+            if cleanup_type == 'emergency':
                 results = self.memory_cleaner.emergency_cleanup()
-                self.smart_cleanup_manager.force_cleanup('emergency')
                 print(f"{TerminalColors.CYAN}⚡ 紧急清理完成{TerminalColors.END}")
-                
             elif cleanup_type == 'vector':
                 results = self.memory_cleaner.cleanup_vector_database()
                 print(f"{TerminalColors.CYAN}🗄️ 向量数据库清理完成{TerminalColors.END}")
-                
             elif cleanup_type == 'all':
-                # 全面清理（传统+智能）
                 results = self.memory_cleaner.force_cleanup_all()
-                self.smart_cleanup_manager.force_cleanup('all')
                 print(f"{TerminalColors.CYAN}🔄 全面清理完成{TerminalColors.END}")
-                
             else:
-                # 常规清理
                 results = self.memory_cleaner.cleanup_system_memory()
                 print(f"{TerminalColors.CYAN}💾 系统内存清理完成{TerminalColors.END}")
             
             # 显示清理结果
-            if 'results' in locals() and isinstance(results, dict):
+            if isinstance(results, dict):
                 if 'memory_freed_mb' in results:
                     freed_mb = results.get('memory_freed_mb', 0)
                     print(f"✅ 释放内存: {freed_mb:.2f} MB")
@@ -1159,71 +857,9 @@ class TerminalTownRefactored:
                     for error in results['errors']:
                         print(f"  • {error}")
             
-            # 显示清理后的状态
-            import psutil
-            new_memory_percent = psutil.virtual_memory().percent
-            print(f"📊 清理后内存使用率: {new_memory_percent:.1f}%")
-            
         except Exception as e:
             print(f"{TerminalColors.RED}❌ 内存清理失败: {e}{TerminalColors.END}")
             logger.error(f"内存清理失败: {e}")
-    
-    def adjust_cleanup_strategy(self, strategy: str = 'balanced'):
-        """调整清理策略"""
-        try:
-            print(f"{TerminalColors.YELLOW}⚙️ 调整清理策略为: {strategy}{TerminalColors.END}")
-            
-            if strategy == 'aggressive':
-                # 激进清理策略
-                self.smart_cleanup_manager.adjust_thresholds(
-                    memory_warning=60.0,
-                    memory_cleanup=70.0,
-                    memory_emergency=80.0,
-                    vector_memories_per_agent=200,
-                    vector_cleanup_interval=2 * 3600,  # 2小时
-                    old_memory_days=3
-                )
-                print(f"{TerminalColors.GREEN}✅ 已启用激进清理策略（更早清理，更小阈值）{TerminalColors.END}")
-                
-            elif strategy == 'conservative':
-                # 保守清理策略
-                self.smart_cleanup_manager.adjust_thresholds(
-                    memory_warning=80.0,
-                    memory_cleanup=85.0,
-                    memory_emergency=90.0,
-                    vector_memories_per_agent=800,
-                    vector_cleanup_interval=12 * 3600,  # 12小时
-                    old_memory_days=14
-                )
-                print(f"{TerminalColors.GREEN}✅ 已启用保守清理策略（更晚清理，保留更多数据）{TerminalColors.END}")
-                
-            elif strategy == 'performance':
-                # 性能优先策略
-                self.smart_cleanup_manager.adjust_thresholds(
-                    memory_warning=55.0,
-                    memory_cleanup=65.0,
-                    memory_emergency=75.0,
-                    vector_memories_per_agent=150,
-                    vector_cleanup_interval=1 * 3600,  # 1小时
-                    old_memory_days=2
-                )
-                print(f"{TerminalColors.GREEN}✅ 已启用性能优先策略（最小内存占用）{TerminalColors.END}")
-                
-            else:
-                # 平衡策略（默认）
-                self.smart_cleanup_manager.adjust_thresholds(
-                    memory_warning=65.0,
-                    memory_cleanup=75.0,
-                    memory_emergency=85.0,
-                    vector_memories_per_agent=300,
-                    vector_cleanup_interval=4 * 3600,  # 4小时
-                    old_memory_days=5
-                )
-                print(f"{TerminalColors.GREEN}✅ 已启用平衡清理策略（默认配置）{TerminalColors.END}")
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 调整清理策略失败: {e}{TerminalColors.END}")
-            logger.error(f"调整清理策略失败: {e}")
     
     def optimize_vector_database(self):
         """优化向量数据库"""
@@ -1355,10 +991,6 @@ class TerminalTownRefactored:
             self.save_system_state()
             
             # 关闭各个组件
-            if hasattr(self, 'smart_cleanup_manager'):
-                print(f"{TerminalColors.CYAN}🤖 关闭智能清理监控...{TerminalColors.END}")
-                self.smart_cleanup_manager.stop_monitoring()
-            
             if hasattr(self, 'memory_cleaner'):
                 self.memory_cleaner.shutdown()
             
@@ -1416,14 +1048,6 @@ def main():
                     town.show_agents_status()
                 elif command == 'social':
                     town.show_social_network()
-                elif command == 'stats':
-                    town.show_system_stats()
-                elif command == 'history':
-                    town.show_interaction_history()
-                elif command == 'popular':
-                    town.show_popular_locations()
-                elif command in ['events', 'event']:
-                    town.show_system_events()
                 elif command == 'chat':
                     if len(parts) > 1:
                         agent_name = parts[1]
@@ -1453,21 +1077,12 @@ def main():
                 elif command == 'cleanup':
                     if len(parts) > 1:
                         cleanup_type = parts[1]
-                        if cleanup_type in ['normal', 'emergency', 'vector', 'all', 'smart']:
+                        if cleanup_type in ['normal', 'emergency', 'vector', 'all']:
                             town.cleanup_memory(cleanup_type)
                         else:
-                            town.ui.show_error("用法: cleanup [normal|emergency|vector|all|smart]")
+                            town.ui.show_error("用法: cleanup [normal|emergency|vector|all]")
                     else:
                         town.cleanup_memory('normal')
-                elif command == 'strategy':
-                    if len(parts) > 1:
-                        strategy = parts[1]
-                        if strategy in ['balanced', 'aggressive', 'conservative', 'performance']:
-                            town.adjust_cleanup_strategy(strategy)
-                        else:
-                            town.ui.show_error("用法: strategy [balanced|aggressive|conservative|performance]")
-                    else:
-                        town.show_smart_cleanup_status()
                 elif command == 'optimize':
                     if len(parts) > 1:
                         if parts[1] == 'vector':
@@ -1489,8 +1104,8 @@ def main():
                     town.ui.show_error(f"未知命令: {command}")
                     
             except KeyboardInterrupt:
-                town.ui.show_warning("\n检测到 Ctrl+C，请使用 'quit' 命令安全退出系统")
-                continue
+                town.ui.show_warning("\\n检测到中断信号，正在安全关闭...")
+                break
             except EOFError:
                 break
             except Exception as e:
