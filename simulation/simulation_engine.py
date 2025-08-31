@@ -33,77 +33,51 @@ class SimulationEngine:
             self.social_handler = None
     
     def toggle_auto_simulation(self):
-        """切换自动模拟 - 线程安全版本"""
-        with self.thread_manager.get_simulation_condition():
-            self.auto_simulation = not self.auto_simulation
-            
-            if self.auto_simulation:
-                print(f"{TerminalColors.GREEN}🤖 自动模拟已开启！Agent将开始自主行动{TerminalColors.END}")
-                if self.simulation_thread is None or not self.simulation_thread.is_alive():
-                    self.simulation_thread = threading.Thread(
-                        target=self._auto_simulation_loop_safe, 
-                        name="AutoSimulation",
-                        daemon=True
-                    )
-                    self.simulation_thread.start()
-                self.thread_manager.get_simulation_condition().notify_all()
-            else:
-                print(f"{TerminalColors.YELLOW}⏸️  自动模拟已暂停{TerminalColors.END}")
-                self.thread_manager.get_simulation_condition().notify_all()
-    
-    def _auto_simulation_loop_safe(self):
-        """线程安全的自动模拟循环"""
-        logger.info("自动模拟循环启动（线程安全版本）")
-        retry_count = 0
-        max_retries = 3
+        """简单切换自动模拟状态"""
+        self.auto_simulation = not self.auto_simulation
         
-        while self.running and not self.thread_manager.is_shutdown():
+        if self.auto_simulation:
+            print(f"{TerminalColors.GREEN}🤖 自动模拟已开启！Agent将开始自主行动{TerminalColors.END}")
+            print(f"{TerminalColors.CYAN}💡 再次输入 'auto' 可以关闭自动模拟{TerminalColors.END}")
+            
+            # 如果没有运行的线程，启动一个新的
+            if self.simulation_thread is None or not self.simulation_thread.is_alive():
+                self.simulation_thread = threading.Thread(
+                    target=self._simple_auto_loop, 
+                    name="AutoSimulation",
+                    daemon=True
+                )
+                self.simulation_thread.start()
+        else:
+            print(f"{TerminalColors.YELLOW}⏸️  自动模拟已关闭{TerminalColors.END}")
+            # 线程会在下一次检查时自动停止
+    
+    def _simple_auto_loop(self):
+        """简单的自动模拟循环"""
+        logger.info("自动模拟循环启动")
+        
+        while self.auto_simulation and self.running:
             try:
-                with self.thread_manager.get_simulation_condition():
-                    # 等待自动模拟开启
-                    while not self.auto_simulation and not self.thread_manager.is_shutdown():
-                        self.thread_manager.get_simulation_condition().wait()
-                    
-                    if self.thread_manager.is_shutdown():
-                        break
-                
-                # 执行一轮模拟
-                success = self._execute_simulation_step_safe()
-                
-                if success:
-                    retry_count = 0  # 重置重试计数
+                # 执行一个模拟步骤
+                if hasattr(self, '_execute_simulation_step_safe') and callable(self._execute_simulation_step_safe):
+                    success = self._execute_simulation_step_safe()
+                    if not success:
+                        # 如果模拟步骤失败，短暂休眠后继续
+                        time.sleep(1)
                 else:
-                    retry_count += 1
-                    if retry_count >= max_retries:
-                        logger.error("模拟步骤连续失败，暂停自动模拟")
-                        with self.thread_manager.get_simulation_condition():
-                            self.auto_simulation = False
-                        break
+                    logger.warning("_execute_simulation_step_safe 方法未找到，跳过此轮模拟")
+                    time.sleep(2)
                 
-                # 动态调整休眠时间
-                sleep_time = random.uniform(2, 5) if success else min(10, 2 ** retry_count)
-                time.sleep(sleep_time)
+                # 模拟步骤间隔
+                time.sleep(random.uniform(2, 5))  # 2-5秒随机间隔
                 
             except Exception as e:
-                retry_count += 1
-                logger.error(f"自动模拟循环异常 (重试 {retry_count}/{max_retries}): {e}")
-                
-                if retry_count >= max_retries:
-                    logger.critical("自动模拟多次失败，停止模拟")
-                    with self.thread_manager.get_simulation_condition():
-                        self.auto_simulation = False
-                    break
-                    
-                time.sleep(min(30, 5 * retry_count))  # 指数退避
+                logger.error(f"自动模拟循环错误: {e}")
+                time.sleep(5)  # 错误后等待5秒
         
         logger.info("自动模拟循环结束")
     
-    def _execute_simulation_step_safe(self) -> bool:
-        """执行一个安全的模拟步骤"""
-        # 注意：这个方法在模拟引擎中，但需要访问主类的agents
-        # 我们需要通过回调或者其他方式来访问agents
-        logger.warning("_execute_simulation_step_safe 需要在主类中重写以访问agents")
-        return False
+        logger.info("自动模拟循环结束")
     
     def choose_agent_action(self, agent, agent_name: str) -> str:
         """选择Agent行动类型"""

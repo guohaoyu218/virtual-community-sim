@@ -90,8 +90,13 @@ class PersistenceManager:
             except Exception as e:
                 logger.error(f"自动保存失败: {e}")
     
-    def save_system_state(self, system_data: Dict[str, Any]) -> bool:
-        """保存完整的系统状态"""
+    def save_system_state(self, system_data: Dict[str, Any], quick_mode: bool = False) -> bool:
+        """保存完整的系统状态
+        
+        Args:
+            system_data: 系统数据
+            quick_mode: 快速模式，只保存关键数据
+        """
         try:
             with self._save_lock:
                 timestamp = datetime.now()
@@ -100,6 +105,28 @@ class PersistenceManager:
                 success_count = 0
                 total_count = 0
                 
+                # 快速模式只保存关键数据
+                if quick_mode:
+                    # 只保存Agent位置和社交网络
+                    if 'agents' in system_data:
+                        total_count += 1
+                        if self._save_agent_states(system_data['agents'], timestamp):
+                            success_count += 1
+                    
+                    if 'social_network' in system_data:
+                        total_count += 1 
+                        if self._save_social_network(system_data['social_network'], timestamp):
+                            success_count += 1
+                    
+                    if 'config' in system_data:
+                        total_count += 1
+                        if self._save_system_config(system_data['config'], timestamp):
+                            success_count += 1
+                            
+                    logger.info(f"快速保存完成: {success_count}/{total_count} 组件成功保存")
+                    return success_count == total_count
+                
+                # 完整模式保存所有数据
                 # 1. Agent状态
                 if 'agents' in system_data:
                     total_count += 1

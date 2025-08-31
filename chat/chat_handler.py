@@ -14,9 +14,10 @@ logger = logging.getLogger(__name__)
 class ChatHandler:
     """聊天处理器"""
     
-    def __init__(self, thread_manager, response_cleaner_func):
+    def __init__(self, thread_manager, response_cleaner_func, context_engine=None):
         self.thread_manager = thread_manager
         self.clean_response = response_cleaner_func
+        self.context_engine = context_engine  # 先进上下文引擎
     
     def chat_with_agent(self, agents, agent_name: str, message: str = None):
         """与Agent对话 - 线程安全版本"""
@@ -113,8 +114,22 @@ class ChatHandler:
             current_location = getattr(agent, 'location', '未知位置')
             situation = f"用户对我说：'{message}'"
             
-            # 获取AI回应
-            response = agent.respond(message)
+            # 如果有上下文引擎，使用先进的上下文构建
+            if self.context_engine:
+                profession = getattr(agent, 'profession', 'general')
+                context = self.context_engine.build_context(
+                    agent_type=profession,  # 使用职业作为agent_type
+                    situation=situation,
+                    interaction_type='user_chat',  # 用户对话类型
+                    relationship_level=80,  # 用户与Agent关系通常较好
+                    recent_memories=[]  # 可以传入最近的记忆
+                )
+                # 使用上下文增强的情况
+                enhanced_situation = f"{situation}\n\n上下文信息：{context}"
+                response = agent.think_and_respond(enhanced_situation)
+            else:
+                # 使用默认回应方式
+                response = agent.think_and_respond(situation)
             
             # 清理回应
             cleaned_response = self.clean_response(response)

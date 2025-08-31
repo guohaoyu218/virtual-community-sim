@@ -23,12 +23,16 @@ class SocialInteractionHandler:
         self.negative_keywords = [
             '不同意', '反对', '不对', '错', '不行', '失望', '糟糕', '问题', '麻烦', 
             '困惑', '不理解', '质疑', '批评', '反驳', '不满', '抱怨', '反感', 
-            '厌恶', '讨厌', '愤怒', '生气', '恼火', '烦躁', '焦虑', '紧张'
+            '厌恶', '讨厌', '愤怒', '生气', '恼火', '烦躁', '焦虑', '紧张',
+            '无聊', '无趣', '奇怪', '不合理', '不现实', '荒谬', '不可能',
+            '我觉得不是', '我不认为', '这不对', '有点问题', '不太对',
+            '我有疑问', '不太合适', '不太好', '不够好', '差劲', '太差'
         ]
         
         self.positive_keywords = [
             '同意', '赞同', '很好', '不错', '棒', '对', '是的', '有道理', 
-            '支持', '喜欢', '认同', '欣赏', '感动', '启发', '有趣', '精彩', '优秀'
+            '支持', '喜欢', '认同', '欣赏', '感动', '启发', '有趣', '精彩', '优秀',
+            '太好了', '很棒', '完美', '出色', '惊人', '了不起', '真是', '确实'
         ]
     
     def execute_social_action_safe(self, agents, agent, agent_name: str) -> bool:
@@ -102,7 +106,12 @@ class SocialInteractionHandler:
             # 更新社交网络并立即显示关系变化
             relationship_info = self.behavior_manager.update_social_network(
                 agent1_name, agent2_name, interaction_type, 
-                f"在{location}的{interaction_type}互动"
+                {
+                    'same_location': True,
+                    'location': location,
+                    'interaction_initiator': agent1_name,
+                    'description': f"在{location}的{interaction_type}互动"
+                }
             )
             
             # 显示关系变化
@@ -132,6 +141,7 @@ class SocialInteractionHandler:
                     print(f"    {level_color}🌟 {relationship_info.get('level_change_message', '关系等级发生变化')}{TerminalColors.END}")
             
             # 同时加入任务队列进行后台处理
+            logger.info(f"🔄 准备后台处理交互: {agent1_name} ↔ {agent2_name} ({interaction_type})")
             self._update_social_relationship(agent1_name, agent2_name, interaction_type, location)
             
             print()  # 空行分隔
@@ -144,17 +154,17 @@ class SocialInteractionHandler:
     def _choose_interaction_type(self, relationship_strength: int) -> str:
         """根据关系强度选择互动类型"""
         if relationship_strength >= 70:
-            # 关系很好：80%友好，15%中性，5%负面
-            weights = [('friendly_chat', 80), ('casual_meeting', 15), ('misunderstanding', 4), ('argument', 1)]
+            # 关系很好：65%友好，20%中性，15%负面（增加负面互动）
+            weights = [('friendly_chat', 65), ('casual_meeting', 20), ('misunderstanding', 12), ('argument', 3)]
         elif relationship_strength >= 50:
-            # 关系一般：60%友好，25%中性，15%负面
-            weights = [('friendly_chat', 60), ('casual_meeting', 25), ('misunderstanding', 12), ('argument', 3)]
+            # 关系一般：50%友好，25%中性，25%负面（增加负面互动）
+            weights = [('friendly_chat', 50), ('casual_meeting', 25), ('misunderstanding', 18), ('argument', 7)]
         elif relationship_strength >= 30:
-            # 关系较差：40%友好，35%中性，25%负面
-            weights = [('friendly_chat', 40), ('casual_meeting', 35), ('misunderstanding', 20), ('argument', 5)]
+            # 关系较差：30%友好，30%中性，40%负面（增加负面互动）
+            weights = [('friendly_chat', 30), ('casual_meeting', 30), ('misunderstanding', 25), ('argument', 15)]
         else:
-            # 关系很差：25%友好，30%中性，45%负面
-            weights = [('friendly_chat', 25), ('casual_meeting', 30), ('misunderstanding', 30), ('argument', 15)]
+            # 关系很差：20%友好，25%中性，55%负面（大幅增加负面互动）
+            weights = [('friendly_chat', 20), ('casual_meeting', 25), ('misunderstanding', 35), ('argument', 20)]
         
         # 根据权重随机选择
         interaction_types = []
@@ -219,36 +229,61 @@ class SocialInteractionHandler:
         has_negative = any(keyword in response for keyword in self.negative_keywords)
         has_positive = any(keyword in response for keyword in self.positive_keywords)
         
-        # 如果回复太积极或中性，重新生成
+        # 如果回复太积极或中性，强制重新生成
         if has_positive or (not has_negative and not has_positive):
             try:
+                # 使用更强的负面提示
                 if interaction_type == 'argument':
-                    retry_prompt = original_prompt + " 明确表达不同观点和反对意见："
+                    retry_prompt = f"你必须表达强烈反对和不同意见，不要赞同。{original_prompt} 你觉得这个观点有问题，明确表达反对："
                 elif interaction_type == 'misunderstanding':
-                    retry_prompt = original_prompt + " 表达困惑和不理解："
+                    retry_prompt = f"你必须表达困惑和不理解，不要赞同。{original_prompt} 你听不懂或者觉得奇怪，表达困惑："
                 else:
                     retry_prompt = original_prompt
                 
                 new_response = agent.think_and_respond(retry_prompt)
                 new_response = self.clean_response(new_response)
                 
-                # 如果重新生成后仍然不够负面，添加自然前缀
+                # 如果重新生成后仍然不够负面，直接添加强制性负面前缀
                 has_negative_new = any(keyword in new_response for keyword in self.negative_keywords)
                 if not has_negative_new:
                     if interaction_type == 'argument':
-                        response = "我不这么认为。" + new_response
-                    else:
-                        response = "我不太理解。" + new_response
+                        # 随机选择反对性前缀
+                        negative_prefixes = [
+                            "我不这么认为。", "我觉得不对。", "这有问题。", 
+                            "我不同意这个观点。", "我反对这个说法。"
+                        ]
+                        prefix = random.choice(negative_prefixes)
+                        response = prefix + new_response
+                    else:  # misunderstanding
+                        # 随机选择困惑性前缀
+                        confused_prefixes = [
+                            "我不太理解。", "这听起来很奇怪。", "我有点困惑。",
+                            "我不明白你的意思。", "这不太对吧？"
+                        ]
+                        prefix = random.choice(confused_prefixes)
+                        response = prefix + new_response
                 else:
                     response = new_response
                     
             except Exception as e:
                 logger.error(f"重新生成负面回应失败: {e}")
-                # 使用默认负面回应
+                # 使用默认强制负面回应
                 if interaction_type == 'argument':
-                    response = "我觉得这个观点有问题。"
+                    default_responses = [
+                        "我觉得这个观点有问题。",
+                        "我不同意这种说法。", 
+                        "这样说不对吧。",
+                        "我有不同的看法。"
+                    ]
+                    response = random.choice(default_responses)
                 else:
-                    response = "我有点困惑，不太明白。"
+                    default_responses = [
+                        "我有点困惑，不太明白。",
+                        "这听起来很奇怪。",
+                        "我不太理解你的意思。",
+                        "这是什么意思？"
+                    ]
+                    response = random.choice(default_responses)
         
         return response
     
@@ -285,6 +320,7 @@ class SocialInteractionHandler:
             }
             
             self.thread_manager.add_interaction_task(interaction_data)
+            logger.info(f"📤 交互任务已添加到队列: {agent1_name} ↔ {agent2_name}")
             
         except Exception as e:
             logger.error(f"更新社交关系失败: {e}")
@@ -406,7 +442,14 @@ class SocialInteractionHandler:
                     # 立即更新关系
                     relationship_info = self.behavior_manager.update_social_network(
                         agent_name, participant, 'group_discussion', 
-                        f"群体讨论: {topic}"
+                        {
+                            'same_location': True,
+                            'location': current_location,
+                            'interaction_initiator': agent_name,
+                            'group_size': len(all_participants),
+                            'topic': topic,
+                            'description': f"群体讨论: {topic}"
+                        }
                     )
                     
                     # 显示关系变化

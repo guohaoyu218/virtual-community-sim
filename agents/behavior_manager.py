@@ -637,6 +637,219 @@ class AgentBehaviorManager:
                 context_parts.append(f"正值{event['name']}活动期间")
         
         return "，".join(context_parts)
+    
+    def save_social_network_to_file(self, file_path: str = None):
+        """保存社交网络到文件"""
+        try:
+            if file_path is None:
+                # 使用默认路径
+                data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'cache')
+                os.makedirs(data_dir, exist_ok=True)
+                file_path = os.path.join(data_dir, 'social_network.json')
+            
+            # 准备保存数据
+            save_data = {
+                'social_network': self.social_network,
+                'location_popularity': self.location_popularity,
+                'save_time': datetime.now().isoformat(),
+                'version': '1.0'
+            }
+            
+            # 保存到文件
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(save_data, f, ensure_ascii=False, indent=2)
+            
+            logger.info(f"社交网络数据已保存到: {file_path}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"保存社交网络数据失败: {e}")
+            return False
+    
+    def load_social_network_from_file(self, file_path: str = None):
+        """从文件加载社交网络，如果没有数据则自动初始化"""
+        try:
+            if file_path is None:
+                # 使用默认路径
+                data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'cache')
+                file_path = os.path.join(data_dir, 'social_network.json')
+            
+            # 检查文件是否存在
+            if not os.path.exists(file_path):
+                logger.info(f"社交网络文件不存在: {file_path}，将自动初始化")
+                return self._auto_initialize_social_network()
+            
+            # 从文件加载
+            with open(file_path, 'r', encoding='utf-8') as f:
+                save_data = json.load(f)
+            
+            # 恢复数据
+            loaded_successfully = False
+            if 'social_network' in save_data and save_data['social_network']:
+                self.social_network = save_data['social_network']
+                logger.info(f"已恢复社交网络数据，包含 {len(self.social_network)} 个Agent")
+                loaded_successfully = True
+            
+            if 'location_popularity' in save_data:
+                self.location_popularity = save_data['location_popularity']
+                logger.info(f"已恢复地点热度数据，包含 {len(self.location_popularity)} 个地点")
+            
+            # 检查是否成功加载了有效的社交网络数据
+            if not loaded_successfully or len(self.social_network) == 0:
+                logger.info("文件中没有有效的社交网络数据，将自动初始化")
+                return self._auto_initialize_social_network()
+            
+            # 检查数据质量（是否都是默认值50）
+            all_default = True
+            for agent, relationships in self.social_network.items():
+                for other_agent, score in relationships.items():
+                    if score != 50:
+                        all_default = False
+                        break
+                if not all_default:
+                    break
+            
+            if all_default and len(self.social_network) > 0:
+                logger.info("检测到社交网络数据都是默认值，将重新初始化真实数据")
+                return self._auto_initialize_social_network()
+            
+            load_time = save_data.get('save_time', 'Unknown')
+            logger.info(f"社交网络数据加载成功，保存时间: {load_time}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"加载社交网络数据失败: {e}，将尝试自动初始化")
+            return self._auto_initialize_social_network()
+    
+    def _auto_initialize_social_network(self):
+        """自动初始化社交网络数据"""
+        try:
+            import random
+            logger.info("🚀 开始自动初始化社交网络数据...")
+            
+            # Agent列表（基于系统中的实际Agent）
+            agents = ['Alex', 'Emma', 'Sarah', 'David', 'Lisa', 'Mike', 'John', 'Anna', 'Tom']
+            
+            # 创建社交网络
+            self.social_network = {}
+            
+            # 为每个Agent创建关系
+            for agent in agents:
+                self.social_network[agent] = {}
+                for other_agent in agents:
+                    if agent != other_agent:
+                        # 创建不同的关系强度
+                        # 30% 概率为好友（60-80）
+                        # 40% 概率为普通关系（40-60）  
+                        # 20% 概率为不太喜欢（20-40）
+                        # 10% 概率为敌对（10-20）
+                        
+                        rand = random.random()
+                        if rand < 0.3:  # 好友
+                            score = random.randint(60, 80)
+                        elif rand < 0.7:  # 普通
+                            score = random.randint(40, 60)
+                        elif rand < 0.9:  # 不太喜欢
+                            score = random.randint(20, 40)
+                        else:  # 敌对
+                            score = random.randint(10, 20)
+                        
+                        self.social_network[agent][other_agent] = score
+            
+            # 创建一些特殊关系（确保有趣的动态）
+            special_relationships = [
+                ('Alex', 'Emma', 75),  # 程序员和艺术家的友谊
+                ('Emma', 'Alex', 72),
+                ('Sarah', 'David', 85),  # 老师和医生的专业尊重
+                ('David', 'Sarah', 83),
+                ('Lisa', 'Tom', 25),   # 厨师和机械师有些摩擦
+                ('Tom', 'Lisa', 28),
+                ('Mike', 'John', 15),  # 商人和某人有冲突
+                ('John', 'Mike', 18),
+                ('Anna', 'Sarah', 90), # 很好的朋友
+                ('Sarah', 'Anna', 88),
+            ]
+            
+            for agent1, agent2, score in special_relationships:
+                if agent1 in self.social_network and agent2 in self.social_network[agent1]:
+                    self.social_network[agent1][agent2] = score
+            
+            # 创建地点热度数据
+            locations = ['咖啡厅', '图书馆', '公园', '办公室', '家', '医院', '餐厅', '修理店']
+            self.location_popularity = {}
+            for location in locations:
+                self.location_popularity[location] = {
+                    'visit_count': random.randint(5, 50),
+                    'average_stay_time': random.randint(30, 180),  # 分钟
+                    'popularity_score': random.uniform(0.3, 0.9)
+                }
+            
+            # 保存到文件
+            success = self.save_social_network_to_file()
+            
+            if success:
+                logger.info(f"✅ 自动初始化完成！创建了 {len(self.social_network)} 个Agent的社交网络")
+                
+                # 统计信息
+                total_relations = sum(len(relations) for relations in self.social_network.values())
+                logger.info(f"📊 统计: Agent数量={len(self.social_network)}, 关系数={total_relations}, 地点数={len(self.location_popularity)}")
+                
+                return True
+            else:
+                logger.error("❌ 自动初始化后保存失败")
+                return False
+                
+        except Exception as e:
+            logger.error(f"自动初始化社交网络失败: {e}")
+            return False
+    
+    def get_social_network_stats(self) -> Dict:
+        """获取社交网络统计信息"""
+        stats = {
+            'total_agents': len(self.social_network),
+            'total_relationships': 0,
+            'average_relationship': 0,
+            'strongest_relationship': 0,
+            'weakest_relationship': 100,
+            'relationship_levels': {}
+        }
+        
+        if not self.social_network:
+            return stats
+        
+        all_relationships = []
+        for agent1 in self.social_network:
+            for agent2, strength in self.social_network[agent1].items():
+                if agent1 < agent2:  # 避免重复计算
+                    all_relationships.append(strength)
+        
+        if all_relationships:
+            stats['total_relationships'] = len(all_relationships)
+            stats['average_relationship'] = sum(all_relationships) / len(all_relationships)
+            stats['strongest_relationship'] = max(all_relationships)
+            stats['weakest_relationship'] = min(all_relationships)
+            
+            # 按等级统计
+            from config.relationship_config import get_relationship_level
+            level_counts = {}
+            for strength in all_relationships:
+                level = get_relationship_level(strength)
+                level_counts[level] = level_counts.get(level, 0) + 1
+            stats['relationship_levels'] = level_counts
+        
+        return stats
 
-# 全局行为管理器实例
-behavior_manager = AgentBehaviorManager()
+# 全局行为管理器实例 - 使用单例模式
+_behavior_manager_instance = None
+
+def get_behavior_manager():
+    """获取行为管理器单例实例"""
+    global _behavior_manager_instance
+    if _behavior_manager_instance is None:
+        _behavior_manager_instance = AgentBehaviorManager()
+        # 立即尝试加载持久化数据
+        _behavior_manager_instance.load_social_network_from_file()
+    return _behavior_manager_instance
+
+# 为了兼容性，保留原名称
+behavior_manager = get_behavior_manager()

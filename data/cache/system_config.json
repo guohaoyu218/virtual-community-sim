@@ -1,8 +1,7 @@
 {
-  "auto_simulation": true,
-  "system_version": "1.0",
-  "last_active": "2025-08-31T01:44:10.951357",
-  "last_updated": "2025-08-31T01:44:10.951357",
+  "auto_simulation": false,
+  "last_shutdown": "2025-08-31T14:20:41.499369",
+  "last_updated": "2025-08-31T14:20:41.499369",
   "persistence_config": {
     "auto_save_interval": 300,
     "backup_retention_days": 7,

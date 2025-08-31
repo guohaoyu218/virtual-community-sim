@@ -4,7 +4,7 @@
 """
 
 import os
-from .terminal_colors import TerminalColors
+from display.terminal_colors import TerminalColors
 
 class TerminalUI:
     """终端UI显示器"""
@@ -30,33 +30,72 @@ class TerminalUI:
 
 {TerminalColors.GREEN}✨ 欢迎来到AI Agent虚拟小镇！{TerminalColors.END}
 
-{TerminalColors.YELLOW}🎮 可用命令：{TerminalColors.END}
+{TerminalColors.YELLOW}🎮 基础命令：{TerminalColors.END}
   📍 map          - 查看小镇地图
   👥 agents       - 查看所有Agent状态  
   💬 chat <name>  - 与Agent对话
   🚶 move <name> <place> - 移动Agent
   🤖 auto         - 开启/关闭自动模拟
   💾 save         - 手动保存系统状态
-  📊 status       - 查看持久化状态
-  🏥 health       - 查看系统健康状态
+  
+{TerminalColors.CYAN}📊 信息查看：{TerminalColors.END}
+  👫 social       - 查看社交网络 (network/detailed/conflicts/tensions)
+  📜 history      - 查看历史记录 (chat/interactions/movements)
   🧠 memory       - 显示内存状态
-  🗄️  vector      - 显示向量数据库状态
-  🧹 cleanup      - 执行内存清理 [normal|emergency|vector|all]
-  � optimize     - 数据库优化 [vector|report]
-  �🔄 reset errors - 重置错误统计
+  🔧 status       - 查看系统状态
+  📊 stats        - 详细统计信息 (system/errors/memory/agents/social)
   
-  🧠 智能命令：
-  👫 social       - 查看社交网络
-  🎪 event        - 创建小镇事件
-  🎯 group <location> - 组织群体活动
-  📊 stats        - 详细统计信息
-  🔥 popular      - 查看热门地点
+{TerminalColors.MAGENTA}🎪 互动功能：{TerminalColors.END}
+  🎉 event        - 事件管理 (list/create/clear)
+  ⚔️ conflict     - 冲突管理
+  💡 dev          - 开发者工具
   
-  📜 history      - 查看对话历史
+{TerminalColors.RED}🆘 系统命令：{TerminalColors.END}
   🆘 help         - 显示帮助
   🚪 quit         - 退出程序
 
-{TerminalColors.CYAN}💡 快速开始：输入 'map' 查看小镇布局，或 'memory' 查看系统状态{TerminalColors.END}
+{TerminalColors.CYAN}💡 快速开始：输入 'map' 查看小镇布局，或 'agents' 查看所有角色{TerminalColors.END}
+""")
+        os.system('cls' if os.name == 'nt' else 'clear')
+    
+    def show_welcome(self):
+        """显示欢迎界面"""
+        print(f"""
+{TerminalColors.BOLD}{TerminalColors.CYAN}
+╔══════════════════════════════════════════════════════════════╗
+║                    🏘️  AI Agent 虚拟小镇                     ║
+║                      终端交互模式                             ║
+║                                                              ║
+║  快速 • 流畅 • 直观的命令行体验                              ║
+╚══════════════════════════════════════════════════════════════╝
+{TerminalColors.END}
+
+{TerminalColors.GREEN}✨ 欢迎来到AI Agent虚拟小镇！{TerminalColors.END}
+
+{TerminalColors.YELLOW}🎮 基础命令：{TerminalColors.END}
+  📍 map          - 查看小镇地图
+  👥 agents       - 查看所有Agent状态  
+  💬 chat <name>  - 与Agent对话
+  🚶 move <name> <place> - 移动Agent
+  🤖 auto         - 开启/关闭自动模拟
+  💾 save         - 手动保存系统状态
+  
+{TerminalColors.CYAN}📊 信息查看：{TerminalColors.END}
+  👫 social       - 查看社交网络
+  📜 history      - 查看对话历史
+  🧠 memory       - 显示内存状态
+  � status       - 查看系统状态
+  
+{TerminalColors.MAGENTA}🎪 互动功能：{TerminalColors.END}
+  🎪 event        - 创建小镇事件
+  🎯 group <location> - 组织群体活动
+  📊 stats        - 详细统计信息
+  
+{TerminalColors.RED}🆘 系统命令：{TerminalColors.END}
+  🆘 help         - 显示帮助
+  🚪 quit         - 退出程序
+
+{TerminalColors.CYAN}💡 快速开始：输入 'map' 查看小镇布局，或 'agents' 查看所有角色{TerminalColors.END}
 """)
     
     def show_map(self, buildings, agents):
