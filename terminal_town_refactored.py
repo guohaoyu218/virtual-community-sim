@@ -1,8 +1,3 @@
-"""
-重构后的终端小镇主类
-将原有的臃肿类拆分成多个专门的模块
-"""
-
 import os
 import sys
 import time
@@ -16,9 +11,9 @@ from typing import Dict, List, Optional, Any
 # 添加项目路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# 导入重构后的模块
 from core.thread_manager import ThreadManager
 from core.agent_manager import AgentManager
+from core.error_handler import ErrorCategory, ErrorSeverity
 from core.terminal_agent import TerminalAgent
 from core.persistence_manager import PersistenceManager
 from core.error_handler import ErrorHandler, ErrorCategory, ErrorSeverity, initialize_error_handler
@@ -31,8 +26,6 @@ from chat.chat_handler import ChatHandler
 from simulation.simulation_engine import SimulationEngine
 from memory.memory_cleaner import get_memory_cleaner
 from memory.vector_optimizer import get_vector_optimizer
-
-# 导入原有模块
 from agents.behavior_manager import behavior_manager
 from setup_logging import setup_logging
 
@@ -41,7 +34,7 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 class TerminalTownRefactored:
-    """重构后的终端版AI小镇"""
+   
     
     def __init__(self):
         # 基础数据结构
@@ -65,8 +58,6 @@ class TerminalTownRefactored:
         self.error_handler = initialize_error_handler()  # 初始化错误处理系统
         self.memory_cleaner = get_memory_cleaner()  # 初始化内存清理器
         self.vector_optimizer = get_vector_optimizer()  # 初始化向量优化器
-        
-        # 新增先进模块
         self.context_engine = AdvancedContextEngine()  # 先进上下文引擎
         self.relationship_manager = AdvancedRelationshipManager()  # 高级关系管理
         self.smart_cleanup_manager = get_smart_cleanup_manager(
@@ -93,6 +84,7 @@ class TerminalTownRefactored:
         self.running = True
         self.behavior_manager = behavior_manager
         
+        
         # 启动后台任务
         self.thread_manager.start_background_workers(
             self._process_memory_save_batch,
@@ -109,13 +101,20 @@ class TerminalTownRefactored:
         self.smart_cleanup_manager.start_monitoring()
         
         # 初始化Agent
-        self.agents = self.agent_manager.init_agents()
-        
-        # 注意：behavior_manager已经在get_behavior_manager()中自动加载了社交网络数据
-        # 这里不需要重复调用 load_social_network_from_file()
+        with self.error_handler.error_context(
+            operation='initialize_agents',
+            category=ErrorCategory.AGENT,
+            severity=ErrorSeverity.HIGH
+        ):
+            self.agents = self.agent_manager.init_agents()
         
         # 加载持久化数据
-        self.load_persistent_data()
+        with self.error_handler.error_context(
+            operation='load_persistent_data',
+            category=ErrorCategory.PERSISTENCE,
+            severity=ErrorSeverity.MEDIUM
+        ):
+            self.load_persistent_data()
         
         # 显示欢迎界面
         self.ui.clear_screen()
@@ -125,6 +124,20 @@ class TerminalTownRefactored:
         """清理AI回应中的多余内容"""
         if not response:
             return "..."
+        
+        # 首先移除训练数据残留和系统信息
+        response = re.sub(r'Human:\s*.*', '', response)  # 移除Human:开头的内容
+        response = re.sub(r'Assistant:\s*.*', '', response)  # 移除Assistant:开头的内容
+        response = re.sub(r'聊天记录：.*', '', response)  # 移除聊天记录相关内容
+        response = re.sub(r'以下是.*记录.*', '', response)  # 移除记录相关说明
+        
+        # 增强的系统信息清理
+        response = re.sub(r'---.*?---', '', response, flags=re.DOTALL)  # 移除---包围的内容
+        response = re.sub(r'接下来是.*?[。！？]', '', response)  # 移除"接下来是..."
+        response = re.sub(r'一名.*?[工程师|艺术家|老师|商人|学生|医生|厨师|机械师|退休人员].*?[。！？]', '', response)  # 移除职业描述
+        response = re.sub(r'[内外]向.*?[。！？]', '', response)  # 移除性格描述
+        response = re.sub(r'注重.*?[。！？]', '', response)  # 移除特点描述
+        response = re.sub(r'理性.*?逻辑.*?[。！？]', '', response)  # 移除理性逻辑描述
         
         # 移除可能的提示词残留和非对话内容
         patterns_to_remove = [
@@ -239,13 +252,39 @@ class TerminalTownRefactored:
             if any(meta_word in sentence for meta_word in ['抓住商机', '商机', '场合下', '迅速', '展示了你']):
                 continue
             
+            # 检测并移除重复的短语（通过"或者"连接或者直接重复）
+            # 先处理"或者"连接的重复
+            if '或者' in sentence:
+                parts = sentence.split('或者')
+                if len(parts) == 2:
+                    part1 = parts[0].strip('，。').strip()
+                    part2 = parts[1].strip('，。').strip()
+                    # 如果两部分相似度很高，只保留第一部分
+                    if part1 and part2 and (part1 in part2 or part2 in part1 or 
+                        len(set(part1) & set(part2)) / max(len(part1), len(part2)) > 0.6):
+                        sentence = part1
+            
+            # 检测句子内部的重复模式
+            words = sentence.split()
+            if len(words) > 2:
+                # 检测连续重复的词组
+                for i in range(len(words) - 1):
+                    for j in range(i + 2, len(words) + 1):
+                        phrase = ' '.join(words[i:j])
+                        rest_text = ' '.join(words[j:])
+                        if phrase in rest_text:
+                            # 发现重复，去除后面的重复部分
+                            sentence = ' '.join(words[:j])
+                            break
+                    else:
+                        continue
+                    break
+            
             # 避免重复句子，但保留技术内容
             if sentence not in valid_sentences and len(sentence) > 2:
-                valid_sentences.append(sentence)
-        
-        # 保留前2句，确保对话内容简洁
+                valid_sentences.append(sentence)        # 保留前5句，确保对话内容简洁
         if valid_sentences:
-            result_sentences = valid_sentences[:2]
+            result_sentences = valid_sentences[:5]
             cleaned = '。'.join(result_sentences)
             if not cleaned.endswith(('。', '！', '？')):
                 cleaned += '。'
@@ -273,322 +312,371 @@ class TerminalTownRefactored:
         """显示所有Agent状态"""
         self.ui.show_agents_status(self.agents)
     
-    def show_social_network(self):
-        """显示社交网络状态"""
+    def show_social_network(self, mode: str = 'basic'):
+        """统一显示社交网络状态
+        
+        Args:
+            mode: 显示模式
+                - 'basic': 基础关系矩阵
+                - 'detailed': 详细分析
+                - 'advanced': 高级状态（冲突和紧张度）
+                - 'file': 文件状态
+        """
         try:
-            print(f"\n{TerminalColors.BOLD}━━━ 👥 社交网络状态 ━━━{TerminalColors.END}")
-            
-            # 获取所有Agent名称
-            agent_names = list(self.agents.keys())
-            if not agent_names:
-                print(f"❌ 暂无Agent")
-                return
-            
-            # 创建关系矩阵表格
-            print(f"\n{TerminalColors.CYAN}🔗 Agent关系矩阵:{TerminalColors.END}")
-            
-            # 准备关系数据
-            relationships = {}
-            
-            # 从behavior_manager的social_network获取真实关系数据
-            if hasattr(self.behavior_manager, 'social_network') and self.behavior_manager.social_network:
-                for agent1_name in agent_names:
-                    for agent2_name in agent_names:
-                        if agent1_name != agent2_name:
-                            # 获取关系强度（默认50）
-                            strength = self.behavior_manager.social_network.get(agent1_name, {}).get(agent2_name, 50)
-                            # 转换为0-1分数（原来是0-100）
-                            score = strength / 100.0
-                            relationships[(agent1_name, agent2_name)] = score
-            
-            # 如果没有关系数据，使用默认值
-            if not relationships:
-                for agent1_name in agent_names:
-                    for agent2_name in agent_names:
-                        if agent1_name != agent2_name:
-                            relationships[(agent1_name, agent2_name)] = 0.5  # 默认中性关系
-            
-            # 表格头部
-            header = f"{'Agent':>8}"
-            for name in agent_names:
-                header += f"{name[:6]:>8}"  # 截断长名称
-            print(header)
-            print("─" * (8 + len(agent_names) * 8))
-            
-            # 表格内容
-            for agent1 in agent_names:
-                row = f"{agent1[:8]:>8}"
-                for agent2 in agent_names:
-                    if agent1 == agent2:
-                        # 自己对自己显示为 -
-                        row += f"{'─':>8}"
-                    else:
-                        # 获取关系分数
-                        score = relationships.get((agent1, agent2), 0.5)
-                        
-                        # 转换为整数分数显示（0-100）
-                        int_score = int(score * 100)
-                        
-                        # 根据分数选择颜色和符号
-                        if score >= 0.8:
-                            symbol = f"{TerminalColors.GREEN}💖{TerminalColors.END}"
-                        elif score >= 0.6:
-                            symbol = f"{TerminalColors.GREEN}😊{TerminalColors.END}"
-                        elif score >= 0.4:
-                            symbol = f"{TerminalColors.CYAN}🙂{TerminalColors.END}"
-                        elif score >= 0.2:
-                            symbol = f"{TerminalColors.YELLOW}😐{TerminalColors.END}"
-                        else:
-                            symbol = f"{TerminalColors.RED}😞{TerminalColors.END}"
-                        
-                        # 显示整数分数
-                        row += f"{symbol}{int_score:>4}"
-                
-                print(row)
-            
-            # 图例说明
-            print(f"\n{TerminalColors.YELLOW}📋 关系等级说明:{TerminalColors.END}")
-            print(f"  💖 亲密 (80+)   😊 友好 (60+)   🙂 中性 (40+)")
-            print(f"  😐 冷淡 (20+)   😞 敌对 (<20)")
-            
-            # 显示详细统计
-            if relationships:
-                scores = [score for (a1, a2), score in relationships.items() if a1 != a2]
-                if scores:
-                    # 转换为整数分数进行统计
-                    int_scores = [int(score * 100) for score in scores]
-                    avg_score = sum(int_scores) / len(int_scores)
-                    max_score = max(int_scores)
-                    min_score = min(int_scores)
-                    
-                    print(f"\n{TerminalColors.CYAN}📊 关系统计:{TerminalColors.END}")
-                    print(f"  • 平均关系值: {avg_score:.0f}")
-                    print(f"  • 最高关系值: {max_score}")
-                    print(f"  • 最低关系值: {min_score}")
-                    print(f"  • 关系对数: {len(scores)//2}")
-            
-            # 显示最近交互（从聊天历史获取）
-            if hasattr(self, 'chat_history') and self.chat_history:
-                # 过滤出Agent之间的交互（非用户聊天）
-                agent_interactions = []
-                for chat in self.chat_history[-20:]:  # 检查最近20条记录
-                    if 'interaction_type' in chat and chat.get('interaction_type') != 'user_chat':
-                        agent_interactions.append(chat)
-                
-                if agent_interactions:
-                    recent_interactions = agent_interactions[-5:]  # 最近5次Agent交互
-                    print(f"\n{TerminalColors.CYAN}💬 最近交互记录:{TerminalColors.END}")
-                    
-                    for i, interaction in enumerate(recent_interactions, 1):
-                        timestamp = interaction.get('timestamp', 'Unknown')[:19]
-                        agent1 = interaction.get('agent1', interaction.get('agent_name', 'Unknown'))
-                        agent2 = interaction.get('agent2', 'Unknown')
-                        interaction_type = interaction.get('interaction_type', interaction.get('type', 'Unknown'))
-                        location = interaction.get('location', 'Unknown')
-                        
-                        print(f"  {i}. [{timestamp}] {agent1} ↔ {agent2}")
-                        print(f"     🎭 {interaction_type} @ 📍 {location}")
-                else:
-                    print(f"\n💬 暂无Agent间交互记录")
-                    print(f"💡 提示: 使用 'auto' 命令来启动Agent自动交互")
+            if mode == 'file':
+                return self._show_social_network_file_status()
+            elif mode == 'detailed':
+                return self._show_social_network_detailed()
+            elif mode == 'advanced':
+                return self._show_social_network_advanced()
             else:
-                print(f"\n💬 暂无交互历史记录")
-                print(f"💡 提示: 使用 'chat' 或 'auto' 命令来增加Agent互动")
-            
-            print()
-            
+                return self._show_social_network_basic()
+                
         except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取社交网络状态失败: {e}{TerminalColors.END}")
-            logger.error(f"显示社交网络状态失败: {e}")
+            print(f"{TerminalColors.RED}❌ 显示社交网络失败: {e}{TerminalColors.END}")
+            logger.error(f"显示社交网络失败: {e}")
     
-    def show_social_network_file_status(self):
-        """显示社交网络文件状态"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 💾 社交网络文件状态 ━━━{TerminalColors.END}")
+    def _show_social_network_basic(self):
+        """显示基础社交网络状态"""
+        print(f"\n{TerminalColors.BOLD}━━━ 👥 社交网络状态 ━━━{TerminalColors.END}")
+        
+        # 获取所有Agent名称
+        agent_names = list(self.agents.keys())
+        if not agent_names:
+            print(f"❌ 暂无Agent")
+            return
+        
+        # 创建关系矩阵表格
+        print(f"\n{TerminalColors.CYAN}🔗 Agent关系矩阵:{TerminalColors.END}")
+        
+        # 准备关系数据
+        relationships = {}
+        
+        # 统一从behavior_manager获取关系数据
+        if hasattr(self.behavior_manager, 'social_network') and self.behavior_manager.social_network:
+            for agent1_name in agent_names:
+                for agent2_name in agent_names:
+                    if agent1_name != agent2_name:
+                        # 获取关系强度（默认50）
+                        strength = self.behavior_manager.social_network.get(agent1_name, {}).get(agent2_name, 50)
+                        # 转换为0-1分数（原来是0-100）
+                        score = strength / 100.0
+                        relationships[(agent1_name, agent2_name)] = score
+        
+        # 如果没有关系数据，使用默认值
+        if not relationships:
+            for agent1_name in agent_names:
+                for agent2_name in agent_names:
+                    if agent1_name != agent2_name:
+                        relationships[(agent1_name, agent2_name)] = 0.5  # 默认中性关系
+        
+        # 表格头部
+        header = f"{'Agent':>8}"
+        for name in agent_names:
+            header += f"{name[:6]:>8}"  # 截断长名称
+        print(header)
+        print("─" * (8 + len(agent_names) * 8))
+        
+        # 表格内容
+        for agent1 in agent_names:
+            row = f"{agent1[:8]:>8}"
+            for agent2 in agent_names:
+                if agent1 == agent2:
+                    # 自己对自己显示为 -
+                    row += f"{'─':>8}"
+                else:
+                    # 获取关系分数
+                    score = relationships.get((agent1, agent2), 0.5)
+                    
+                    # 转换为整数分数显示（0-100）
+                    int_score = int(score * 100)
+                    
+                    # 根据分数选择颜色和符号
+                    if score >= 0.8:
+                        symbol = f"{TerminalColors.GREEN}💖{TerminalColors.END}"
+                    elif score >= 0.6:
+                        symbol = f"{TerminalColors.GREEN}😊{TerminalColors.END}"
+                    elif score >= 0.4:
+                        symbol = f"{TerminalColors.CYAN}🙂{TerminalColors.END}"
+                    elif score >= 0.2:
+                        symbol = f"{TerminalColors.YELLOW}😐{TerminalColors.END}"
+                    else:
+                        symbol = f"{TerminalColors.RED}😞{TerminalColors.END}"
+                    
+                    # 显示整数分数
+                    row += f"{symbol}{int_score:>4}"
             
-            # 获取文件路径
-            data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'cache')
+            print(row)
+        
+        # 图例说明
+        print(f"\n{TerminalColors.YELLOW}📋 关系等级说明:{TerminalColors.END}")
+        print(f"  💖 亲密 (80+)   😊 友好 (60+)   🙂 中性 (40+)")
+        print(f"  😐 冷淡 (20+)   😞 敌对 (<20)")
+        
+        # 显示统计信息
+        self._show_relationship_statistics(relationships)
+        self._show_recent_interactions()
+        print()
+    
+    def _show_relationship_statistics(self, relationships):
+        """显示关系统计信息"""
+        if relationships:
+            scores = [score for (a1, a2), score in relationships.items() if a1 != a2]
+            if scores:
+                # 转换为整数分数进行统计
+                int_scores = [int(score * 100) for score in scores]
+                avg_score = sum(int_scores) / len(int_scores)
+                max_score = max(int_scores)
+                min_score = min(int_scores)
+                
+                print(f"\n{TerminalColors.CYAN}📊 关系统计:{TerminalColors.END}")
+                print(f"  • 平均关系值: {avg_score:.0f}")
+                print(f"  • 最高关系值: {max_score}")
+                print(f"  • 最低关系值: {min_score}")
+                print(f"  • 关系对数: {len(scores)//2}")
+    
+    def _show_recent_interactions(self):
+        """显示最近交互"""
+        if hasattr(self, 'chat_history') and self.chat_history:
+            # 过滤出Agent之间的交互（非用户聊天）
+            agent_interactions = []
+            for chat in self.chat_history[-20:]:  # 检查最近20条记录
+                if 'interaction_type' in chat and chat.get('interaction_type') != 'user_chat':
+                    agent_interactions.append(chat)
+            
+            if agent_interactions:
+                recent_interactions = agent_interactions[-5:]  # 最近5次Agent交互
+                print(f"\n{TerminalColors.CYAN}💬 最近交互记录:{TerminalColors.END}")
+                
+                for i, interaction in enumerate(recent_interactions, 1):
+                    timestamp = interaction.get('timestamp', 'Unknown')[:19]
+                    agent1 = interaction.get('agent1', interaction.get('agent_name', 'Unknown'))
+                    agent2 = interaction.get('agent2', 'Unknown')
+                    interaction_type = interaction.get('interaction_type', interaction.get('type', 'Unknown'))
+                    location = interaction.get('location', 'Unknown')
+                    
+                    print(f"  {i}. [{timestamp}] {agent1} ↔ {agent2}")
+                    print(f"     🎭 {interaction_type} @ 📍 {location}")
+            else:
+                print(f"\n💬 暂无Agent间交互记录")
+                print(f"💡 提示: 使用 'auto' 命令来启动Agent自动交互")
+        else:
+            print(f"\n💬 暂无交互历史记录")
+            print(f"💡 提示: 使用 'chat' 或 'auto' 命令来增加Agent互动")
+            
+    def _show_social_network_file_status(self):
+        """显示社交网络文件状态"""
+        print(f"\n{TerminalColors.BOLD}━━━ 📁 社交网络文件状态 ━━━{TerminalColors.END}")
+        
+        try:
+            import os
+            data_dir = os.path.join(os.path.dirname(__file__), 'data')
             file_path = os.path.join(data_dir, 'social_network.json')
             
             if os.path.exists(file_path):
-                # 读取文件信息
-                stat = os.stat(file_path)
-                file_size = stat.st_size
-                mod_time = datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+                # 文件存在，显示详细信息
+                file_stat = os.stat(file_path)
+                file_size = file_stat.st_size
+                modification_time = datetime.fromtimestamp(file_stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
                 
-                print(f"📁 文件路径: {file_path}")
+                print(f"📄 文件路径: {file_path}")
                 print(f"📊 文件大小: {file_size} 字节")
-                print(f"🕐 最后修改: {mod_time}")
+                print(f"🕒 修改时间: {modification_time}")
                 
                 # 尝试读取文件内容
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
                         data = json.load(f)
                     
-                    print(f"✅ 文件状态: 正常")
+                    print(f"✅ 文件状态: 可读取")
                     print(f"📈 社交网络大小: {len(data.get('social_network', {}))} 个Agent")
-                    print(f"🏢 地点热度数据: {len(data.get('location_popularity', {}))} 个地点")
-                    print(f"💾 保存时间: {data.get('save_time', 'Unknown')}")
-                    print(f"🏷️ 数据版本: {data.get('version', 'Unknown')}")
                     
-                    # 显示社交网络统计
-                    stats = self.behavior_manager.get_social_network_stats()
-                    print(f"\n📊 当前内存中的社交网络统计:")
-                    print(f"   • 总Agent数: {stats['total_agents']}")
-                    print(f"   • 总关系数: {stats['total_relationships']}")
-                    if stats['total_relationships'] > 0:
-                        print(f"   • 平均关系值: {stats['average_relationship']:.1f}")
-                        print(f"   • 最强关系: {stats['strongest_relationship']}")
-                        print(f"   • 最弱关系: {stats['weakest_relationship']}")
+                    # 显示behavior_manager的统计信息
+                    if hasattr(self.behavior_manager, 'get_social_network_stats'):
+                        try:
+                            stats = self.behavior_manager.get_social_network_stats()
+                            print(f"📊 统计信息:")
+                            for key, value in stats.items():
+                                print(f"   • {key}: {value}")
+                        except Exception as e:
+                            print(f"⚠️ 无法获取统计信息: {e}")
                     
                 except json.JSONDecodeError as e:
-                    print(f"❌ 文件内容损坏: {e}")
+                    print(f"❌ 文件格式错误: {e}")
                 except Exception as e:
                     print(f"❌ 读取文件失败: {e}")
             else:
-                print(f"⚠️ 社交网络文件不存在: {file_path}")
-                print(f"💡 提示: 系统会在有交互时自动创建文件")
+                print(f"❌ 文件不存在: {file_path}")
+                print(f"💡 提示: 使用 'save' 命令创建社交网络文件")
             
             print()
             
         except Exception as e:
             print(f"{TerminalColors.RED}❌ 获取社交网络文件状态失败: {e}{TerminalColors.END}")
             logger.error(f"显示社交网络文件状态失败: {e}")
-    
-    def show_social_network_detailed(self):
+
+    def _show_social_network_detailed(self):
         """显示详细的社交网络分析"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 📊 详细社交网络分析 ━━━{TerminalColors.END}")
+        print(f"\n{TerminalColors.BOLD}━━━ 📊 详细社交网络分析 ━━━{TerminalColors.END}")
+        
+        agent_names = list(self.agents.keys())
+        if not agent_names:
+            print(f"❌ 暂无Agent")
+            return
+        
+        # 社交活跃度排行
+        print(f"\n{TerminalColors.CYAN}🏆 社交活跃度排行:{TerminalColors.END}")
+        social_scores = {}
+        
+        # 计算每个Agent的社交分数
+        for agent_name in agent_names:
+            score = 0
+            interaction_count = 0
             
-            agent_names = list(self.agents.keys())
-            if not agent_names:
-                print(f"❌ 暂无Agent")
-                return
+            # 统一从behavior_manager获取关系数据
+            if hasattr(self.behavior_manager, 'social_network'):
+                agent_relationships = self.behavior_manager.social_network.get(agent_name, {})
+                for other_agent, strength in agent_relationships.items():
+                    score += strength
+                    interaction_count += 1
             
-            # 社交活跃度排行
-            print(f"\n{TerminalColors.CYAN}🏆 社交活跃度排行:{TerminalColors.END}")
-            social_scores = {}
+            # 从聊天历史统计用户交互
+            user_chats = 0
+            if hasattr(self, 'chat_history'):
+                user_chats = len([chat for chat in self.chat_history if chat.get('agent_name') == agent_name])
+                score += user_chats * 5  # 用户交互加分
             
-            # 计算每个Agent的社交分数
-            for agent_name in agent_names:
-                score = 0
-                interaction_count = 0
+            social_scores[agent_name] = {
+                'total_score': score,
+                'interaction_count': interaction_count,
+                'user_chats': user_chats
+            }
+        
+        # 排序并显示
+        sorted_agents = sorted(social_scores.items(), key=lambda x: x[1]['total_score'], reverse=True)
+        
+        for i, (agent_name, stats) in enumerate(sorted_agents, 1):
+            agent = self.agents.get(agent_name)
+            if agent:
+                emoji = getattr(agent, 'emoji', '🤖')
+                profession = getattr(agent, 'profession', '未知')
+                location = getattr(agent, 'location', '未知')
                 
-                # 统计与其他Agent的关系
-                if hasattr(self.behavior_manager, 'relationships'):
-                    for agent_pair, relationship in self.behavior_manager.relationships.items():
-                        if agent_name in agent_pair:
-                            score += relationship.get('relationship_score', 0)
-                            interaction_count += relationship.get('interaction_count', 0)
-                
-                # 从聊天历史统计用户交互
-                if hasattr(self, 'chat_history'):
-                    user_chats = len([chat for chat in self.chat_history if chat.get('agent_name') == agent_name])
-                    score += user_chats * 0.1  # 用户交互加分
-                
-                social_scores[agent_name] = {
-                    'total_score': score,
-                    'interaction_count': interaction_count,
-                    'user_chats': user_chats if 'user_chats' in locals() else 0
-                }
+                print(f"  {i:2d}. {emoji} {agent_name} ({profession})")
+                print(f"      📍 {location} | 💯 {stats['total_score']:.1f} | 🤝 {stats['interaction_count']} | 💬 {stats['user_chats']}")
+        
+        # 显示关系网络分析
+        print(f"\n{TerminalColors.CYAN}🕸️ 关系网络分析:{TerminalColors.END}")
+        
+        # 统计关系强度分布
+        if hasattr(self.behavior_manager, 'social_network'):
+            strength_distribution = {'敌对': 0, '冷淡': 0, '中性': 0, '友好': 0, '亲密': 0}
+            total_relationships = 0
             
-            # 排序并显示
-            sorted_agents = sorted(social_scores.items(), key=lambda x: x[1]['total_score'], reverse=True)
+            for agent_name, relationships in self.behavior_manager.social_network.items():
+                for other_agent, strength in relationships.items():
+                    total_relationships += 1
+                    if strength >= 80:
+                        strength_distribution['亲密'] += 1
+                    elif strength >= 60:
+                        strength_distribution['友好'] += 1
+                    elif strength >= 40:
+                        strength_distribution['中性'] += 1
+                    elif strength >= 20:
+                        strength_distribution['冷淡'] += 1
+                    else:
+                        strength_distribution['敌对'] += 1
             
-            for i, (agent_name, stats) in enumerate(sorted_agents, 1):
-                agent = self.agents.get(agent_name)
-                if agent:
-                    emoji = getattr(agent, 'emoji', '🤖')
-                    profession = getattr(agent, 'profession', '未知')
-                    
-                    print(f"  {i}. {emoji} {agent_name} ({profession})")
-                    print(f"     📊 社交分数: {stats['total_score']:.2f}")
-                    print(f"     🤝 Agent交互: {stats['interaction_count']}")
-                    print(f"     💬 用户对话: {stats['user_chats']}")
-                    print()
+            print(f"  📊 关系分布 (总计 {total_relationships//2} 对关系):")
+            for level, count in strength_distribution.items():
+                if count > 0:
+                    percentage = (count / total_relationships) * 100 if total_relationships > 0 else 0
+                    print(f"     {level}: {count//2} 对 ({percentage/2:.1f}%)")
+        
+        print()
+
+    def _show_social_network_advanced(self):
+        """显示高级社交网络状态"""
+        print(f"\n{TerminalColors.BOLD}━━━ 💫 高级社交网络 ━━━{TerminalColors.END}")
+        
+        if hasattr(self, 'relationship_manager'):
+            # 显示活跃冲突
+            conflicts = getattr(self.relationship_manager, 'active_conflicts', {})
+            if conflicts:
+                print(f"⚔️  活跃冲突: {len(conflicts)} 个")
+                for pair, conflict in conflicts.items():
+                    agents = pair.split('_')
+                    topic = getattr(conflict, 'topic', 'Unknown')
+                    intensity = getattr(conflict, 'intensity', 'Unknown')
+                    print(f"  • {agents[0]} vs {agents[1]}: {topic} ({intensity})")
+            else:
+                print(f"✌️  当前无活跃冲突")
             
-            # 关系网络图谱（简化版）
-            print(f"{TerminalColors.CYAN}🕸️ 关系网络图谱:{TerminalColors.END}")
-            if hasattr(self.behavior_manager, 'relationships') and self.behavior_manager.relationships:
-                # 找到最强的关系
-                strong_relationships = []
-                for agent_pair, relationship in self.behavior_manager.relationships.items():
-                    score = relationship.get('relationship_score', 0)
-                    if score > 0.6:  # 只显示较强的关系
-                        agent1, agent2 = agent_pair.split('_', 1)
-                        strong_relationships.append((agent1, agent2, score))
-                
-                if strong_relationships:
-                    # 按分数排序
-                    strong_relationships.sort(key=lambda x: x[2], reverse=True)
-                    
-                    print(f"  强关系连接 (关系值 > 0.6):")
-                    for agent1, agent2, score in strong_relationships[:5]:  # 显示前5个最强关系
-                        if score >= 0.8:
-                            bond = "💖"
-                        else:
-                            bond = "💙"
-                        print(f"    {agent1} {bond} {agent2} ({score:.2f})")
+            # 显示关系紧张度
+            tensions = getattr(self.relationship_manager, 'relationship_tensions', {})
+            if tensions:
+                print(f"\n😤 关系紧张度:")
+                high_tension = {k: v for k, v in tensions.items() if v > 0.5}
+                if high_tension:
+                    for pair, tension in high_tension.items():
+                        agents = pair.split('_')
+                        color = TerminalColors.RED if tension > 0.8 else TerminalColors.YELLOW
+                        print(f"  • {agents[0]} - {agents[1]}: {color}{tension:.2f}{TerminalColors.END}")
                 else:
-                    print(f"  暂无强关系连接")
-                    print(f"  💡 提示: 让Agent们多互动来建立更深的关系！")
-            else:
-                print(f"  暂无关系数据")
+                    print(f"  😊 所有关系都比较和谐")
             
-            # 孤立度分析
-            print(f"\n{TerminalColors.CYAN}🏝️ 孤立度分析:{TerminalColors.END}")
-            isolated_agents = []
+            # 显示冲突概率设置
+            conflict_prob = getattr(self.relationship_manager, 'conflict_probability', 0.15)
+            print(f"\n🎲 基础冲突概率: {conflict_prob:.1%}")
             
-            for agent_name in agent_names:
-                connection_count = 0
-                if hasattr(self.behavior_manager, 'relationships'):
-                    for agent_pair in self.behavior_manager.relationships.keys():
-                        if agent_name in agent_pair:
-                            connection_count += 1
-                
-                if connection_count == 0:
-                    isolated_agents.append(agent_name)
-                elif connection_count < 2:
-                    print(f"  ⚠️ {agent_name}: 连接较少 ({connection_count} 个关系)")
-            
-            if isolated_agents:
-                print(f"  🏝️ 完全孤立: {', '.join(isolated_agents)}")
-                print(f"  💡 建议: 安排这些Agent参与更多社交活动")
-            else:
-                print(f"  ✅ 所有Agent都有社交连接")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取详细社交分析失败: {e}{TerminalColors.END}")
-            logger.error(f"显示详细社交分析失败: {e}")
+        else:
+            print(f"{TerminalColors.RED}❌ 关系管理器未初始化{TerminalColors.END}")
+        
+        print()
+    
+
+
 
     def chat_with_agent(self, agent_name: str, message: str = None):
         """与Agent对话"""
-        self.chat_handler.chat_with_agent(self.agents, agent_name, message)
+        with self.error_handler.error_context(
+            operation=f'chat_with_agent_{agent_name}',
+            category=ErrorCategory.AGENT,
+            severity=ErrorSeverity.LOW,
+            agent_name=agent_name,
+            message_length=len(message) if message else 0
+        ):
+            self.chat_handler.chat_with_agent(self.agents, agent_name, message)
     
     def move_agent(self, agent_name: str, location: str):
         """移动Agent"""
-        # 获取当前位置
-        current_location = None
-        if agent_name in self.agents:
-            current_location = getattr(self.agents[agent_name], 'location', '家')
-        
-        # 执行移动
-        success = self.agent_manager.move_agent(
-            self.agents, self.buildings, self.behavior_manager, agent_name, location
-        )
-        
-        # 如果移动成功，保存移动事件
-        if success and current_location and current_location != location:
-            movement_task = {
-                'type': 'movement',
-                'agent_name': agent_name,
-                'old_location': current_location,
-                'new_location': location,
-                'reason': 'user_command',  # 用户手动移动
-                'timestamp': datetime.now().isoformat()
-            }
+        with self.error_handler.error_context(
+            operation=f'move_agent_{agent_name}_to_{location}',
+            category=ErrorCategory.AGENT,
+            severity=ErrorSeverity.MEDIUM,
+            agent_name=agent_name,
+            target_location=location
+        ):
+            # 获取当前位置
+            current_location = None
+            if agent_name in self.agents:
+                current_location = getattr(self.agents[agent_name], 'location', '家')
+            
+            # 执行移动
+            success = self.agent_manager.move_agent(
+                self.agents, self.buildings, self.behavior_manager, agent_name, location
+            )
+            
+            # 如果移动成功，保存移动事件
+            if success and current_location and current_location != location:
+                movement_task = {
+                    'type': 'movement',
+                    'agent_name': agent_name,
+                    'old_location': current_location,
+                    'new_location': location,
+                    'reason': 'user_command',  # 用户手动移动
+                    'timestamp': datetime.now().isoformat()
+                }
             self.thread_manager.add_memory_task(movement_task)
         
         return success
@@ -1823,17 +1911,58 @@ class TerminalTownRefactored:
     def _create_conflict_event(self):
         """创建冲突事件"""
         import random
-        if hasattr(self, 'relationship_manager'):
+        
+        agents = list(self.agents.keys())
+        if len(agents) >= 2:
+            # 随机选择两个Agent
+            agent1, agent2 = random.sample(agents, 2)
+            
+            # 获取当前关系值
+            current_relationship = 50  # 默认值
+            if hasattr(self, 'relationship_manager') and hasattr(self.relationship_manager, 'relationships'):
+                relationships = getattr(self.relationship_manager, 'relationships', {})
+                if agent1 in relationships and agent2 in relationships[agent1]:
+                    current_relationship = relationships[agent1][agent2]
+            
+            # 获取职业信息
+            agent1_profession = getattr(self.agents[agent1], 'profession', 'unknown')
+            agent2_profession = getattr(self.agents[agent2], 'profession', 'unknown')
+            
             # 使用关系管理器创建冲突
-            agents = list(self.agents.keys())
-            if len(agents) >= 2:
-                agent1, agent2 = random.sample(agents, 2)
-                conflict_scenario = self.context_engine.generate_conflict_scenario(
-                    getattr(self.agents[agent1], 'profession', 'unknown'),
-                    getattr(self.agents[agent2], 'profession', 'unknown')
+            if hasattr(self, 'relationship_manager'):
+                # 检查是否应该触发冲突
+                should_conflict = self.relationship_manager.should_trigger_conflict(
+                    agent1, agent2, current_relationship, interaction_count=3
                 )
-                print(f"⚔️ 冲突双方: {agent1} vs {agent2}")
-                print(f"🎭 冲突话题: {conflict_scenario.get('topic', '价值观分歧')}")
+                
+                if should_conflict:
+                    # 创建冲突场景
+                    conflict_scenario = self.relationship_manager.create_conflict(
+                        agent1, agent2, current_relationship,
+                        agent1_profession, agent2_profession
+                    )
+                    
+                    print(f"⚔️ 冲突事件发生!")
+                    print(f"👥 冲突双方: {agent1} vs {agent2}")
+                    print(f"🎭 冲突话题: {conflict_scenario.topic}")
+                    print(f"🔥 冲突强度: {conflict_scenario.intensity}")
+                    print(f"⚡ 触发原因: {conflict_scenario.trigger}")
+                    print(f"⏱️ 预计持续: {conflict_scenario.duration}轮")
+                    
+                    # 更新Agent状态
+                    for agent_name in [agent1, agent2]:
+                        if agent_name in self.agents:
+                            agent = self.agents[agent_name]
+                            if hasattr(agent, '_last_action'):
+                                agent._last_action = f"正在与{agent2 if agent_name == agent1 else agent1}发生冲突"
+                    
+                    return conflict_scenario
+                else:
+                    print(f"💭 {agent1} 和 {agent2} 保持和谐关系")
+            else:
+                print("⚠️ 关系管理器未初始化，无法创建冲突")
+        
+        return None
     
     def _create_celebration_event(self):
         """创建庆祝事件"""
@@ -2108,49 +2237,7 @@ class TerminalTownRefactored:
             print(f"{TerminalColors.RED}❌ 测试上下文引擎失败: {e}{TerminalColors.END}")
             logger.error(f"测试上下文引擎失败: {e}")
 
-    def show_advanced_social_network(self):
-        """显示高级社交网络状态"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 💫 高级社交网络 ━━━{TerminalColors.END}")
-            
-            if hasattr(self, 'relationship_manager'):
-                # 显示活跃冲突
-                conflicts = getattr(self.relationship_manager, 'active_conflicts', {})
-                if conflicts:
-                    print(f"⚔️  活跃冲突: {len(conflicts)} 个")
-                    for pair, conflict in conflicts.items():
-                        agents = pair.split('_')
-                        topic = getattr(conflict, 'topic', 'Unknown')
-                        intensity = getattr(conflict, 'intensity', 'Unknown')
-                        print(f"  • {agents[0]} vs {agents[1]}: {topic} ({intensity})")
-                else:
-                    print(f"✌️  当前无活跃冲突")
-                
-                # 显示关系紧张度
-                tensions = getattr(self.relationship_manager, 'relationship_tensions', {})
-                if tensions:
-                    print(f"\n😤 关系紧张度:")
-                    high_tension = {k: v for k, v in tensions.items() if v > 0.5}
-                    if high_tension:
-                        for pair, tension in high_tension.items():
-                            agents = pair.split('_')
-                            color = TerminalColors.RED if tension > 0.8 else TerminalColors.YELLOW
-                            print(f"  • {agents[0]} - {agents[1]}: {color}{tension:.2f}{TerminalColors.END}")
-                    else:
-                        print(f"  😊 所有关系都比较和谐")
-                
-                # 显示冲突概率设置
-                conflict_prob = getattr(self.relationship_manager, 'conflict_probability', 0.15)
-                print(f"\n🎲 基础冲突概率: {conflict_prob:.1%}")
-                
-            else:
-                print(f"{TerminalColors.RED}❌ 关系管理器未初始化{TerminalColors.END}")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取高级社交网络状态失败: {e}{TerminalColors.END}")
-            logger.error(f"显示高级社交网络状态失败: {e}")
+
 
     def show_relationship_conflicts(self):
         """显示关系冲突详情"""
@@ -2264,19 +2351,21 @@ def main():
                 elif command == 'social':
                     if len(parts) > 1:
                         if parts[1] == 'network':
-                            town.show_social_network()
+                            town.show_social_network('basic')
                         elif parts[1] == 'conflicts':
                             town.show_relationship_conflicts()
                         elif parts[1] == 'tensions':
                             town.show_relationship_tensions()
                         elif parts[1] == 'advanced':
-                            town.show_advanced_social_network()
+                            town.show_social_network('advanced')
                         elif parts[1] == 'detailed':
-                            town.show_social_network_detailed()
+                            town.show_social_network('detailed')
+                        elif parts[1] == 'file':
+                            town.show_social_network('file')
                         else:
-                            town.show_social_network()
+                            town.show_social_network('basic')
                     else:
-                        town.show_social_network()
+                        town.show_social_network('basic')
                 elif command == 'memory':
                     if len(parts) > 1:
                         if parts[1] == 'status':
@@ -2391,7 +2480,7 @@ def main():
                         elif parts[1] == 'agents':
                             town.show_agents_status()
                         elif parts[1] == 'social':
-                            town.show_social_network()
+                            town.show_social_network('basic')
                         else:
                             # 显示综合统计
                             town.show_comprehensive_stats()

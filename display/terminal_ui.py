@@ -47,49 +47,7 @@ class TerminalUI:
   
 {TerminalColors.MAGENTA}🎪 互动功能：{TerminalColors.END}
   🎉 event        - 事件管理 (list/create/clear)
-  ⚔️ conflict     - 冲突管理
   💡 dev          - 开发者工具
-  
-{TerminalColors.RED}🆘 系统命令：{TerminalColors.END}
-  🆘 help         - 显示帮助
-  🚪 quit         - 退出程序
-
-{TerminalColors.CYAN}💡 快速开始：输入 'map' 查看小镇布局，或 'agents' 查看所有角色{TerminalColors.END}
-""")
-        os.system('cls' if os.name == 'nt' else 'clear')
-    
-    def show_welcome(self):
-        """显示欢迎界面"""
-        print(f"""
-{TerminalColors.BOLD}{TerminalColors.CYAN}
-╔══════════════════════════════════════════════════════════════╗
-║                    🏘️  AI Agent 虚拟小镇                     ║
-║                      终端交互模式                             ║
-║                                                              ║
-║  快速 • 流畅 • 直观的命令行体验                              ║
-╚══════════════════════════════════════════════════════════════╝
-{TerminalColors.END}
-
-{TerminalColors.GREEN}✨ 欢迎来到AI Agent虚拟小镇！{TerminalColors.END}
-
-{TerminalColors.YELLOW}🎮 基础命令：{TerminalColors.END}
-  📍 map          - 查看小镇地图
-  👥 agents       - 查看所有Agent状态  
-  💬 chat <name>  - 与Agent对话
-  🚶 move <name> <place> - 移动Agent
-  🤖 auto         - 开启/关闭自动模拟
-  💾 save         - 手动保存系统状态
-  
-{TerminalColors.CYAN}📊 信息查看：{TerminalColors.END}
-  👫 social       - 查看社交网络
-  📜 history      - 查看对话历史
-  🧠 memory       - 显示内存状态
-  � status       - 查看系统状态
-  
-{TerminalColors.MAGENTA}🎪 互动功能：{TerminalColors.END}
-  🎪 event        - 创建小镇事件
-  🎯 group <location> - 组织群体活动
-  📊 stats        - 详细统计信息
   
 {TerminalColors.RED}🆘 系统命令：{TerminalColors.END}
   🆘 help         - 显示帮助
@@ -103,45 +61,66 @@ class TerminalUI:
         print(f"\n{TerminalColors.BOLD}🗺️  小镇地图{TerminalColors.END}")
         print("=" * 50)
         
+        # 调试信息
+        print(f"DEBUG: 建筑数量: {len(buildings)}, Agent数量: {len(agents)}")
+        
         # 创建6x6网格
         grid = [['⬜' for _ in range(6)] for _ in range(6)]
         
-        # 放置建筑
+        # 放置建筑到网格
         for name, building in buildings.items():
             x, y = building['x'], building['y']
-            grid[y][x] = building['emoji']
+            if 0 <= x < 6 and 0 <= y < 6:  # 确保坐标在范围内
+                grid[y][x] = building['emoji']
+                print(f"DEBUG: 建筑 {name} 在位置 ({x}, {y})")
         
-        # 放置Agent
+        # 获取Agent位置信息
         agent_positions = {}
-        for name, agent in agents.items():
+        for agent_name, agent in agents.items():
             location = agent.location
+            print(f"DEBUG: {agent_name} 在 {location}")
             if location in buildings:
                 x, y = buildings[location]['x'], buildings[location]['y']
-                if (x, y) not in agent_positions:
-                    agent_positions[(x, y)] = []
-                agent_positions[(x, y)].append(f"{agent.color}{agent.emoji}{TerminalColors.END}")
+                if 0 <= x < 6 and 0 <= y < 6:  # 确保坐标在范围内
+                    if (x, y) not in agent_positions:
+                        agent_positions[(x, y)] = []
+                    agent_positions[(x, y)].append(f"{agent.emoji}{agent_name}")
         
-        # 显示地图
+        # 显示地图网格
         for y in range(6):
             row = ""
             for x in range(6):
                 if (x, y) in agent_positions:
-                    # 显示Agent
+                    # 如果该位置有Agent，显示第一个Agent
                     agents_here = agent_positions[(x, y)]
-                    row += agents_here[0] + " "  # 只显示第一个Agent
+                    if len(agents_here) == 1:
+                        row += agents_here[0][0] + " "  # 只显示emoji
+                    else:
+                        row += f"{len(agents_here)}" + " "  # 显示数量
                 else:
                     # 显示建筑或空地
                     row += grid[y][x] + " "
             print(f"  {row}")
         
-        print("\n📍 建筑说明:")
+        # 显示建筑说明（只显示一次）
+        print(f"\n📍 建筑说明:")
         for name, building in buildings.items():
-            occupants = [f"{agents[agent_name].emoji}{agent_name}" 
-                        for agent_name in agents.keys() 
-                        if agents[agent_name].location == name]
+            # 统计该建筑的Agent
+            occupants = []
+            for agent_name, agent in agents.items():
+                if agent.location == name:
+                    occupants.append(f"{agent.emoji}{agent_name}")
+            
             occupant_count = len(occupants)
-            count_display = f"[{occupant_count}人]" if occupant_count > 0 else "[空]"
-            occupant_text = f" {count_display} ({', '.join(occupants)})" if occupants else f" {count_display}"
+            if occupant_count > 0:
+                count_display = f"[{occupant_count}人]"
+                if occupant_count <= 3:
+                    occupant_text = f" {count_display} ({', '.join(occupants)})"
+                else:
+                    occupant_text = f" {count_display} ({', '.join(occupants[:3])}...)"
+            else:
+                occupant_text = " [空]"
+            
             print(f"  {building['emoji']} {name}{occupant_text}")
         print()
     

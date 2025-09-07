@@ -21,7 +21,7 @@ class CleanupThresholds:
     memory_emergency: float = 90.0  # 内存使用率超过90%时紧急清理
     
     # 向量数据库阈值
-    vector_memories_per_agent: int = 500     # 每个Agent最多保留500条记忆
+    vector_memories_per_agent: int = 10000   # 每个Agent最多保留1000条记忆
     vector_cleanup_interval: int = 6 * 3600  # 6小时清理一次
     
     # 交互历史阈值
@@ -29,7 +29,7 @@ class CleanupThresholds:
     interaction_history_max: int = 500 # 最多保留500条交互记录
     
     # 时间阈值
-    old_memory_days: int = 7          # 7天前的记忆视为过期
+    old_memory_days: int = 7      # 7天前的记忆视为过期
     cache_timeout_hours: int = 2      # 缓存2小时后过期
 
 

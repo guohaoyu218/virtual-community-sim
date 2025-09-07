@@ -33,16 +33,32 @@ class VectorDatabaseOptimizer:
             'importance_decay_rate': 0.001, # 重要性衰减率
             'memory_compression_ratio': 0.8, # 压缩比率
         }
-        
         # 性能统计
         self.performance_stats = {
+            # 最后一次优化操作的时间（通常是 datetime 对象）
+            # 用于跟踪最近一次系统优化的时间点，判断是否需要触发新的优化
             'last_optimization': None,
+    
+            # 累计执行的优化操作总次数
+                # 统计系统自启动以来共进行了多少次性能优化（如内存整理、索引优化等）
             'total_optimizations': 0,
+    
+    # 累计清理的记忆数据总条数
+    # 记录所有清理操作中被删除的记忆条目总数，反映内存减负效果
             'total_memories_cleaned': 0,
+    
+    # 累计节省的存储空间（单位：MB）
+    # 统计清理/优化操作释放的总存储空间，评估资源回收效率
             'total_space_saved_mb': 0,
-            'average_query_time_ms': 0,
+    
+    # 平均查询响应时间（单位：毫秒）
+    # 记录数据查询操作的平均耗时，反映系统查询性能的整体表现
+             'average_query_time_ms': 0,
+    
+    # 已优化的数据集/集合数量
+    # 针对分库分表或多集合存储场景，统计已完成优化的集合数量
             'collections_optimized': 0
-        }
+}
         
     def run_full_optimization(self) -> Dict[str, Any]:
         """运行完整的数据库优化"""

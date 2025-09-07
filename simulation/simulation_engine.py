@@ -23,6 +23,7 @@ class SimulationEngine:
         self.auto_simulation = False
         self.simulation_thread = None
         self.running = True
+        self.behavior_manager = behavior_manager  # 保存behavior_manager为实例变量
         
         # 初始化社交交互处理器
         if behavior_manager:
@@ -243,43 +244,110 @@ class SimulationEngine:
             return False
     
     def execute_social_action_safe(self, agents, agent, agent_name: str) -> bool:
-        """安全执行社交行动 - 改进版本"""
-        if self.social_handler:
-            return self.social_handler.execute_social_action_safe(agents, agent, agent_name)
-        else:
-            # 回退到基本版本
-            return self._basic_social_action(agents, agent, agent_name)
-    
-    def execute_group_discussion_safe(self, agents, agent, agent_name: str) -> bool:
-        """安全执行群体讨论"""
-        if self.social_handler:
-            return self.social_handler.execute_group_discussion_safe(agents, agent, agent_name)
-        else:
-            # 回退到基本版本
-            return self._basic_group_discussion(agents, agent, agent_name)
-    
-    def _basic_social_action(self, agents, agent, agent_name: str) -> bool:
-        """基本社交行动（后备方案）"""
+        """统一的社交行动执行入口"""
         try:
-            current_location = getattr(agent, 'location', '家')
-            print(f"\n{TerminalColors.BOLD}━━━ 💬 社交互动 ━━━{TerminalColors.END}")
-            print(f"  {agent.emoji} {TerminalColors.CYAN}{agent_name}{TerminalColors.END} 在{current_location}进行社交活动")
-            print()
-            return True
+            return self._unified_social_execution(agents, agent, agent_name)
         except Exception as e:
-            logger.error(f"基本社交行动异常: {e}")
+            logger.error(f"执行社交行动异常: {e}")
+            return self._fallback_solo_thinking(agent, agent_name)
+    
+    def _unified_social_execution(self, agents, agent, agent_name: str) -> bool:
+        """统一的社交执行逻辑"""
+        current_location = getattr(agent, 'location', '家')
+        
+        # 线程安全地找到同位置的其他Agent
+        with self.thread_manager.agents_lock:
+            other_agents = [
+                name for name, other_agent in agents.items()
+                if name != agent_name and getattr(other_agent, 'location', '家') == current_location
+            ]
+        
+        if not other_agents:
+            return self._fallback_solo_thinking(agent, agent_name)
+        
+        # 选择交互对象
+        target_agent_name = random.choice(other_agents)
+        target_agent = agents[target_agent_name]
+        
+        # 执行社交互动
+        return self._execute_social_interaction(
+            agent, agent_name, target_agent, target_agent_name, current_location
+        )
+    
+    def _execute_social_interaction(self, agent1, agent1_name: str, agent2, agent2_name: str, location: str) -> bool:
+        """执行社交互动的核心逻辑"""
+        try:
+            # 确保两人在同一位置
+            if getattr(agent1, 'location') != getattr(agent2, 'location'):
+                agent2.move_to(location)
+                if hasattr(agent2, 'real_agent'):
+                    agent2.real_agent.current_location = location
+            
+            # 获取当前关系强度
+            if self.behavior_manager:
+                current_relationship = self.behavior_manager.get_relationship_strength(agent1_name, agent2_name)
+            else:
+                current_relationship = 50  # 默认中性关系
+            
+            # 显示对话标题
+            print(f"\n{TerminalColors.BOLD}━━━ 💬 对话交流 ━━━{TerminalColors.END}")
+            print(f"📍 地点: {location}")
+            print(f"👥 参与者: {agent1_name} ↔ {agent2_name} (关系: {current_relationship})")
+            
+            # Agent1发起对话
+            topic_prompt = f"在{location}遇到{agent2_name}，简短地打个招呼或说句话："
+            topic = agent1.think_and_respond(topic_prompt)
+            topic = self.clean_response(topic)
+            
+            print(f"  {agent1.emoji} {TerminalColors.CYAN}{agent1_name} → {agent2_name}{TerminalColors.END}: {topic}")
+            
+            # 根据关系决定互动类型
+            interaction_type = self._choose_interaction_type(current_relationship)
+            
+            # Agent2回应
+            response = self._generate_agent_response(agent2, agent2_name, agent1_name, topic, interaction_type)
+            display_color = self._get_interaction_color(interaction_type)
+            
+            print(f"  {agent2.emoji} {display_color}{agent2_name} → {agent1_name}{TerminalColors.END}: {response}")
+            
+            # Agent1的反馈
+            feedback = self._generate_feedback_response(agent1, agent1_name, agent2_name, response, interaction_type)
+            feedback_color = self._get_interaction_color(interaction_type)
+            
+            print(f"  {agent1.emoji} {feedback_color}{agent1_name} → {agent2_name}{TerminalColors.END}: {feedback}")
+            
+            # 更新社交网络
+            self._update_relationship(agent1_name, agent2_name, interaction_type, location)
+            
+            print()  # 空行分隔
+            return True
+            
+        except Exception as e:
+            logger.error(f"执行社交互动异常: {e}")
             return False
     
-    def _basic_group_discussion(self, agents, agent, agent_name: str) -> bool:
-        """基本群体讨论（后备方案）"""
+    def _fallback_solo_thinking(self, agent, agent_name: str) -> bool:
+        """后备的独自思考行动"""
         try:
             current_location = getattr(agent, 'location', '家')
-            print(f"\n{TerminalColors.BOLD}━━━ 👥 群体讨论 ━━━{TerminalColors.END}")
-            print(f"  {agent.emoji} {TerminalColors.BLUE}{agent_name}{TerminalColors.END} 在{current_location}参与群体讨论")
+            think_prompt = f"在{current_location}独自思考："
+            
+            # 使用线程池获取思考内容
+            future = self.thread_manager.submit_task(lambda: agent.think_and_respond(think_prompt))
+            try:
+                thought = future.result(timeout=8.0)
+                cleaned_thought = self.clean_response(thought)
+            except Exception:
+                cleaned_thought = "在安静地思考..."
+            
+            print(f"\n{TerminalColors.BOLD}━━━ � 独自思考 ━━━{TerminalColors.END}")
+            print(f"  {agent.emoji} {TerminalColors.YELLOW}{agent_name}{TerminalColors.END}: {cleaned_thought}")
             print()
+            
             return True
+            
         except Exception as e:
-            logger.error(f"基本群体讨论异常: {e}")
+            logger.error(f"独自思考异常: {e}")
             return False
 
     def stop_simulation(self):
@@ -290,3 +358,184 @@ class SimulationEngine:
         # 等待模拟线程结束
         if self.simulation_thread and self.simulation_thread.is_alive():
             self.simulation_thread.join(timeout=10.0)
+    
+    def _choose_interaction_type(self, relationship_strength: int) -> str:
+        """根据关系强度选择互动类型"""
+        if relationship_strength >= 70:
+            # 关系很好：65%友好，20%中性，15%负面
+            weights = [('friendly_chat', 65), ('casual_meeting', 20), ('misunderstanding', 12), ('argument', 3)]
+        elif relationship_strength >= 50:
+            # 关系一般：50%友好，25%中性，25%负面
+            weights = [('friendly_chat', 50), ('casual_meeting', 25), ('misunderstanding', 18), ('argument', 7)]
+        elif relationship_strength >= 30:
+            # 关系较差：30%友好，30%中性，40%负面
+            weights = [('friendly_chat', 30), ('casual_meeting', 30), ('misunderstanding', 25), ('argument', 15)]
+        else:
+            # 关系很差：20%友好，25%中性，55%负面
+            weights = [('friendly_chat', 20), ('casual_meeting', 25), ('misunderstanding', 35), ('argument', 20)]
+        
+        # 根据权重随机选择
+        interaction_types = []
+        for interaction_type, weight in weights:
+            interaction_types.extend([interaction_type] * weight)
+        
+        return random.choice(interaction_types)
+    
+    def _generate_agent_response(self, agent, agent_name: str, other_name: str, topic: str, interaction_type: str) -> str:
+        """生成Agent的回应"""
+        try:
+            # 根据互动类型生成不同的提示词
+            if interaction_type == 'friendly_chat':
+                prompt = f"{other_name}说：'{topic}'，友好积极地回应："
+            elif interaction_type == 'casual_meeting':
+                prompt = f"{other_name}说：'{topic}'，简短中性地回应："
+            elif interaction_type == 'misunderstanding':
+                prompt = f"{other_name}说：'{topic}'，表示困惑不解，不要赞同："
+            elif interaction_type == 'argument':
+                prompt = f"{other_name}说：'{topic}'，表示不同意和反对："
+            else:
+                prompt = f"{other_name}说：'{topic}'，简短回应："
+            
+            response = agent.think_and_respond(prompt)
+            response = self.clean_response(response)
+            
+            # 验证负面互动的真实性
+            if interaction_type in ['misunderstanding', 'argument']:
+                response = self._ensure_negative_response(response, interaction_type, agent, prompt)
+            
+            return response
+            
+        except Exception as e:
+            logger.error(f"生成回应异常: {e}")
+            return "..."
+    
+    def _generate_feedback_response(self, agent, agent_name: str, other_name: str, response: str, interaction_type: str) -> str:
+        """生成反馈回应"""
+        try:
+            if interaction_type == 'friendly_chat':
+                prompt = f"{other_name}回应：'{response}'，表示认同或进一步交流："
+            elif interaction_type == 'casual_meeting':
+                prompt = f"{other_name}回应：'{response}'，简单回应或结束对话："
+            elif interaction_type == 'misunderstanding':
+                prompt = f"{other_name}回应：'{response}'，尝试澄清或表示困惑："
+            elif interaction_type == 'argument':
+                prompt = f"{other_name}回应：'{response}'，继续表达不同观点："
+            else:
+                prompt = f"{other_name}回应：'{response}'，简短回应："
+            
+            feedback = agent.think_and_respond(prompt)
+            return self.clean_response(feedback)
+            
+        except Exception as e:
+            logger.error(f"生成反馈异常: {e}")
+            return "好的。"
+    
+    def _ensure_negative_response(self, response: str, interaction_type: str, agent, prompt: str) -> str:
+        """确保负面互动的真实性"""
+        # 检查回应是否真的是负面的
+        positive_indicators = ['好', '棒', '对', '是', '赞同', '同意', '理解', '明白', '谢谢', '太好了']
+        if any(indicator in response for indicator in positive_indicators):
+            # 如果生成了正面回应，使用默认的负面回应
+            if interaction_type == 'argument':
+                default_responses = [
+                    "我不这么认为。",
+                    "这说不通。",
+                    "我不同意你的观点。",
+                    "这听起来不对。"
+                ]
+                response = random.choice(default_responses)
+            elif interaction_type == 'misunderstanding':
+                default_responses = [
+                    "我有点困惑，不太明白。",
+                    "这听起来很奇怪。",
+                    "我不太理解你的意思。",
+                    "这是什么意思？"
+                ]
+                response = random.choice(default_responses)
+        
+        return response
+    
+    def _get_interaction_color(self, interaction_type: str) -> str:
+        """获取互动类型对应的显示颜色"""
+        color_map = {
+            'friendly_chat': TerminalColors.GREEN,
+            'casual_meeting': TerminalColors.YELLOW,
+            'misunderstanding': TerminalColors.RED,
+            'argument': TerminalColors.RED,
+            'deep_conversation': TerminalColors.CYAN,
+            'collaboration': TerminalColors.BLUE
+        }
+        return color_map.get(interaction_type, TerminalColors.YELLOW)
+    
+    def _update_relationship(self, agent1_name: str, agent2_name: str, interaction_type: str, location: str):
+        """更新社交关系"""
+        try:
+            if not self.behavior_manager:
+                logger.warning("behavior_manager未初始化，跳过关系更新")
+                return None
+                
+            # 立即更新关系
+            relationship_info = self.behavior_manager.update_social_network(
+                agent1_name, agent2_name, interaction_type, 
+                {
+                    'same_location': True,
+                    'location': location,
+                    'interaction_initiator': agent1_name,
+                    'description': f"在{location}的{interaction_type}互动"
+                }
+            )
+            
+            # 显示关系变化
+            if relationship_info and relationship_info.get('change', 0) != 0:
+                change_color = TerminalColors.GREEN if relationship_info['change'] > 0 else TerminalColors.RED
+                change_symbol = "+" if relationship_info['change'] > 0 else ""
+                
+                # 根据互动类型显示不同的图标
+                icon_map = {
+                    'friendly_chat': "💫",
+                    'casual_meeting': "💭",
+                    'misunderstanding': "❓",
+                    'argument': "💥"
+                }
+                icon = icon_map.get(interaction_type, "🔄")
+                
+                print(f"  {icon} {relationship_info.get('relationship_emoji', '🤝')} "
+                      f"{relationship_info.get('new_level', '普通')} "
+                      f"({change_color}{change_symbol}{relationship_info['change']:.1f}{TerminalColors.END})")
+                
+                # 只在重大等级变化时显示详情
+                if relationship_info.get('level_changed', False):
+                    level_color = TerminalColors.GREEN if relationship_info['new_strength'] > relationship_info['old_strength'] else TerminalColors.YELLOW
+                    print(f"    {level_color}🌟 {relationship_info.get('level_change_message', '关系等级发生变化')}{TerminalColors.END}")
+            
+            # 异步后台处理
+            interaction_data = {
+                'agent1_name': agent1_name,
+                'agent2_name': agent2_name,
+                'interaction_type': interaction_type,
+                'location': location,
+                'context': {
+                    'same_location': True,
+                    'location': location,
+                    'interaction_initiator': agent1_name,
+                    'timestamp': datetime.now().isoformat()
+                }
+            }
+            
+            self.thread_manager.add_interaction_task(interaction_data)
+            logger.info(f"📤 交互任务已添加到队列: {agent1_name} ↔ {agent2_name}")
+            
+        except Exception as e:
+            logger.error(f"更新社交关系失败: {e}")
+
+    def execute_group_discussion_safe(self, agents, agent, agent_name: str) -> bool:
+        """统一的群体讨论执行"""
+        try:
+            current_location = getattr(agent, 'location', '家')
+            print(f"\n{TerminalColors.BOLD}━━━ 👥 群体讨论 ━━━{TerminalColors.END}")
+            print(f"  {agent.emoji} {TerminalColors.BLUE}{agent_name}{TerminalColors.END} 在{current_location}参与群体讨论")
+            print()
+            return True
+        except Exception as e:
+            logger.error(f"群体讨论异常: {e}")
+            return False

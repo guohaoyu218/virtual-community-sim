@@ -12,12 +12,13 @@ from display.terminal_colors import TerminalColors
 logger = logging.getLogger(__name__)
 
 class SocialInteractionHandler:
-    """社交交互处理器"""
+    """社交交互处理器 - 重构为辅助工具类"""
     
     def __init__(self, thread_manager, behavior_manager, response_cleaner_func):
         self.thread_manager = thread_manager
         self.behavior_manager = behavior_manager
         self.clean_response = response_cleaner_func
+        logger.info("🔄 社交互动处理器已初始化 (重构版 - 辅助工具)")
         
         # 负面关键词用于验证互动真实性
         self.negative_keywords = [
@@ -36,7 +37,18 @@ class SocialInteractionHandler:
         ]
     
     def execute_social_action_safe(self, agents, agent, agent_name: str) -> bool:
-        """安全执行社交行动"""
+        """
+        [已弃用] 社交行动执行 - 保留兼容性
+        建议使用 SimulationEngine._unified_social_execution
+        """
+        logger.warning("⚠️  使用了已弃用的 SocialInteractionHandler.execute_social_action_safe")
+        logger.warning("🔄 建议使用统一的 SimulationEngine 社交执行方法")
+        
+        # 为了兼容性，仍然执行原逻辑
+        return self._legacy_social_execution(agents, agent, agent_name)
+    
+    def _legacy_social_execution(self, agents, agent, agent_name: str) -> bool:
+        """传统社交执行逻辑（向后兼容）"""
         try:
             current_location = getattr(agent, 'location', '家')
             

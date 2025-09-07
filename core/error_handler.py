@@ -50,9 +50,9 @@ class ErrorHandler:
         }
         
         # 错误处理策略
-        self.error_handlers = {}
-        self.recovery_strategies = {}
-        self.circuit_breakers = {}
+        self.error_handlers = {}#错误处理器映射表
+        self.recovery_strategies = {}#错误恢复策略，针对不同错误定义恢复流程
+        self.circuit_breakers = {}#熔断机制存储
         
         # 监控配置
         self.max_recent_errors = 100
@@ -75,9 +75,9 @@ class ErrorHandler:
     def _start_monitoring(self):
         """启动错误监控线程"""
         self._monitoring_thread = threading.Thread(
-            target=self._monitoring_loop,
-            name="ErrorMonitoring",
-            daemon=True
+            target=self._monitoring_loop,  # 线程要执行的目标函数
+            name="ErrorMonitoring",       # 线程名称（便于调试和日志记录）
+            daemon=True                   # 设置为守护线程  
         )
         self._monitoring_thread.start()
     

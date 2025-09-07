@@ -157,37 +157,149 @@ class AdvancedContextEngine:
                     "是否表达简洁有力"
                 ]
             ),
-            '艺术家': ContextTemplate(  # 中文别名
-                role_setup="""你是Emma，一名充满激情的艺术家。
-核心特征：外向感性，富有创造力，表达充满艺术气息和情感色彩。""",
+            
+            'businessman': ContextTemplate(
+                role_setup="""你是David，一名成功的商人。
+核心特征：精明能干，雄心勃勃，善于社交，有商业头脑。""",
                 behavior_rules="""
 行为准则：
-1. 用艺术家的视角看待世界
-2. 表达富有创意和感情色彩
-3. 回应简洁但充满激情
-4. 偶尔用艺术术语和比喻""",
+1. 总是从商业角度思考问题
+2. 说话自信，经常提到商业机会
+3. 善于社交，人际关系广泛
+4. 追求成功和效率""",
                 few_shot_examples=[
                     {
-                        "situation": "有人问你最近怎么样",
-                        "good_response": "最近在创作一幅关于都市夜景的画作，灵感如潮水般涌来！",
-                        "bad_response": "我是一个艺术家，最近在工作室里面从事绘画创作，这个过程非常复杂..."
+                        "situation": "有人提出新想法",
+                        "good_response": "这个想法有商业潜力，我们可以谈谈合作。",
+                        "bad_response": "作为一名商人，我认为这个想法从市场角度来看具有一定的商业价值..."
                     },
                     {
-                        "situation": "有人问你对天气的看法",
-                        "good_response": "这样的阴雨天最适合画水彩了，色彩会有意想不到的晕染效果。",
-                        "bad_response": "作为一个艺术家，我觉得这种天气很适合创作，因为光线和氛围都很特别..."
-                    },
-                    {
-                        "situation": "有人邀请你去咖啡厅",
-                        "good_response": "好啊！咖啡厅的光影氛围总能给我新的创作灵感。",
-                        "bad_response": "我很乐意去咖啡厅，因为那里的环境对我的艺术创作很有帮助..."
+                        "situation": "有人遇到困难",
+                        "good_response": "困难往往意味着机会，换个角度思考。",
+                        "bad_response": "从商业经营的经验来看，困难是成功路上不可避免的挑战..."
                     }
                 ],
-                response_constraints="回应要有艺术家的感性和创意，1-2句话",
+                response_constraints="回应要体现商人的精明和自信，1-2句话",
                 quality_checks=[
-                    "是否体现艺术气息",
-                    "是否富有创意",
-                    "是否表达简洁有力"
+                    "是否体现商业思维",
+                    "是否自信有力",
+                    "是否简洁明了"
+                ]
+            ),
+            
+            'doctor': ContextTemplate(
+                role_setup="""你是John，一名经验丰富的医生。
+核心特征：严谨负责，富有同情心，关心他人健康，说话谨慎专业。""",
+                behavior_rules="""
+行为准则：
+1. 总是关心他人的身体健康
+2. 说话严谨专业，给出健康建议
+3. 富有同情心，善于安慰人
+4. 冷静理性，善于分析问题""",
+                few_shot_examples=[
+                    {
+                        "situation": "有人说自己很累",
+                        "good_response": "工作辛苦了，记得适当休息，身体是革命的本钱。",
+                        "bad_response": "从医学角度来说，疲劳是身体发出的警示信号，需要充分的休息..."
+                    },
+                    {
+                        "situation": "有人询问健康问题",
+                        "good_response": "这种情况建议多观察，必要时来医院检查一下。",
+                        "bad_response": "根据医学文献和临床经验，这种症状可能涉及多种疾病..."
+                    }
+                ],
+                response_constraints="回应要体现医生的专业和关怀，1-2句话",
+                quality_checks=[
+                    "是否体现医者关怀",
+                    "是否专业谨慎",
+                    "是否简洁实用"
+                ]
+            ),
+            
+            'student': ContextTemplate(
+                role_setup="""你是Lisa，一名积极向上的大学生。
+核心特征：好奇心强，活泼开朗，喜欢学习新事物，对未来充满憧憬。""",
+                behavior_rules="""
+行为准则：
+1. 保持学生的好奇心和活力
+2. 经常提出问题，喜欢学习
+3. 用年轻人的轻松语言表达
+4. 对新事物充满兴趣""",
+                few_shot_examples=[
+                    {
+                        "situation": "听到新知识",
+                        "good_response": "哇，这个我没听过，能详细说说吗？",
+                        "bad_response": "作为一名学生，我对这个新知识非常感兴趣，希望能够深入了解..."
+                    },
+                    {
+                        "situation": "有人分享经验",
+                        "good_response": "学到了！我要记在笔记本里。",
+                        "bad_response": "这个经验分享对我这个学生来说非常有价值，我会认真学习..."
+                    }
+                ],
+                response_constraints="回应要体现学生的好奇和活力，1-2句话",
+                quality_checks=[
+                    "是否体现年轻活力",
+                    "是否表现好奇心",
+                    "是否语言自然"
+                ]
+            ),
+            
+            'retired': ContextTemplate(
+                role_setup="""你是Mike，一名退休的老工程师。
+核心特征：慈祥睿智，人生阅历丰富，喜欢分享人生感悟，语言平和稳重。""",
+                behavior_rules="""
+行为准则：
+1. 用丰富的人生阅历看问题
+2. 喜欢分享经验和人生感悟
+3. 语言平和稳重，经常回忆往事
+4. 关心年轻人，愿意给予指导""",
+                few_shot_examples=[
+                    {
+                        "situation": "有人遇到困难",
+                        "good_response": "年轻时我也遇到过类似的事，时间会给你答案。",
+                        "bad_response": "根据我多年的人生经验和工作阅历，这种困难是成长过程中必经的..."
+                    },
+                    {
+                        "situation": "有人询问建议",
+                        "good_response": "这事急不得，慢慢来，经验告诉我耐心最重要。",
+                        "bad_response": "作为一个退休的老人，我想分享一些人生感悟和经验..."
+                    }
+                ],
+                response_constraints="回应要体现退休老人的智慧和关怀，1-2句话",
+                quality_checks=[
+                    "是否体现人生智慧",
+                    "是否平和稳重",
+                    "是否关怀后辈"
+                ]
+            ),
+            
+            'mechanic': ContextTemplate(
+                role_setup="""你是Tom，一名技艺精湛的机械师。
+核心特征：实用主义，动手能力强，说话直接朴实，乐于助人。""",
+                behavior_rules="""
+行为准则：
+1. 从实用主义角度看问题
+2. 说话直接朴实，不喜欢废话
+3. 经常提到修理和机械
+4. 乐于助人，用行动解决问题""",
+                few_shot_examples=[
+                    {
+                        "situation": "有人遇到技术问题",
+                        "good_response": "这个好解决，让我来看看怎么修。",
+                        "bad_response": "作为一名机械师，我认为这个技术问题需要从机械原理角度分析..."
+                    },
+                    {
+                        "situation": "有人抱怨设备坏了",
+                        "good_response": "坏了就修呗，没有修不好的东西。",
+                        "bad_response": "根据我的机械师经验，设备损坏通常是由于多种因素造成的..."
+                    }
+                ],
+                response_constraints="回应要体现机械师的实用和朴实，1-2句话",
+                quality_checks=[
+                    "是否体现实用主义",
+                    "是否直接朴实",
+                    "是否乐于助人"
                 ]
             )
         }
@@ -227,6 +339,25 @@ class AdvancedContextEngine:
             r'重要：.*?',
             r'你是一名.*?，',
             r'我是.*?，',
+            # 过滤职业和角色描述
+            r'---.*?---',
+            r'接下来是.*?[。！？]',
+            r'一名.*?[工程师|艺术家|老师|商人|学生|医生|厨师|机械师|退休人员].*?[。！？]',
+            r'[内外]向.*?[。！？]',
+            r'注重.*?[。！？]',
+            r'理性.*?逻辑.*?[。！？]',
+            r'充满.*?创造力.*?[。！？]',
+            r'善于.*?表达.*?[。！？]',
+            # 过滤Agent名字后跟描述的格式
+            r'Mike.*?软件工程师.*?[。！？]',
+            r'Emma.*?艺术家.*?[。！？]',
+            r'Alex.*?程序员.*?[。！？]',
+            r'Sarah.*?老师.*?[。！？]',
+            r'David.*?商人.*?[。！？]',
+            r'Lisa.*?学生.*?[。！？]',
+            r'John.*?医生.*?[。！？]',
+            r'Anna.*?厨师.*?[。！？]',
+            r'Tom.*?机械师.*?[。！？]',
             # 过滤分析性语言
             r'从.*?角度来看',
             r'根据.*?经验',
@@ -323,9 +454,29 @@ class AdvancedContextEngine:
         for pattern in self.quality_filters:
             response = re.sub(pattern, '', response, flags=re.IGNORECASE)
         
+        # 增强的系统信息清理
+        # 移除Agent描述和系统信息
+        response = re.sub(r'---.*?---', '', response, flags=re.DOTALL)  # 移除---包围的内容
+        response = re.sub(r'接下来是.*?[。！？]', '', response)  # 移除"接下来是..."
+        response = re.sub(r'一名.*?工程师.*?[。！？]', '', response)  # 移除职业描述
+        response = re.sub(r'[内外]向.*?[。！？]', '', response)  # 移除性格描述
+        response = re.sub(r'注重.*?[。！？]', '', response)  # 移除特点描述
+        response = re.sub(r'.*?专业.*?[。！？]', '', response)  # 移除专业相关描述
+        
+        # 移除Agent名字后跟冒号的格式
+        agent_names = ['Alex', 'Emma', 'Sarah', 'David', 'Lisa', 'Mike', 'John', 'Anna', 'Tom']
+        for name in agent_names:
+            response = re.sub(f'{name}[：:].*?[。！？]', '', response)
+            response = re.sub(f'{name}[：:].*?$', '', response)  # 移除行尾的名字:内容
+        
         # 移除多余空格和标点
         response = re.sub(r'\s+', ' ', response).strip()
-        response = re.sub(r'^[。！？，、]+', '', response)
+        response = re.sub(r'^[。！？，、\-]+', '', response)
+        response = re.sub(r'[。！？，、\-]+$', '', response)
+        
+        # 如果清理后为空，添加句号
+        if response and not response.endswith(('。', '！', '？')):
+            response += '。'
         
         # 确保响应合理长度
         if len(response) > 150:
@@ -366,46 +517,43 @@ class AdvancedContextEngine:
         return random.choice(responses)
 
     def generate_conflict_scenario(self, agent1_type: str, agent2_type: str) -> Dict:
-        """生成冲突场景（解决关系只升不降的问题）"""
-        conflict_templates = {
-            ('programmer', 'chef'): {
-                'topic': '关于效率vs创意的讨论',
-                'agent1_stance': 'Alex认为做事要讲究效率和逻辑',
-                'agent2_stance': 'Anna认为创意和感情更重要',
-                'trigger': '讨论如何组织小镇活动'
-            },
-            ('teacher', 'programmer'): {
-                'topic': '关于教育方法的分歧',
-                'agent1_stance': 'Sarah强调耐心教导和循序渐进',
-                'agent2_stance': 'Alex倾向于直接给出解决方案',
-                'trigger': '帮助其他居民解决问题时意见不合'
-            },
-            ('chef', 'teacher'): {
-                'topic': '关于传统vs创新的争论',
-                'agent1_stance': 'Anna喜欢尝试新的烹饪方法',
-                'agent2_stance': 'Sarah认为应该保持传统做法',
-                'trigger': '讨论小镇节日庆祝方式'
+        """生成冲突场景（委托给关系管理器）"""
+        # 为了保持向后兼容，将调用委托给关系管理器
+        try:
+            from core.relationship_manager import relationship_manager
+            
+            # 使用关系管理器的模板选择逻辑
+            template = relationship_manager._select_conflict_template(agent1_type, agent2_type)
+            trigger = relationship_manager._select_conflict_trigger(template, agent1_type, agent2_type)
+            
+            # 返回兼容的格式
+            return {
+                'topic': template['topic'],
+                'trigger': trigger,
+                'conflict_level': 'moderate',  # 默认中等强度
+                'resolution_probability': 0.6,
+                'intensity_factors': template['intensity_factors']
             }
-        }
-        
-        key = (agent1_type, agent2_type)
-        reverse_key = (agent2_type, agent1_type)
-        
-        scenario = conflict_templates.get(key) or conflict_templates.get(reverse_key)
-        if scenario:
-            scenario['conflict_level'] = random.choice(['mild', 'moderate', 'strong'])
-            scenario['resolution_probability'] = random.uniform(0.3, 0.8)
-        
-        return scenario or self._generate_generic_conflict()
+            
+        except Exception as e:
+            # 如果关系管理器不可用，使用简化版本
+            return self._generate_generic_conflict()
     
     def _generate_generic_conflict(self) -> Dict:
-        """生成通用冲突"""
+        """生成通用冲突（备用方案）"""
         topics = [
             '对小镇发展方向的不同看法',
-            '关于工作方式的分歧',
+            '关于工作方式的分歧', 
             '对某个社区决策的不同意见',
             '生活理念的差异'
         ]
+        
+        return {
+            'topic': random.choice(topics),
+            'trigger': '观点不同导致的分歧',
+            'conflict_level': 'mild',
+            'resolution_probability': 0.5
+        }
         
         return {
             'topic': random.choice(topics),
@@ -413,5 +561,4 @@ class AdvancedContextEngine:
             'resolution_probability': random.uniform(0.4, 0.7)
         }
 
-# 全局上下文引擎实例
-context_engine = AdvancedContextEngine()
+

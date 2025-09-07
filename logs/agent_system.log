@@ -6118,3 +6118,796 @@ b'{"status":{"error":"Not found: Collection `social_network_data` doesn\'t exist
 2025-08-31 14:20:46,517 - core.thread_manager - INFO - 线程管理器已安全关闭
 2025-08-31 14:20:46,517 - __main__ - INFO - thread_manager 关闭完成
 2025-08-31 14:20:46,518 - __main__ - INFO - 系统关闭完成
+2025-09-01 11:41:36,412 - root - INFO - 日志系统初始化完成
+2025-09-01 11:41:36,417 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-01 11:41:36,422 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-01 11:41:36,423 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-01 11:41:41,159 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-01 11:41:44,297 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-01 11:41:44,299 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-01 11:41:48,361 - memory.vector_store - ERROR - 连接测试失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-09-01 11:41:48,361 - memory.vector_store - WARNING - 连接尝试 1 失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-09-01 11:41:48,537 - root - INFO - 日志系统初始化完成
+2025-09-01 11:41:48,541 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-01 11:41:48,546 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-01 11:41:48,547 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-01 11:41:49,363 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-01 11:41:53,222 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-01 11:41:53,840 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-01 11:41:55,576 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-01 11:41:55,577 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-01 11:41:57,909 - memory.vector_store - ERROR - 连接测试失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-09-01 11:41:57,909 - memory.vector_store - WARNING - 连接尝试 2 失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-09-01 11:41:58,911 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-01 11:41:59,659 - memory.vector_store - ERROR - 连接测试失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-09-01 11:41:59,661 - memory.vector_store - WARNING - 连接尝试 1 失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-09-01 11:42:00,662 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-01 11:42:03,419 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-01 11:42:07,469 - memory.vector_store - ERROR - 连接测试失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-09-01 11:42:07,469 - memory.vector_store - WARNING - 连接尝试 3 失败: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2025-09-01 11:42:07,470 - memory.vector_store - ERROR - 所有连接尝试都失败，使用内存模式作为备用
+2025-09-01 11:42:07,470 - memory.vector_store - WARNING - 使用内存模式Qdrant (数据不会持久化)
+2025-09-01 11:42:07,499 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-01 11:42:07,501 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-01 11:42:07,507 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-01 11:42:07,510 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-01 11:42:07,513 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-01 11:42:07,513 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-01 11:42:07,714 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 3.49 MB
+2025-09-01 11:42:07,718 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-01 11:42:07,718 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-01 11:42:07,753 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-01 11:42:07,774 - memory.vector_store - INFO - 创建集合成功: agent_alex_memories
+2025-09-01 11:42:07,775 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-01 11:42:07,776 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 11:26:47,792 - root - INFO - 日志系统初始化完成
+2025-09-07 11:26:47,793 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 11:26:47,796 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 11:26:47,797 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 11:26:48,669 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 11:26:50,715 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 11:26:50,716 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 11:26:50,724 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 11:26:50,988 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 11:26:50,989 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 11:26:50,990 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 11:26:50,990 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 11:26:50,993 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 11:26:50,995 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 11:26:50,998 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 11:26:50,999 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 11:26:51,354 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 -1.29 MB
+2025-09-07 11:26:51,355 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 11:26:51,363 - core.smart_cleanup_manager - INFO - 内存使用率较高(85.8%)，执行自动清理
+2025-09-07 11:26:51,363 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 11:26:51,364 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 11:26:51,400 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 11:26:51,401 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 11:26:52,131 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 11:26:52,139 - memory.memory_cleaner - WARNING - 内存使用率过高: 86.4%, 执行紧急清理
+2025-09-07 11:26:52,578 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 28.07 MB
+2025-09-07 11:26:52,578 - memory.memory_cleaner - WARNING - 执行紧急内存清理...
+2025-09-07 11:26:53,148 - core.smart_cleanup_manager - INFO - 自动内存清理完成: {'before_memory_mb': 13919.5625, 'cleaned_items': 0, 'errors': [], 'gc_collected': 172, 'cache_cleaned': 0, 'after_memory_mb': 13891.4921875, 'memory_freed_mb': 28.0703125}
+2025-09-07 11:26:53,694 - memory.memory_cleaner - INFO - 紧急清理完成，采取行动: ['强制垃圾回收', '清理缓存']
+2025-09-07 11:27:05,924 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-09-07 11:27:06,943 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-09-07 11:27:10,323 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-09-07 11:27:10,364 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-09-07 11:27:10,490 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-09-07 11:27:13,622 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-09-07 11:27:13,638 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-09-07 11:27:13,780 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-09-07 11:27:16,944 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-09-07 11:27:16,965 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-09-07 11:27:17,041 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-09-07 11:27:20,277 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-09-07 11:27:20,312 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-09-07 11:27:20,395 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-09-07 11:27:23,754 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-09-07 11:27:23,775 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-09-07 11:27:23,887 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-09-07 11:27:27,197 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-09-07 11:27:27,208 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-09-07 11:27:27,415 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-09-07 11:27:30,846 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-09-07 11:27:30,857 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-09-07 11:27:31,124 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-09-07 11:27:33,956 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-09-07 11:27:33,987 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-09-07 11:27:34,097 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-09-07 11:27:37,043 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-09-07 11:27:37,061 - __main__ - INFO - 开始加载持久化数据...
+2025-09-07 11:27:37,113 - core.persistence_manager - INFO - 系统状态加载完成
+2025-09-07 11:27:37,114 - __main__ - INFO - 恢复了 9 个Agent的状态
+2025-09-07 11:27:37,114 - __main__ - INFO - 建筑物状态恢复完成
+2025-09-07 11:27:37,114 - __main__ - INFO - 恢复了 1 条聊天记录
+2025-09-07 11:27:37,114 - __main__ - INFO - 社交网络状态恢复完成
+2025-09-07 11:27:37,116 - __main__ - INFO - 系统配置恢复完成
+2025-09-07 11:27:37,116 - __main__ - INFO - 持久化数据加载完成
+2025-09-07 11:31:51,031 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 11:31:51,032 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 11:36:51,053 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 11:36:51,054 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 11:39:20,266 - __main__ - INFO - 开始关闭系统...
+2025-09-07 11:39:20,266 - __main__ - INFO - 自动模拟已停止
+2025-09-07 11:39:20,271 - core.persistence_manager - INFO - 快速保存完成: 3/3 组件成功保存
+2025-09-07 11:39:20,272 - __main__ - INFO - 关键数据保存完成
+2025-09-07 11:39:20,274 - memory.memory_cleaner - INFO - 正在关闭内存清理管理器...
+2025-09-07 11:39:20,274 - memory.memory_cleaner - INFO - 后台内存清理已停止
+2025-09-07 11:39:20,274 - memory.memory_cleaner - INFO - 内存清理管理器已关闭
+2025-09-07 11:39:20,275 - __main__ - INFO - memory_cleaner 关闭完成
+2025-09-07 11:39:20,276 - core.persistence_manager - INFO - 开始关闭持久化管理器...
+2025-09-07 11:39:20,278 - core.persistence_manager - INFO - 持久化管理器已关闭
+2025-09-07 11:39:20,278 - __main__ - INFO - persistence_manager 关闭完成
+2025-09-07 11:39:20,280 - core.error_handler - INFO - 开始关闭错误处理系统...
+2025-09-07 11:39:21,289 - __main__ - WARNING - error_handler 关闭超时，强制继续
+2025-09-07 11:39:25,295 - core.error_handler - INFO - 错误处理系统已关闭
+2025-09-07 11:39:25,296 - core.thread_manager - INFO - 开始关闭线程管理器...
+2025-09-07 11:39:25,297 - core.thread_manager - INFO - 线程管理器已安全关闭
+2025-09-07 11:39:25,297 - __main__ - INFO - thread_manager 关闭完成
+2025-09-07 11:39:25,298 - __main__ - INFO - 系统关闭完成
+2025-09-07 13:16:39,035 - root - INFO - 日志系统初始化完成
+2025-09-07 13:16:39,037 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 13:16:39,039 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 13:16:39,040 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 13:16:39,867 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 13:16:42,036 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 13:16:42,036 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 13:16:42,062 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 13:16:42,300 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 13:16:42,300 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 13:16:42,302 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 13:16:42,302 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 13:16:42,304 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 13:16:42,306 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 13:16:42,307 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 13:16:42,307 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 13:16:42,671 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 0.03 MB
+2025-09-07 13:16:42,672 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 13:16:42,859 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 13:16:42,912 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 13:16:42,913 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 13:16:43,620 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 13:16:56,636 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-09-07 13:16:57,381 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-09-07 13:17:00,883 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-09-07 13:17:00,896 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-09-07 13:17:01,022 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-09-07 13:17:04,467 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-09-07 13:17:04,480 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-09-07 13:17:04,662 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-09-07 13:17:08,348 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-09-07 13:17:08,395 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-09-07 13:17:08,481 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-09-07 13:17:12,254 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-09-07 13:17:12,265 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-09-07 13:17:12,447 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-09-07 13:17:15,271 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-09-07 13:17:15,313 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-09-07 13:17:15,417 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-09-07 13:17:18,325 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-09-07 13:17:18,362 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-09-07 13:17:18,539 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-09-07 13:17:21,809 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-09-07 13:17:21,843 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-09-07 13:17:22,030 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-09-07 13:17:26,105 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-09-07 13:17:26,116 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-09-07 13:17:26,292 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-09-07 13:17:29,458 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-09-07 13:17:29,466 - __main__ - INFO - 开始加载持久化数据...
+2025-09-07 13:17:29,520 - core.persistence_manager - INFO - 系统状态加载完成
+2025-09-07 13:17:29,520 - __main__ - INFO - 恢复了 9 个Agent的状态
+2025-09-07 13:17:29,521 - __main__ - INFO - 建筑物状态恢复完成
+2025-09-07 13:17:29,521 - __main__ - INFO - 恢复了 1 条聊天记录
+2025-09-07 13:17:29,522 - __main__ - INFO - 社交网络状态恢复完成
+2025-09-07 13:17:29,523 - __main__ - INFO - 系统配置恢复完成
+2025-09-07 13:17:29,523 - __main__ - INFO - 持久化数据加载完成
+2025-09-07 13:21:42,329 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 13:21:42,330 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 13:24:28,344 - __main__ - INFO - 开始关闭系统...
+2025-09-07 13:24:28,344 - __main__ - INFO - 自动模拟已停止
+2025-09-07 13:24:28,350 - core.persistence_manager - INFO - 快速保存完成: 3/3 组件成功保存
+2025-09-07 13:24:28,350 - __main__ - INFO - 关键数据保存完成
+2025-09-07 13:24:28,352 - memory.memory_cleaner - INFO - 正在关闭内存清理管理器...
+2025-09-07 13:24:28,353 - memory.memory_cleaner - INFO - 后台内存清理已停止
+2025-09-07 13:24:28,353 - memory.memory_cleaner - INFO - 内存清理管理器已关闭
+2025-09-07 13:24:28,353 - __main__ - INFO - memory_cleaner 关闭完成
+2025-09-07 13:24:28,356 - core.persistence_manager - INFO - 开始关闭持久化管理器...
+2025-09-07 13:24:28,357 - core.persistence_manager - INFO - 持久化管理器已关闭
+2025-09-07 13:24:28,357 - __main__ - INFO - persistence_manager 关闭完成
+2025-09-07 13:24:28,359 - core.error_handler - INFO - 开始关闭错误处理系统...
+2025-09-07 13:24:29,361 - __main__ - WARNING - error_handler 关闭超时，强制继续
+2025-09-07 13:24:33,366 - core.error_handler - INFO - 错误处理系统已关闭
+2025-09-07 13:24:33,367 - core.thread_manager - INFO - 开始关闭线程管理器...
+2025-09-07 13:24:33,368 - core.thread_manager - INFO - 线程管理器已安全关闭
+2025-09-07 13:24:33,368 - __main__ - INFO - thread_manager 关闭完成
+2025-09-07 13:24:33,369 - __main__ - INFO - 系统关闭完成
+2025-09-07 13:24:48,883 - root - INFO - 日志系统初始化完成
+2025-09-07 13:24:48,885 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 13:24:48,887 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 13:24:48,888 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 13:24:49,640 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 13:24:51,576 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 13:24:51,577 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 13:24:51,601 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 13:24:51,859 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 13:24:51,859 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 13:24:51,860 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 13:24:51,860 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 13:24:51,862 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 13:24:51,865 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 13:24:51,866 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 13:24:51,866 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 13:24:52,096 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 8.17 MB
+2025-09-07 13:24:52,097 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 13:24:52,117 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 13:24:52,184 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 13:24:52,185 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 13:24:52,929 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 13:25:05,552 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-09-07 13:25:06,190 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-09-07 13:25:09,692 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-09-07 13:25:09,720 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-09-07 13:25:09,875 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-09-07 13:25:14,143 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-09-07 13:25:14,155 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-09-07 13:25:14,400 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-09-07 13:25:18,092 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-09-07 13:25:18,119 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-09-07 13:25:18,282 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-09-07 13:25:21,568 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-09-07 13:25:21,611 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-09-07 13:25:21,784 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-09-07 13:25:24,689 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-09-07 13:25:24,720 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-09-07 13:25:24,890 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-09-07 13:25:28,975 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-09-07 13:25:28,987 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-09-07 13:25:29,201 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-09-07 13:25:32,152 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-09-07 13:25:32,163 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-09-07 13:25:32,370 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-09-07 13:25:35,728 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-09-07 13:25:35,761 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-09-07 13:25:35,969 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-09-07 13:25:39,167 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-09-07 13:25:39,168 - __main__ - INFO - 开始加载持久化数据...
+2025-09-07 13:25:39,217 - core.persistence_manager - INFO - 系统状态加载完成
+2025-09-07 13:25:39,218 - __main__ - INFO - 恢复了 9 个Agent的状态
+2025-09-07 13:25:39,218 - __main__ - INFO - 建筑物状态恢复完成
+2025-09-07 13:25:39,219 - __main__ - INFO - 恢复了 1 条聊天记录
+2025-09-07 13:25:39,219 - __main__ - INFO - 社交网络状态恢复完成
+2025-09-07 13:25:39,219 - __main__ - INFO - 系统配置恢复完成
+2025-09-07 13:25:39,220 - __main__ - INFO - 持久化数据加载完成
+2025-09-07 13:29:51,890 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 13:29:51,890 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 13:50:07,848 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 13:50:07,849 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 13:55:14,248 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 13:55:14,249 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 13:55:15,300 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 13:55:15,821 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 -1.76 MB
+2025-09-07 14:00:28,581 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 14:00:28,582 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 14:05:28,595 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 14:05:28,595 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 14:10:28,809 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 14:10:28,809 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 14:15:28,829 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 14:15:28,830 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 14:20:29,945 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 14:20:29,951 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 14:25:12,271 - __main__ - INFO - 开始关闭系统...
+2025-09-07 14:25:12,271 - __main__ - INFO - 自动模拟已停止
+2025-09-07 14:25:12,276 - core.persistence_manager - INFO - 快速保存完成: 3/3 组件成功保存
+2025-09-07 14:25:12,277 - __main__ - INFO - 关键数据保存完成
+2025-09-07 14:25:12,280 - memory.memory_cleaner - INFO - 正在关闭内存清理管理器...
+2025-09-07 14:25:12,280 - memory.memory_cleaner - INFO - 后台内存清理已停止
+2025-09-07 14:25:12,282 - memory.memory_cleaner - INFO - 内存清理管理器已关闭
+2025-09-07 14:25:12,283 - __main__ - INFO - memory_cleaner 关闭完成
+2025-09-07 14:25:12,285 - core.persistence_manager - INFO - 开始关闭持久化管理器...
+2025-09-07 14:25:12,286 - core.persistence_manager - INFO - 持久化管理器已关闭
+2025-09-07 14:25:12,286 - __main__ - INFO - persistence_manager 关闭完成
+2025-09-07 14:25:12,287 - core.error_handler - INFO - 开始关闭错误处理系统...
+2025-09-07 14:25:13,288 - __main__ - WARNING - error_handler 关闭超时，强制继续
+2025-09-07 14:25:17,301 - core.error_handler - INFO - 错误处理系统已关闭
+2025-09-07 14:25:17,303 - core.thread_manager - INFO - 开始关闭线程管理器...
+2025-09-07 14:25:17,303 - core.thread_manager - INFO - 线程管理器已安全关闭
+2025-09-07 14:25:17,304 - __main__ - INFO - thread_manager 关闭完成
+2025-09-07 14:25:17,304 - __main__ - INFO - 系统关闭完成
+2025-09-07 18:26:39,092 - root - INFO - 日志系统初始化完成
+2025-09-07 18:26:39,095 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 18:26:39,097 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 18:26:39,098 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 18:26:39,861 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 18:26:41,911 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 18:26:41,911 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 18:26:41,937 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 18:26:42,247 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 18:26:42,248 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 18:26:42,248 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 18:26:42,249 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 18:26:42,249 - simulation.social_interaction - INFO - 🔄 社交互动处理器已初始化 (重构版 - 辅助工具)
+2025-09-07 18:26:42,252 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 18:26:42,252 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 18:26:42,255 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 18:26:42,255 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 18:26:42,639 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 -13.17 MB
+2025-09-07 18:26:42,640 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 18:26:42,648 - core.smart_cleanup_manager - INFO - 内存使用率较高(81.0%)，执行自动清理
+2025-09-07 18:26:42,648 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 18:26:42,649 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 18:26:42,679 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 18:26:42,680 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 18:26:43,464 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 18:26:43,664 - memory.memory_cleaner - WARNING - 内存使用率过高: 81.3%, 执行紧急清理
+2025-09-07 18:26:43,873 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 -18.01 MB
+2025-09-07 18:26:43,874 - memory.memory_cleaner - WARNING - 执行紧急内存清理...
+2025-09-07 18:27:50,513 - root - INFO - 日志系统初始化完成
+2025-09-07 18:27:50,515 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 18:27:50,517 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 18:27:50,517 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 18:27:51,199 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 18:27:52,577 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 18:27:52,578 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 18:27:52,605 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 18:27:52,806 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 18:27:52,807 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 18:27:52,808 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 18:27:52,809 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 18:27:52,809 - simulation.social_interaction - INFO - 🔄 社交互动处理器已初始化 (重构版 - 辅助工具)
+2025-09-07 18:27:52,811 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 18:27:52,812 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 18:27:52,813 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 18:27:52,813 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 18:27:53,187 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 -26.89 MB
+2025-09-07 18:27:53,187 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 18:27:53,195 - core.smart_cleanup_manager - INFO - 内存使用率较高(80.0%)，执行自动清理
+2025-09-07 18:27:53,195 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 18:27:53,196 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 18:27:53,238 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 18:27:53,239 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 18:27:54,477 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 18:27:54,757 - memory.memory_cleaner - WARNING - 内存使用率过高: 80.7%, 执行紧急清理
+2025-09-07 18:27:55,007 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 -1437.59 MB
+2025-09-07 18:27:55,007 - memory.memory_cleaner - WARNING - 执行紧急内存清理...
+2025-09-07 18:27:55,008 - core.smart_cleanup_manager - INFO - 自动内存清理完成: {'before_memory_mb': 13043.078125, 'cleaned_items': 0, 'errors': [], 'gc_collected': 86, 'cache_cleaned': 0, 'after_memory_mb': 14480.671875, 'memory_freed_mb': -1437.59375}
+2025-09-07 18:27:55,555 - memory.memory_cleaner - INFO - 紧急清理完成，采取行动: ['强制垃圾回收', '清理缓存']
+2025-09-07 18:28:06,844 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-09-07 18:28:07,584 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-09-07 18:28:11,312 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-09-07 18:28:11,329 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-09-07 18:28:11,536 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-09-07 18:28:14,966 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-09-07 18:28:14,986 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-09-07 18:28:15,111 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-09-07 18:28:18,681 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-09-07 18:28:18,694 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-09-07 18:28:18,851 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-09-07 18:28:22,488 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-09-07 18:28:22,519 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-09-07 18:28:22,623 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-09-07 18:28:26,364 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-09-07 18:28:26,403 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-09-07 18:28:26,546 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-09-07 18:28:29,855 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-09-07 18:28:29,886 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-09-07 18:28:30,011 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-09-07 18:28:33,443 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-09-07 18:28:33,486 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-09-07 18:28:33,613 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-09-07 18:28:37,013 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-09-07 18:28:37,024 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-09-07 18:28:37,322 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-09-07 18:28:40,778 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-09-07 18:28:40,779 - __main__ - INFO - 开始加载持久化数据...
+2025-09-07 18:28:40,826 - core.persistence_manager - INFO - 系统状态加载完成
+2025-09-07 18:28:40,827 - __main__ - INFO - 恢复了 9 个Agent的状态
+2025-09-07 18:28:40,827 - __main__ - INFO - 建筑物状态恢复完成
+2025-09-07 18:28:40,827 - __main__ - INFO - 恢复了 1 条聊天记录
+2025-09-07 18:28:40,828 - __main__ - INFO - 社交网络状态恢复完成
+2025-09-07 18:28:40,828 - __main__ - INFO - 系统配置恢复完成
+2025-09-07 18:28:40,829 - __main__ - INFO - 持久化数据加载完成
+2025-09-07 18:32:52,834 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 18:32:52,835 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 18:32:55,577 - memory.memory_cleaner - WARNING - 内存使用率过高: 90.4%, 执行紧急清理
+2025-09-07 18:32:55,578 - memory.memory_cleaner - WARNING - 执行紧急内存清理...
+2025-09-07 18:32:56,144 - memory.memory_cleaner - INFO - 紧急清理完成，采取行动: ['强制垃圾回收', '清理缓存']
+2025-09-07 18:32:56,894 - core.smart_cleanup_manager - WARNING - 内存使用率过高(90.3%)，执行紧急清理
+2025-09-07 18:32:57,104 - memory.memory_cleaner - WARNING - 执行紧急内存清理...
+2025-09-07 18:32:57,435 - memory.memory_cleaner - INFO - 紧急清理完成，采取行动: ['强制垃圾回收', '清理缓存']
+2025-09-07 18:32:57,436 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 18:32:57,604 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 18:32:57,605 - core.smart_cleanup_manager - INFO - 紧急清理完成: GC回收339个对象, 清理结果: {'emergency_cleanup': True, 'actions_taken': ['强制垃圾回收', '清理缓存'], 'gc_collected': 0, 'cache_cleaned': 0, 'emergency_deleted': 0}
+2025-09-07 18:34:41,344 - __main__ - INFO - 开始关闭系统...
+2025-09-07 18:34:41,345 - __main__ - INFO - 自动模拟已停止
+2025-09-07 18:34:41,350 - core.persistence_manager - INFO - 快速保存完成: 3/3 组件成功保存
+2025-09-07 18:34:41,350 - __main__ - INFO - 关键数据保存完成
+2025-09-07 18:34:41,352 - memory.memory_cleaner - INFO - 正在关闭内存清理管理器...
+2025-09-07 18:34:41,352 - memory.memory_cleaner - INFO - 后台内存清理已停止
+2025-09-07 18:34:41,353 - memory.memory_cleaner - INFO - 内存清理管理器已关闭
+2025-09-07 18:34:41,353 - __main__ - INFO - memory_cleaner 关闭完成
+2025-09-07 18:34:41,355 - core.persistence_manager - INFO - 开始关闭持久化管理器...
+2025-09-07 18:34:41,355 - core.persistence_manager - INFO - 持久化管理器已关闭
+2025-09-07 18:34:41,356 - __main__ - INFO - persistence_manager 关闭完成
+2025-09-07 18:34:41,356 - core.error_handler - INFO - 开始关闭错误处理系统...
+2025-09-07 18:34:42,359 - __main__ - WARNING - error_handler 关闭超时，强制继续
+2025-09-07 18:34:46,368 - core.error_handler - INFO - 错误处理系统已关闭
+2025-09-07 18:34:46,369 - core.thread_manager - INFO - 开始关闭线程管理器...
+2025-09-07 18:34:46,369 - core.thread_manager - INFO - 线程管理器已安全关闭
+2025-09-07 18:34:46,371 - __main__ - INFO - thread_manager 关闭完成
+2025-09-07 18:34:46,371 - __main__ - INFO - 系统关闭完成
+2025-09-07 18:37:49,944 - root - INFO - 日志系统初始化完成
+2025-09-07 18:37:49,945 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 18:37:49,947 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 18:37:49,947 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 18:37:50,668 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 18:37:52,596 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 18:37:52,597 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 18:37:52,605 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 18:37:52,861 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 18:37:52,862 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 18:37:52,862 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 18:37:52,862 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 18:37:52,862 - simulation.social_interaction - INFO - 🔄 社交互动处理器已初始化 (重构版 - 辅助工具)
+2025-09-07 18:37:52,865 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 18:37:52,866 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 18:37:52,867 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 18:37:52,867 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 18:37:53,218 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 0.04 MB
+2025-09-07 18:37:53,219 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 18:37:53,395 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 18:37:53,445 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 18:37:53,446 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 18:37:53,893 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 18:38:09,400 - root - INFO - 日志系统初始化完成
+2025-09-07 18:38:09,401 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 18:38:09,403 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 18:38:09,403 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 18:38:10,119 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 18:38:11,507 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 18:38:11,507 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 18:38:11,527 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 18:38:11,736 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 18:38:11,736 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 18:38:11,736 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 18:38:11,738 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 18:38:11,738 - simulation.social_interaction - INFO - 🔄 社交互动处理器已初始化 (重构版 - 辅助工具)
+2025-09-07 18:38:11,740 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 18:38:11,741 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 18:38:11,741 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 18:38:11,741 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 18:38:12,096 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 -2.97 MB
+2025-09-07 18:38:12,097 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 18:38:12,277 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 18:38:12,327 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 18:38:12,328 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 18:38:12,770 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 18:42:36,372 - root - INFO - 日志系统初始化完成
+2025-09-07 18:42:36,373 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 18:42:36,374 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 18:42:36,374 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 18:42:37,045 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 18:42:38,394 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 18:42:38,394 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 18:42:38,413 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 18:42:38,612 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 18:42:38,612 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 18:42:38,613 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 18:42:38,613 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 18:42:38,613 - simulation.social_interaction - INFO - 🔄 社交互动处理器已初始化 (重构版 - 辅助工具)
+2025-09-07 18:42:38,615 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 18:42:38,616 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 18:42:38,617 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 18:42:38,617 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 18:42:38,972 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 29.15 MB
+2025-09-07 18:42:38,973 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 18:42:38,982 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 18:42:39,199 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 18:42:39,200 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 18:42:39,616 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 18:43:35,405 - root - INFO - 日志系统初始化完成
+2025-09-07 18:43:35,405 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 18:43:35,408 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 18:43:35,408 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 18:43:36,143 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 18:43:37,634 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 18:43:37,634 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 18:43:37,654 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 18:43:37,888 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 18:43:37,889 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 18:43:37,889 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 18:43:37,889 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 18:43:37,889 - simulation.social_interaction - INFO - 🔄 社交互动处理器已初始化 (重构版 - 辅助工具)
+2025-09-07 18:43:37,890 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 18:43:37,891 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 18:43:37,892 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 18:43:37,892 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 18:43:38,088 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 42.57 MB
+2025-09-07 18:43:38,088 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 18:43:38,103 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 18:43:38,135 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 18:43:38,137 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 18:43:38,589 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 18:43:51,542 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-09-07 18:43:52,167 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-09-07 18:43:55,913 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-09-07 18:43:55,943 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-09-07 18:43:56,072 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-09-07 18:43:59,336 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-09-07 18:43:59,373 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-09-07 18:43:59,487 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-09-07 18:44:03,985 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-09-07 18:44:04,019 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-09-07 18:44:04,110 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-09-07 18:44:07,666 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-09-07 18:44:07,699 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-09-07 18:44:07,830 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-09-07 18:44:11,028 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-09-07 18:44:11,059 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-09-07 18:44:11,352 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-09-07 18:44:14,937 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-09-07 18:44:14,957 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-09-07 18:44:15,042 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-09-07 18:44:18,297 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-09-07 18:44:18,315 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-09-07 18:44:18,600 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-09-07 18:44:22,125 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-09-07 18:44:22,145 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-09-07 18:44:22,219 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-09-07 18:44:25,712 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-09-07 18:44:25,714 - __main__ - INFO - 开始加载持久化数据...
+2025-09-07 18:44:25,748 - core.persistence_manager - INFO - 系统状态加载完成
+2025-09-07 18:44:25,749 - __main__ - INFO - 恢复了 9 个Agent的状态
+2025-09-07 18:44:25,749 - __main__ - INFO - 建筑物状态恢复完成
+2025-09-07 18:44:25,749 - __main__ - INFO - 恢复了 1 条聊天记录
+2025-09-07 18:44:25,749 - __main__ - INFO - 社交网络状态恢复完成
+2025-09-07 18:44:25,749 - __main__ - INFO - 系统配置恢复完成
+2025-09-07 18:44:25,750 - __main__ - INFO - 持久化数据加载完成
+2025-09-07 18:44:42,732 - simulation.simulation_engine - INFO - 自动模拟循环启动
+2025-09-07 18:44:53,093 - simulation.simulation_engine - ERROR - 执行社交互动异常: 'SimulationEngine' object has no attribute 'behavior_manager'
+2025-09-07 18:45:03,338 - simulation.simulation_engine - ERROR - 执行社交互动异常: 'SimulationEngine' object has no attribute 'behavior_manager'
+2025-09-07 18:45:17,207 - simulation.simulation_engine - INFO - 自动模拟循环结束
+2025-09-07 18:45:17,208 - simulation.simulation_engine - INFO - 自动模拟循环结束
+2025-09-07 18:47:13,847 - __main__ - INFO - 开始关闭系统...
+2025-09-07 18:47:13,847 - __main__ - INFO - 自动模拟已停止
+2025-09-07 18:47:13,852 - core.persistence_manager - INFO - 快速保存完成: 3/3 组件成功保存
+2025-09-07 18:47:13,852 - __main__ - INFO - 关键数据保存完成
+2025-09-07 18:47:13,854 - memory.memory_cleaner - INFO - 正在关闭内存清理管理器...
+2025-09-07 18:47:13,854 - memory.memory_cleaner - INFO - 后台内存清理已停止
+2025-09-07 18:47:13,854 - memory.memory_cleaner - INFO - 内存清理管理器已关闭
+2025-09-07 18:47:13,854 - __main__ - INFO - memory_cleaner 关闭完成
+2025-09-07 18:47:13,855 - core.persistence_manager - INFO - 开始关闭持久化管理器...
+2025-09-07 18:47:13,855 - core.persistence_manager - INFO - 持久化管理器已关闭
+2025-09-07 18:47:13,857 - __main__ - INFO - persistence_manager 关闭完成
+2025-09-07 18:47:13,857 - core.error_handler - INFO - 开始关闭错误处理系统...
+2025-09-07 18:47:14,871 - __main__ - WARNING - error_handler 关闭超时，强制继续
+2025-09-07 18:47:18,864 - core.error_handler - INFO - 错误处理系统已关闭
+2025-09-07 18:47:18,865 - core.thread_manager - INFO - 开始关闭线程管理器...
+2025-09-07 18:47:18,866 - core.thread_manager - INFO - 线程管理器已安全关闭
+2025-09-07 18:47:18,866 - __main__ - INFO - thread_manager 关闭完成
+2025-09-07 18:47:18,867 - __main__ - INFO - 系统关闭完成
+2025-09-07 18:47:41,388 - root - INFO - 日志系统初始化完成
+2025-09-07 18:47:41,390 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 18:47:41,392 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 18:47:41,392 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 18:47:42,229 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 18:47:44,304 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 18:47:44,305 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 18:47:44,312 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 18:47:44,558 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 18:47:44,559 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 18:47:44,559 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 18:47:44,559 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 18:47:44,559 - simulation.social_interaction - INFO - 🔄 社交互动处理器已初始化 (重构版 - 辅助工具)
+2025-09-07 18:47:44,561 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 18:47:44,562 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 18:47:44,564 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 18:47:44,564 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 18:47:44,777 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 -4.51 MB
+2025-09-07 18:47:44,778 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 18:47:44,795 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 18:47:44,828 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 18:47:44,829 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 18:47:45,505 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 18:47:57,679 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-09-07 18:47:58,283 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-09-07 18:48:02,093 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-09-07 18:48:02,124 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-09-07 18:48:02,223 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-09-07 18:48:05,207 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-09-07 18:48:05,237 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-09-07 18:48:05,360 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-09-07 18:48:08,522 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-09-07 18:48:08,559 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-09-07 18:48:08,688 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-09-07 18:48:12,118 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-09-07 18:48:12,129 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-09-07 18:48:12,269 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-09-07 18:48:16,160 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-09-07 18:48:16,200 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-09-07 18:48:16,328 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-09-07 18:48:19,594 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-09-07 18:48:19,633 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-09-07 18:48:19,731 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-09-07 18:48:23,380 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-09-07 18:48:23,402 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-09-07 18:48:23,525 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-09-07 18:48:27,183 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-09-07 18:48:27,209 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-09-07 18:48:27,487 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-09-07 18:48:31,219 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-09-07 18:48:31,221 - __main__ - INFO - 开始加载持久化数据...
+2025-09-07 18:48:31,250 - core.persistence_manager - INFO - 系统状态加载完成
+2025-09-07 18:48:31,250 - __main__ - INFO - 恢复了 9 个Agent的状态
+2025-09-07 18:48:31,250 - __main__ - INFO - 建筑物状态恢复完成
+2025-09-07 18:48:31,250 - __main__ - INFO - 恢复了 1 条聊天记录
+2025-09-07 18:48:31,252 - __main__ - INFO - 社交网络状态恢复完成
+2025-09-07 18:48:31,252 - __main__ - INFO - 系统配置恢复完成
+2025-09-07 18:48:31,252 - __main__ - INFO - 持久化数据加载完成
+2025-09-07 18:48:34,986 - simulation.simulation_engine - INFO - 自动模拟循环启动
+2025-09-07 18:49:59,786 - simulation.simulation_engine - INFO - 📤 交互任务已添加到队列: John ↔ Mike
+2025-09-07 18:49:59,786 - __main__ - INFO - 🔄 开始异步处理交互: John ↔ Mike
+2025-09-07 18:49:59,788 - __main__ - INFO - 📊 社交网络更新完成: {'old_strength': 8, 'new_strength': 0, 'change': -10, 'old_level': '陌生', 'new_level': '陌生', 'level_changed': False, 'effect_details': '基础产生误解: -10', 'relationship_emoji': '�', 'relationship_desc': '不熟悉，初次见面'}
+2025-09-07 18:49:59,788 - __main__ - INFO - 💾 准备保存交互记录到向量数据库...
+2025-09-07 18:49:59,788 - __main__ - INFO - ✅ 交互记录任务已添加到内存队列
+2025-09-07 18:49:59,788 - __main__ - INFO - 🗄️ 开始保存交互到向量数据库: John ↔ Mike (misunderstanding)
+2025-09-07 18:49:59,789 - __main__ - INFO - 🗂️ 准备保存到John的记忆库: agent_john_memories
+2025-09-07 18:49:59,843 - __main__ - INFO - ✅ 成功保存到John记忆库: 269ca0ab-8cdc-4d59-a7f1-58542e64df8a
+2025-09-07 18:49:59,844 - __main__ - INFO - 🗂️ 准备保存到Mike的记忆库: agent_mike_memories
+2025-09-07 18:49:59,891 - __main__ - INFO - ✅ 成功保存到Mike记忆库: 6d9ab5ab-c04d-4906-af4c-e46862e2531a
+2025-09-07 18:49:59,891 - __main__ - INFO - ✅ 完成保存John与Mike的misunderstanding交互
+2025-09-07 18:52:30,052 - simulation.simulation_engine - INFO - 📤 交互任务已添加到队列: David ↔ Mike
+2025-09-07 18:52:30,052 - __main__ - INFO - 🔄 开始异步处理交互: David ↔ Mike
+2025-09-07 18:52:30,052 - __main__ - INFO - 📊 社交网络更新完成: {'old_strength': 2, 'new_strength': 0, 'change': -10, 'old_level': '陌生', 'new_level': '陌生', 'level_changed': False, 'effect_details': '基础产生误解: -10', 'relationship_emoji': '�', 'relationship_desc': '不熟悉，初次见面'}
+2025-09-07 18:52:30,052 - __main__ - INFO - 💾 准备保存交互记录到向量数据库...
+2025-09-07 18:52:30,052 - __main__ - INFO - ✅ 交互记录任务已添加到内存队列
+2025-09-07 18:52:30,052 - __main__ - INFO - 🗄️ 开始保存交互到向量数据库: David ↔ Mike (misunderstanding)
+2025-09-07 18:52:30,053 - __main__ - INFO - 🗂️ 准备保存到David的记忆库: agent_david_memories
+2025-09-07 18:52:30,071 - __main__ - INFO - ✅ 成功保存到David记忆库: 5831abdf-34d3-442e-9bff-f76afcf3fa42
+2025-09-07 18:52:30,072 - __main__ - INFO - 🗂️ 准备保存到Mike的记忆库: agent_mike_memories
+2025-09-07 18:52:30,092 - __main__ - INFO - ✅ 成功保存到Mike记忆库: dd2d24d2-7961-4fde-8e4e-b2c182a265bc
+2025-09-07 18:52:30,092 - __main__ - INFO - ✅ 完成保存David与Mike的misunderstanding交互
+2025-09-07 18:52:44,582 - core.persistence_manager - INFO - 系统状态保存完成: 6/6 组件成功保存
+2025-09-07 18:52:44,582 - core.persistence_manager - INFO - 自动保存完成
+2025-09-07 18:53:56,443 - simulation.simulation_engine - INFO - 📤 交互任务已添加到队列: Alex ↔ Tom
+2025-09-07 18:53:56,443 - __main__ - INFO - 🔄 开始异步处理交互: Alex ↔ Tom
+2025-09-07 18:53:56,444 - __main__ - INFO - 📊 社交网络更新完成: {'old_strength': 62, 'new_strength': 63, 'change': 1, 'old_level': '好朋友', 'new_level': '好朋友', 'level_changed': False, 'effect_details': '基础偶然相遇: +1', 'relationship_emoji': '😄', 'relationship_desc': '关系很好，经常交流'}
+2025-09-07 18:53:56,444 - __main__ - INFO - 💾 准备保存交互记录到向量数据库...
+2025-09-07 18:53:56,444 - __main__ - INFO - ✅ 交互记录任务已添加到内存队列
+2025-09-07 18:53:56,444 - __main__ - INFO - 🗄️ 开始保存交互到向量数据库: Alex ↔ Tom (casual_meeting)
+2025-09-07 18:53:56,445 - __main__ - INFO - 🗂️ 准备保存到Alex的记忆库: agent_alex_memories
+2025-09-07 18:53:56,484 - __main__ - INFO - ✅ 成功保存到Alex记忆库: 9d65fa2a-9019-4e6e-8a48-959dbef6eabd
+2025-09-07 18:53:56,484 - __main__ - INFO - 🗂️ 准备保存到Tom的记忆库: agent_tom_memories
+2025-09-07 18:53:56,517 - __main__ - INFO - ✅ 成功保存到Tom记忆库: 2919fd45-87f0-4649-aac9-5fad3ffeb248
+2025-09-07 18:53:56,517 - __main__ - INFO - ✅ 完成保存Alex与Tom的casual_meeting交互
+2025-09-07 18:55:41,873 - simulation.simulation_engine - INFO - 📤 交互任务已添加到队列: Tom ↔ Sarah
+2025-09-07 18:55:41,873 - __main__ - INFO - 🔄 开始异步处理交互: Tom ↔ Sarah
+2025-09-07 18:55:41,874 - __main__ - INFO - 📊 社交网络更新完成: {'old_strength': 48, 'new_strength': 49, 'change': 1, 'old_level': '熟人', 'new_level': '熟人', 'level_changed': False, 'effect_details': '基础偶然相遇: +1', 'relationship_emoji': '😊', 'relationship_desc': '比较熟悉，偶尔聊天'}
+2025-09-07 18:55:41,876 - agents.behavior_manager - INFO - 社交网络数据已保存到: E:\Da-model-learn\virtual-community-sim\data\cache\social_network.json
+2025-09-07 18:55:41,876 - __main__ - INFO - 💾 准备保存交互记录到向量数据库...
+2025-09-07 18:55:41,876 - __main__ - INFO - ✅ 交互记录任务已添加到内存队列
+2025-09-07 18:55:41,876 - __main__ - INFO - 🗄️ 开始保存交互到向量数据库: Tom ↔ Sarah (casual_meeting)
+2025-09-07 18:55:41,877 - __main__ - INFO - 🗂️ 准备保存到Tom的记忆库: agent_tom_memories
+2025-09-07 18:55:41,915 - __main__ - INFO - ✅ 成功保存到Tom记忆库: f3838b9d-ee0b-4721-b095-aee621e3149a
+2025-09-07 18:55:41,915 - __main__ - INFO - 🗂️ 准备保存到Sarah的记忆库: agent_sarah_memories
+2025-09-07 18:55:41,945 - __main__ - INFO - ✅ 成功保存到Sarah记忆库: d7045cb3-723c-4420-9afa-56edfcc1ee3a
+2025-09-07 18:55:41,946 - __main__ - INFO - ✅ 完成保存Tom与Sarah的casual_meeting交互
+2025-09-07 18:56:45,976 - __main__ - INFO - 开始关闭系统...
+2025-09-07 18:56:45,976 - __main__ - INFO - 自动模拟已停止
+2025-09-07 18:56:45,982 - core.persistence_manager - INFO - 快速保存完成: 3/3 组件成功保存
+2025-09-07 18:56:45,983 - __main__ - INFO - 关键数据保存完成
+2025-09-07 18:56:45,983 - memory.memory_cleaner - INFO - 正在关闭内存清理管理器...
+2025-09-07 18:56:45,984 - memory.memory_cleaner - INFO - 后台内存清理已停止
+2025-09-07 18:56:45,984 - memory.memory_cleaner - INFO - 内存清理管理器已关闭
+2025-09-07 18:56:45,984 - __main__ - INFO - memory_cleaner 关闭完成
+2025-09-07 18:56:45,985 - core.persistence_manager - INFO - 开始关闭持久化管理器...
+2025-09-07 18:56:45,986 - core.persistence_manager - INFO - 持久化管理器已关闭
+2025-09-07 18:56:45,986 - __main__ - INFO - persistence_manager 关闭完成
+2025-09-07 18:56:45,987 - core.error_handler - INFO - 开始关闭错误处理系统...
+2025-09-07 18:56:47,001 - __main__ - WARNING - error_handler 关闭超时，强制继续
+2025-09-07 18:56:50,999 - core.error_handler - INFO - 错误处理系统已关闭
+2025-09-07 18:56:51,000 - core.thread_manager - INFO - 开始关闭线程管理器...
+2025-09-07 18:56:51,001 - core.thread_manager - INFO - 线程管理器已安全关闭
+2025-09-07 18:56:51,001 - __main__ - INFO - thread_manager 关闭完成
+2025-09-07 18:56:51,001 - __main__ - INFO - 系统关闭完成
+2025-09-07 18:57:20,390 - root - INFO - 日志系统初始化完成
+2025-09-07 18:57:20,391 - core.persistence_manager - INFO - 持久化管理器初始化完成，数据目录: data
+2025-09-07 18:57:20,393 - core.error_handler - INFO - 错误处理系统初始化完成
+2025-09-07 18:57:20,394 - memory.vector_store - INFO - 尝试连接到Qdrant服务器: localhost:6333
+2025-09-07 18:57:21,178 - memory.embedding_service - INFO - 尝试加载本地嵌入模型: C:\Users\guohaoyu\.cache\huggingface\hub\models--BAAI--bge-small-zh-v1.5\snapshots\7999e1d3359715c523056ef9478215996d62a620
+2025-09-07 18:57:22,967 - memory.embedding_service - INFO - 本地嵌入模型加载成功，维度: 512
+2025-09-07 18:57:22,967 - memory.vector_store - INFO - 连接配置: localhost:6333, 向量维度: 512
+2025-09-07 18:57:22,992 - memory.vector_store - INFO - 连接测试成功，当前集合数量: 10
+2025-09-07 18:57:23,219 - memory.vector_store - INFO - 健康检查通过
+2025-09-07 18:57:23,220 - memory.vector_store - INFO - Qdrant连接成功建立
+2025-09-07 18:57:23,220 - memory.memory_cleaner - INFO - 内存清理管理器初始化完成
+2025-09-07 18:57:23,221 - core.smart_cleanup_manager - INFO - 智能清理管理器初始化完成
+2025-09-07 18:57:23,221 - simulation.social_interaction - INFO - 🔄 社交互动处理器已初始化 (重构版 - 辅助工具)
+2025-09-07 18:57:23,223 - core.thread_manager - INFO - 后台工作线程已启动
+2025-09-07 18:57:23,224 - core.persistence_manager - INFO - 自动保存线程已启动
+2025-09-07 18:57:23,226 - memory.memory_cleaner - INFO - 开始系统内存清理...
+2025-09-07 18:57:23,226 - memory.memory_cleaner - INFO - 后台内存清理已启动
+2025-09-07 18:57:23,414 - memory.memory_cleaner - INFO - 系统内存清理完成，释放 -3.00 MB
+2025-09-07 18:57:23,415 - memory.memory_cleaner - INFO - 开始向量数据库清理...
+2025-09-07 18:57:23,428 - core.smart_cleanup_manager - INFO - 智能清理监控已启动，检查间隔: 60秒
+2025-09-07 18:57:23,469 - memory.memory_manager - INFO - 记忆管理器初始化完成: alex
+2025-09-07 18:57:23,470 - model_interface.qwen_interface - INFO - 强制GPU加载模型: ./model/Qwen2.5-3B
+2025-09-07 18:57:23,949 - memory.memory_cleaner - INFO - 向量数据库清理完成，删除 0 条记忆
+2025-09-07 18:57:36,040 - model_interface.qwen_interface - INFO - ✅ 模型成功加载到GPU
+2025-09-07 18:57:36,656 - agents.base_agent - INFO - Agent Alex (程序员) 创建成功
+2025-09-07 18:57:40,734 - agents.base_agent - INFO - Alex 具备DeepSeek高级推理能力
+2025-09-07 18:57:40,769 - memory.memory_manager - INFO - 记忆管理器初始化完成: emma
+2025-09-07 18:57:40,993 - agents.base_agent - INFO - Agent Emma (艺术家) 创建成功
+2025-09-07 18:57:44,860 - agents.base_agent - INFO - Emma 具备DeepSeek高级推理能力
+2025-09-07 18:57:44,899 - memory.memory_manager - INFO - 记忆管理器初始化完成: sarah
+2025-09-07 18:57:45,041 - agents.base_agent - INFO - Agent Sarah (老师) 创建成功
+2025-09-07 18:57:48,539 - agents.base_agent - INFO - Sarah 具备DeepSeek高级推理能力
+2025-09-07 18:57:48,578 - memory.memory_manager - INFO - 记忆管理器初始化完成: david
+2025-09-07 18:57:48,722 - agents.base_agent - INFO - Agent David (商人) 创建成功
+2025-09-07 18:57:52,535 - agents.base_agent - INFO - David 具备DeepSeek高级推理能力
+2025-09-07 18:57:52,579 - memory.memory_manager - INFO - 记忆管理器初始化完成: lisa
+2025-09-07 18:57:52,754 - agents.base_agent - INFO - Agent Lisa (学生) 创建成功
+2025-09-07 18:57:55,931 - agents.base_agent - INFO - Lisa 具备DeepSeek高级推理能力
+2025-09-07 18:57:55,957 - memory.memory_manager - INFO - 记忆管理器初始化完成: mike
+2025-09-07 18:57:56,143 - agents.base_agent - INFO - Agent Mike (退休人员) 创建成功
+2025-09-07 18:57:59,297 - agents.base_agent - INFO - Mike 具备DeepSeek高级推理能力
+2025-09-07 18:57:59,331 - memory.memory_manager - INFO - 记忆管理器初始化完成: john
+2025-09-07 18:57:59,593 - agents.base_agent - INFO - Agent John (医生) 创建成功
+2025-09-07 18:58:03,497 - agents.base_agent - INFO - John 具备DeepSeek高级推理能力
+2025-09-07 18:58:03,531 - memory.memory_manager - INFO - 记忆管理器初始化完成: anna
+2025-09-07 18:58:03,684 - agents.base_agent - INFO - Agent Anna (厨师) 创建成功
+2025-09-07 18:58:07,080 - agents.base_agent - INFO - Anna 具备DeepSeek高级推理能力
+2025-09-07 18:58:07,113 - memory.memory_manager - INFO - 记忆管理器初始化完成: tom
+2025-09-07 18:58:07,252 - agents.base_agent - INFO - Agent Tom (机械师) 创建成功
+2025-09-07 18:58:11,178 - agents.base_agent - INFO - Tom 具备DeepSeek高级推理能力
+2025-09-07 18:58:11,179 - __main__ - INFO - 开始加载持久化数据...
+2025-09-07 18:58:11,230 - core.persistence_manager - INFO - 系统状态加载完成
+2025-09-07 18:58:11,232 - __main__ - INFO - 恢复了 9 个Agent的状态
+2025-09-07 18:58:11,232 - __main__ - INFO - 建筑物状态恢复完成
+2025-09-07 18:58:11,232 - __main__ - INFO - 恢复了 1 条聊天记录
+2025-09-07 18:58:11,233 - __main__ - INFO - 社交网络状态恢复完成
+2025-09-07 18:58:11,233 - __main__ - INFO - 系统配置恢复完成
+2025-09-07 18:58:11,233 - __main__ - INFO - 持久化数据加载完成
+2025-09-07 18:58:20,871 - simulation.simulation_engine - INFO - 自动模拟循环启动
+2025-09-07 18:59:30,987 - simulation.simulation_engine - INFO - 📤 交互任务已添加到队列: Mike ↔ Emma
+2025-09-07 18:59:30,987 - __main__ - INFO - 🔄 开始异步处理交互: Mike ↔ Emma
+2025-09-07 18:59:30,987 - __main__ - INFO - 📊 社交网络更新完成: {'old_strength': 56, 'new_strength': 61, 'change': 5, 'old_level': '熟人', 'new_level': '好朋友', 'level_changed': True, 'effect_details': '基础友好聊天: +3 | 同地点: +2', 'relationship_emoji': '😄', 'relationship_desc': '关系很好，经常交流', 'level_change_message': '友谊加深，成为了好朋友'}
+2025-09-07 18:59:30,989 - __main__ - INFO - 💾 准备保存交互记录到向量数据库...
+2025-09-07 18:59:30,989 - __main__ - INFO - ✅ 交互记录任务已添加到内存队列
+2025-09-07 18:59:30,989 - __main__ - INFO - 🗄️ 开始保存交互到向量数据库: Mike ↔ Emma (friendly_chat)
+2025-09-07 18:59:30,989 - __main__ - INFO - 🗂️ 准备保存到Mike的记忆库: agent_mike_memories
+2025-09-07 18:59:31,015 - __main__ - INFO - ✅ 成功保存到Mike记忆库: 7ad8e22e-0537-46fd-b67b-89bdd03ffb2f
+2025-09-07 18:59:31,016 - __main__ - INFO - 🗂️ 准备保存到Emma的记忆库: agent_emma_memories
+2025-09-07 18:59:31,038 - __main__ - INFO - ✅ 成功保存到Emma记忆库: ff8c14db-7541-445c-995d-23d29eb526ef
+2025-09-07 18:59:31,039 - __main__ - INFO - ✅ 完成保存Mike与Emma的friendly_chat交互
+2025-09-07 19:01:27,630 - simulation.simulation_engine - INFO - 📤 交互任务已添加到队列: John ↔ Alex
+2025-09-07 19:01:27,630 - __main__ - INFO - 🔄 开始异步处理交互: John ↔ Alex
+2025-09-07 19:01:27,631 - __main__ - INFO - 📊 社交网络更新完成: {'old_strength': 30, 'new_strength': 20, 'change': -10, 'old_level': '认识', 'new_level': '陌生', 'level_changed': True, 'effect_details': '基础产生误解: -10', 'relationship_emoji': '�', 'relationship_desc': '不熟悉，初次见面', 'level_change_message': '关系疏远，变得陌生'}
+2025-09-07 19:01:27,632 - __main__ - INFO - 💾 准备保存交互记录到向量数据库...
+2025-09-07 19:01:27,632 - __main__ - INFO - ✅ 交互记录任务已添加到内存队列
+2025-09-07 19:01:27,632 - __main__ - INFO - 🗄️ 开始保存交互到向量数据库: John ↔ Alex (misunderstanding)
+2025-09-07 19:01:27,633 - __main__ - INFO - 🗂️ 准备保存到John的记忆库: agent_john_memories
+2025-09-07 19:01:27,697 - __main__ - INFO - ✅ 成功保存到John记忆库: 8e8eeda2-8871-4c1f-9ab7-3418843edbc4
+2025-09-07 19:01:27,697 - __main__ - INFO - 🗂️ 准备保存到Alex的记忆库: agent_alex_memories
+2025-09-07 19:01:27,745 - __main__ - INFO - ✅ 成功保存到Alex记忆库: d6afa709-5575-45a1-ae16-9b430f60edee
+2025-09-07 19:01:27,746 - __main__ - INFO - ✅ 完成保存John与Alex的misunderstanding交互
+2025-09-07 19:01:35,050 - __main__ - INFO - 开始关闭系统...
+2025-09-07 19:01:35,051 - __main__ - INFO - 自动模拟已停止
+2025-09-07 19:01:35,056 - core.persistence_manager - INFO - 快速保存完成: 3/3 组件成功保存
+2025-09-07 19:01:35,056 - __main__ - INFO - 关键数据保存完成
+2025-09-07 19:01:35,058 - memory.memory_cleaner - INFO - 正在关闭内存清理管理器...
+2025-09-07 19:01:35,059 - memory.memory_cleaner - INFO - 后台内存清理已停止
+2025-09-07 19:01:35,059 - memory.memory_cleaner - INFO - 内存清理管理器已关闭
+2025-09-07 19:01:35,061 - __main__ - INFO - memory_cleaner 关闭完成
+2025-09-07 19:01:35,062 - core.persistence_manager - INFO - 开始关闭持久化管理器...
+2025-09-07 19:01:35,063 - core.persistence_manager - INFO - 持久化管理器已关闭
+2025-09-07 19:01:35,063 - __main__ - INFO - persistence_manager 关闭完成
+2025-09-07 19:01:35,065 - core.error_handler - INFO - 开始关闭错误处理系统...
+2025-09-07 19:01:36,071 - __main__ - WARNING - error_handler 关闭超时，强制继续
+2025-09-07 19:01:40,081 - core.error_handler - INFO - 错误处理系统已关闭
+2025-09-07 19:01:40,083 - core.thread_manager - INFO - 开始关闭线程管理器...
+2025-09-07 19:01:40,084 - core.thread_manager - INFO - 线程管理器已安全关闭
+2025-09-07 19:01:40,085 - __main__ - INFO - thread_manager 关闭完成
+2025-09-07 19:01:40,086 - __main__ - INFO - 系统关闭完成

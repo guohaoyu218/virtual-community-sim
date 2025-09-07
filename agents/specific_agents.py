@@ -98,7 +98,7 @@ class EmmaArtist(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-重要：这是负面互动，Emma必须保持负面情感，不允许缓解气氛或转向积极。直接回应，不要解释："""
+重要：这是负面互动，Emma必须保持负面情感，不允许缓解气氛或转向积极。请只用1-2句话直接回应，不要添加任何解释或描述："""
         else:
             # 正常互动
             prompt = f"""你是Emma，一名艺术家。
@@ -117,7 +117,7 @@ class EmmaArtist(BaseAgent):
 最近记忆: {memories_text}
 当前情况: {context}
 
-请以Emma的身份用1-2句话感性地回应，体现艺术家的创意和激情："""
+请以Emma的身份用1-2句话感性地回应，体现艺术家的创意和激情。只回应对话内容，不要包含任何描述或说明："""
         return prompt
 
 class SarahTeacher(BaseAgent):
