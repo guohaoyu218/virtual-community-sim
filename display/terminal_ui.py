@@ -61,9 +61,6 @@ class TerminalUI:
         print(f"\n{TerminalColors.BOLD}🗺️  小镇地图{TerminalColors.END}")
         print("=" * 50)
         
-        # 调试信息
-        print(f"DEBUG: 建筑数量: {len(buildings)}, Agent数量: {len(agents)}")
-        
         # 创建6x6网格
         grid = [['⬜' for _ in range(6)] for _ in range(6)]
         
@@ -72,13 +69,11 @@ class TerminalUI:
             x, y = building['x'], building['y']
             if 0 <= x < 6 and 0 <= y < 6:  # 确保坐标在范围内
                 grid[y][x] = building['emoji']
-                print(f"DEBUG: 建筑 {name} 在位置 ({x}, {y})")
         
         # 获取Agent位置信息
         agent_positions = {}
         for agent_name, agent in agents.items():
             location = agent.location
-            print(f"DEBUG: {agent_name} 在 {location}")
             if location in buildings:
                 x, y = buildings[location]['x'], buildings[location]['y']
                 if 0 <= x < 6 and 0 <= y < 6:  # 确保坐标在范围内
@@ -86,25 +81,43 @@ class TerminalUI:
                         agent_positions[(x, y)] = []
                     agent_positions[(x, y)].append(f"{agent.emoji}{agent_name}")
         
-        # 显示地图网格
+        # 显示地图网格 - 使用固定宽度格式化
+        print(f"\n🗺️  地图网格 (X坐标: 0-5, Y坐标: 0-5):")
+        print("   " + "".join([f"{i:^4}" for i in range(6)]))  # X轴坐标
+        print("   " + "─" * 24)
+        
         for y in range(6):
-            row = ""
+            row_cells = []
             for x in range(6):
                 if (x, y) in agent_positions:
-                    # 如果该位置有Agent，显示第一个Agent
+                    # 如果该位置有Agent，显示Agent数量或首个Agent emoji
                     agents_here = agent_positions[(x, y)]
                     if len(agents_here) == 1:
-                        row += agents_here[0][0] + " "  # 只显示emoji
+                        cell = agents_here[0][0]  # 只显示emoji
                     else:
-                        row += f"{len(agents_here)}" + " "  # 显示数量
+                        cell = f"{len(agents_here)}"  # 显示数量
                 else:
                     # 显示建筑或空地
-                    row += grid[y][x] + " "
-            print(f"  {row}")
+                    cell = grid[y][x]
+                
+                # 每个格子固定宽度为4个字符
+                row_cells.append(f"{cell:^4}")
+            
+            print(f"{y} │" + "".join(row_cells))
         
-        # 显示建筑说明（只显示一次）
-        print(f"\n📍 建筑说明:")
-        for name, building in buildings.items():
+        print("   " + "─" * 24)
+        
+        # 显示建筑说明（更整齐的格式）
+        print(f"\n📍 建筑分布:")
+        print(f"{'位置':^8} {'建筑':^8} {'人数':^6} {'居住者':^20}")
+        print("─" * 50)
+        
+        # 按坐标排序显示建筑
+        sorted_buildings = sorted(buildings.items(), key=lambda x: (x[1]['y'], x[1]['x']))
+        
+        for name, building in sorted_buildings:
+            x, y = building['x'], building['y']
+            
             # 统计该建筑的Agent
             occupants = []
             for agent_name, agent in agents.items():
@@ -113,15 +126,19 @@ class TerminalUI:
             
             occupant_count = len(occupants)
             if occupant_count > 0:
-                count_display = f"[{occupant_count}人]"
-                if occupant_count <= 3:
-                    occupant_text = f" {count_display} ({', '.join(occupants)})"
+                if occupant_count <= 2:
+                    occupant_text = ', '.join(occupants)
                 else:
-                    occupant_text = f" {count_display} ({', '.join(occupants[:3])}...)"
+                    occupant_text = f"{', '.join(occupants[:2])}... +{occupant_count-2}"
             else:
-                occupant_text = " [空]"
+                occupant_text = "空"
             
-            print(f"  {building['emoji']} {name}{occupant_text}")
+            # 格式化输出，确保对齐
+            pos_str = f"({x},{y})"
+            building_str = f"{building['emoji']}{name}"
+            count_str = f"[{occupant_count}人]" if occupant_count > 0 else "[空]"
+            
+            print(f"{pos_str:^8} {building_str:<8} {count_str:^6} {occupant_text:<20}")
         print()
     
     def show_agents_status(self, agents):

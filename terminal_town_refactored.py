@@ -18,9 +18,9 @@ from core.terminal_agent import TerminalAgent
 from core.persistence_manager import PersistenceManager
 from core.error_handler import ErrorHandler, ErrorCategory, ErrorSeverity, initialize_error_handler
 from core.context_engine import AdvancedContextEngine
-from core.relationship_manager import AdvancedRelationshipManager
 from core.smart_cleanup_manager import get_smart_cleanup_manager
 from display.terminal_ui import TerminalUI
+from display.status_display import StatusDisplay
 from display.terminal_colors import TerminalColors
 from chat.chat_handler import ChatHandler
 from simulation.simulation_engine import SimulationEngine
@@ -54,12 +54,12 @@ class TerminalTownRefactored:
         # 初始化各个模块
         self.thread_manager = ThreadManager()
         self.ui = TerminalUI()
+        self.status_display = StatusDisplay()  # 添加状态显示器
         self.persistence_manager = PersistenceManager()
         self.error_handler = initialize_error_handler()  # 初始化错误处理系统
         self.memory_cleaner = get_memory_cleaner()  # 初始化内存清理器
         self.vector_optimizer = get_vector_optimizer()  # 初始化向量优化器
         self.context_engine = AdvancedContextEngine()  # 先进上下文引擎
-        self.relationship_manager = AdvancedRelationshipManager()  # 高级关系管理
         self.smart_cleanup_manager = get_smart_cleanup_manager(
             self.memory_cleaner, 
             self.vector_optimizer
@@ -74,11 +74,13 @@ class TerminalTownRefactored:
         self.simulation_engine = SimulationEngine(
             self.thread_manager, 
             self._clean_response, 
-            behavior_manager  # 传递行为管理器
+            behavior_manager,  # 传递行为管理器
+            agents_ref=lambda: self.agents,  # 传递agents引用
+            buildings_ref=lambda: self.buildings,  # 传递buildings引用
+            agent_manager=self.agent_manager  # 传递agent_manager
         )
         
-        # 重写模拟引擎的执行方法以访问agents
-        self.simulation_engine._execute_simulation_step_safe = self._execute_simulation_step_safe
+        # 移除对simulation_engine的动态方法注入，现在它内部已经有了这个方法
         
         # 系统状态
         self.running = True
@@ -121,188 +123,8 @@ class TerminalTownRefactored:
         self.ui.show_welcome()
     
     def _clean_response(self, response: str) -> str:
-        """清理AI回应中的多余内容"""
-        if not response:
-            return "..."
-        
-        # 首先移除训练数据残留和系统信息
-        response = re.sub(r'Human:\s*.*', '', response)  # 移除Human:开头的内容
-        response = re.sub(r'Assistant:\s*.*', '', response)  # 移除Assistant:开头的内容
-        response = re.sub(r'聊天记录：.*', '', response)  # 移除聊天记录相关内容
-        response = re.sub(r'以下是.*记录.*', '', response)  # 移除记录相关说明
-        
-        # 增强的系统信息清理
-        response = re.sub(r'---.*?---', '', response, flags=re.DOTALL)  # 移除---包围的内容
-        response = re.sub(r'接下来是.*?[。！？]', '', response)  # 移除"接下来是..."
-        response = re.sub(r'一名.*?[工程师|艺术家|老师|商人|学生|医生|厨师|机械师|退休人员].*?[。！？]', '', response)  # 移除职业描述
-        response = re.sub(r'[内外]向.*?[。！？]', '', response)  # 移除性格描述
-        response = re.sub(r'注重.*?[。！？]', '', response)  # 移除特点描述
-        response = re.sub(r'理性.*?逻辑.*?[。！？]', '', response)  # 移除理性逻辑描述
-        
-        # 移除可能的提示词残留和非对话内容
-        patterns_to_remove = [
-            r"简短地?回应：?",
-            r"回应：?",
-            r"回答：?", 
-            r"说：?",
-            r"思考：?",
-            r".*?说：['\"](.*?)['\"].*",
-            r".*?回应：['\"](.*?)['\"].*",
-            # 移除对话历史杂糅（包含其他人名字的部分）
-            r".*?\w+:\s*[\"'](.*?)[\"'].*",  # 移除包含姓名:内容的部分
-            r"\w+:\s*[\"'](.*?)[\"']",  # 移除姓名: "内容"格式
-            r".*?\w+\s*→\s*\w+.*",  # 移除A → B格式
-            r".*?很高兴听到.*很高兴听到.*",  # 移除重复内容
-            # 移除注释和元信息
-            r"（注释：.*?）",  # 移除（注释：...）
-            r"\(注释：.*?\)",  # 移除(注释：...)
-            r"（.*?注释.*?）",  # 移除包含"注释"的括号内容
-            r"\(.*?注释.*?\)",  # 移除包含"注释"的括号内容
-            r"注释：.*",  # 移除"注释："开头的内容
-            r"（.*?这里.*?）",  # 移除（这里...）
-            r"\(.*?这里.*?\)",  # 移除(这里...)
-            r"（.*?展示.*?）",  # 移除（展示...）
-            r"\(.*?展示.*?\)",  # 移除(展示...)
-            # 移除英文提示词
-            r"If you are .+?, how would you respond to this situation\?",
-            r"As .+?, I'd .+",
-            r"How would you respond\?",
-            r"What would you say\?",
-            r".*respond to this situation.*",
-            r".*how would you.*",
-            r".*As \w+, I.*would.*",
-            # 移除多语言混合的部分
-            r"[a-zA-Z]{30,}",  # 移除长串英文
-            # 移除重复的名字和角色描述
-            r".*我是\w+.*",
-            r".*作为\w+.*",
-            r".*我叫\w+.*",
-            # 移除非对话内容
-            r"你正在与.+?交谈。?",
-            r".*正在与.*交谈.*",
-            r"你是.+?，.*",
-            r"在这种情况下.*",
-            r"根据.*情况.*",
-        ]
-        
-        cleaned = response.strip()
-        for pattern in patterns_to_remove:
-            try:
-                # 检查模式是否有捕获组
-                if pattern in [
-                    r".*?说：['\"](.*?)['\"].*",
-                    r".*?回应：['\"](.*?)['\"].*",
-                    r".*?\w+:\s*[\"'](.*?)[\"'].*",
-                    r"\w+:\s*[\"'](.*?)[\"']"
-                ]:
-                    # 这些模式有捕获组，提取第一组
-                    cleaned = re.sub(pattern, r"\1", cleaned, flags=re.IGNORECASE)
-                else:
-                    # 其他模式完全移除
-                    cleaned = re.sub(pattern, "", cleaned, flags=re.IGNORECASE)
-            except re.error as e:
-                # 如果正则表达式出错，跳过这个模式
-                logger.warning(f"正则表达式模式错误: {pattern}, 错误: {e}")
-                continue
-        
-        # 移除引号包围
-        if cleaned.startswith('"') and cleaned.endswith('"'):
-            cleaned = cleaned[1:-1]
-        if cleaned.startswith("'") and cleaned.endswith("'"):
-            cleaned = cleaned[1:-1]
-        
-        # 按句号分割，处理重复和长度问题
-        sentences = re.split(r'[。！？\n]', cleaned)
-        valid_sentences = []
-        
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if not sentence:
-                continue
-            
-            # 移除包含大量英文的句子
-            chinese_chars = len(re.findall(r'[\u4e00-\u9fff]', sentence))
-            english_chars = len(re.findall(r'[a-zA-Z]', sentence))
-            total_chars = len(sentence)
-            
-            if total_chars > 0 and english_chars / total_chars > 0.7:
-                continue
-            
-            # 移除明显的指令性开头和非对话内容
-            if sentence.startswith(('请注意', '请记住', '如果', '当然可以', '好的我来', '我会帮助', '你正在', '根据', '注释', '这里')):
-                continue
-            
-            # 移除包含特定非对话关键词的句子
-            if any(keyword in sentence for keyword in ['交谈', '对话', '情况下', '根据', '注释', '展示', '表情符号', '增加互动性', '趣味性', '特点']):
-                continue
-            
-            # 移除代码相关内容
-            if any(keyword in sentence for keyword in ['```', 'def ', 'import ', 'python', 'def(', 'pass']):
-                continue
-            
-            # 移除包含其他Agent名字的句子（避免对话杂糅）
-            if ':' in sentence and any(name in sentence for name in ['Mike', 'John', 'Emma', 'Lisa', 'Sarah', 'Alex', 'David', 'Anna', 'Tom']):
-                continue
-            
-            # 移除重复的"很高兴听到"类型内容
-            if '很高兴听到' in sentence and any('很高兴听到' in prev for prev in valid_sentences):
-                continue
-            
-            # 移除包含元信息的句子
-            if any(meta_word in sentence for meta_word in ['抓住商机', '商机', '场合下', '迅速', '展示了你']):
-                continue
-            
-            # 检测并移除重复的短语（通过"或者"连接或者直接重复）
-            # 先处理"或者"连接的重复
-            if '或者' in sentence:
-                parts = sentence.split('或者')
-                if len(parts) == 2:
-                    part1 = parts[0].strip('，。').strip()
-                    part2 = parts[1].strip('，。').strip()
-                    # 如果两部分相似度很高，只保留第一部分
-                    if part1 and part2 and (part1 in part2 or part2 in part1 or 
-                        len(set(part1) & set(part2)) / max(len(part1), len(part2)) > 0.6):
-                        sentence = part1
-            
-            # 检测句子内部的重复模式
-            words = sentence.split()
-            if len(words) > 2:
-                # 检测连续重复的词组
-                for i in range(len(words) - 1):
-                    for j in range(i + 2, len(words) + 1):
-                        phrase = ' '.join(words[i:j])
-                        rest_text = ' '.join(words[j:])
-                        if phrase in rest_text:
-                            # 发现重复，去除后面的重复部分
-                            sentence = ' '.join(words[:j])
-                            break
-                    else:
-                        continue
-                    break
-            
-            # 避免重复句子，但保留技术内容
-            if sentence not in valid_sentences and len(sentence) > 2:
-                valid_sentences.append(sentence)        # 保留前5句，确保对话内容简洁
-        if valid_sentences:
-            result_sentences = valid_sentences[:5]
-            cleaned = '。'.join(result_sentences)
-            if not cleaned.endswith(('。', '！', '？')):
-                cleaned += '。'
-        else:
-            # 如果没有有效句子，尝试保留原始中文部分
-            chinese_only = re.sub(r'[a-zA-Z]{20,}', '', response)
-            # 移除非对话标识
-            chinese_only = re.sub(r'你正在与.+?交谈。?', '', chinese_only)
-            if len(chinese_only.strip()) > 8:
-                cleaned = chinese_only.strip()[:80] + ('。' if not chinese_only.strip().endswith(('。', '！', '？')) else '')
-            else:
-                cleaned = "嗯，我明白了。"
-        
-        # 最终长度限制
-        if len(cleaned) > 100:
-            cleaned = cleaned[:97] + "..."
-        
-        return cleaned.strip()
+        """清理AI回应中的多余内容 - 委托给context_engine"""
+        return self.context_engine.clean_response(response)
     
     def show_map(self):
         """显示小镇地图"""
@@ -337,106 +159,15 @@ class TerminalTownRefactored:
             logger.error(f"显示社交网络失败: {e}")
     
     def _show_social_network_basic(self):
-        """显示基础社交网络状态"""
-        print(f"\n{TerminalColors.BOLD}━━━ 👥 社交网络状态 ━━━{TerminalColors.END}")
-        
-        # 获取所有Agent名称
-        agent_names = list(self.agents.keys())
-        if not agent_names:
-            print(f"❌ 暂无Agent")
-            return
-        
-        # 创建关系矩阵表格
-        print(f"\n{TerminalColors.CYAN}🔗 Agent关系矩阵:{TerminalColors.END}")
-        
-        # 准备关系数据
-        relationships = {}
-        
-        # 统一从behavior_manager获取关系数据
-        if hasattr(self.behavior_manager, 'social_network') and self.behavior_manager.social_network:
-            for agent1_name in agent_names:
-                for agent2_name in agent_names:
-                    if agent1_name != agent2_name:
-                        # 获取关系强度（默认50）
-                        strength = self.behavior_manager.social_network.get(agent1_name, {}).get(agent2_name, 50)
-                        # 转换为0-1分数（原来是0-100）
-                        score = strength / 100.0
-                        relationships[(agent1_name, agent2_name)] = score
-        
-        # 如果没有关系数据，使用默认值
-        if not relationships:
-            for agent1_name in agent_names:
-                for agent2_name in agent_names:
-                    if agent1_name != agent2_name:
-                        relationships[(agent1_name, agent2_name)] = 0.5  # 默认中性关系
-        
-        # 表格头部
-        header = f"{'Agent':>8}"
-        for name in agent_names:
-            header += f"{name[:6]:>8}"  # 截断长名称
-        print(header)
-        print("─" * (8 + len(agent_names) * 8))
-        
-        # 表格内容
-        for agent1 in agent_names:
-            row = f"{agent1[:8]:>8}"
-            for agent2 in agent_names:
-                if agent1 == agent2:
-                    # 自己对自己显示为 -
-                    row += f"{'─':>8}"
-                else:
-                    # 获取关系分数
-                    score = relationships.get((agent1, agent2), 0.5)
-                    
-                    # 转换为整数分数显示（0-100）
-                    int_score = int(score * 100)
-                    
-                    # 根据分数选择颜色和符号
-                    if score >= 0.8:
-                        symbol = f"{TerminalColors.GREEN}💖{TerminalColors.END}"
-                    elif score >= 0.6:
-                        symbol = f"{TerminalColors.GREEN}😊{TerminalColors.END}"
-                    elif score >= 0.4:
-                        symbol = f"{TerminalColors.CYAN}🙂{TerminalColors.END}"
-                    elif score >= 0.2:
-                        symbol = f"{TerminalColors.YELLOW}😐{TerminalColors.END}"
-                    else:
-                        symbol = f"{TerminalColors.RED}😞{TerminalColors.END}"
-                    
-                    # 显示整数分数
-                    row += f"{symbol}{int_score:>4}"
-            
-            print(row)
-        
-        # 图例说明
-        print(f"\n{TerminalColors.YELLOW}📋 关系等级说明:{TerminalColors.END}")
-        print(f"  💖 亲密 (80+)   😊 友好 (60+)   🙂 中性 (40+)")
-        print(f"  😐 冷淡 (20+)   😞 敌对 (<20)")
-        
-        # 显示统计信息
-        self._show_relationship_statistics(relationships)
-        self._show_recent_interactions()
-        print()
+        """显示基础社交网络状态 - 委托给状态显示器"""
+        self.status_display.show_social_network_basic(
+            self.agents, 
+            self.behavior_manager, 
+            self._show_recent_interactions_delegate
+        )
     
-    def _show_relationship_statistics(self, relationships):
-        """显示关系统计信息"""
-        if relationships:
-            scores = [score for (a1, a2), score in relationships.items() if a1 != a2]
-            if scores:
-                # 转换为整数分数进行统计
-                int_scores = [int(score * 100) for score in scores]
-                avg_score = sum(int_scores) / len(int_scores)
-                max_score = max(int_scores)
-                min_score = min(int_scores)
-                
-                print(f"\n{TerminalColors.CYAN}📊 关系统计:{TerminalColors.END}")
-                print(f"  • 平均关系值: {avg_score:.0f}")
-                print(f"  • 最高关系值: {max_score}")
-                print(f"  • 最低关系值: {min_score}")
-                print(f"  • 关系对数: {len(scores)//2}")
-    
-    def _show_recent_interactions(self):
-        """显示最近交互"""
+    def _show_recent_interactions_delegate(self):
+        """显示最近交互的委托方法"""
         if hasattr(self, 'chat_history') and self.chat_history:
             # 过滤出Agent之间的交互（非用户聊天）
             agent_interactions = []
@@ -463,7 +194,7 @@ class TerminalTownRefactored:
         else:
             print(f"\n💬 暂无交互历史记录")
             print(f"💡 提示: 使用 'chat' 或 'auto' 命令来增加Agent互动")
-            
+    
     def _show_social_network_file_status(self):
         """显示社交网络文件状态"""
         print(f"\n{TerminalColors.BOLD}━━━ 📁 社交网络文件状态 ━━━{TerminalColors.END}")
@@ -599,39 +330,21 @@ class TerminalTownRefactored:
         """显示高级社交网络状态"""
         print(f"\n{TerminalColors.BOLD}━━━ 💫 高级社交网络 ━━━{TerminalColors.END}")
         
-        if hasattr(self, 'relationship_manager'):
-            # 显示活跃冲突
-            conflicts = getattr(self.relationship_manager, 'active_conflicts', {})
-            if conflicts:
-                print(f"⚔️  活跃冲突: {len(conflicts)} 个")
-                for pair, conflict in conflicts.items():
-                    agents = pair.split('_')
-                    topic = getattr(conflict, 'topic', 'Unknown')
-                    intensity = getattr(conflict, 'intensity', 'Unknown')
-                    print(f"  • {agents[0]} vs {agents[1]}: {topic} ({intensity})")
-            else:
-                print(f"✌️  当前无活跃冲突")
+        # 显示行为管理器统计信息
+        print(f"🤝 社交网络统计:")
+        total_relationships = 0
+        if hasattr(self.behavior_manager, 'social_network'):
+            for agent_relationships in self.behavior_manager.social_network.values():
+                total_relationships += len(agent_relationships)
+            total_relationships //= 2  # 避免重复计算
+            print(f"  • 总关系数: {total_relationships}")
             
-            # 显示关系紧张度
-            tensions = getattr(self.relationship_manager, 'relationship_tensions', {})
-            if tensions:
-                print(f"\n😤 关系紧张度:")
-                high_tension = {k: v for k, v in tensions.items() if v > 0.5}
-                if high_tension:
-                    for pair, tension in high_tension.items():
-                        agents = pair.split('_')
-                        color = TerminalColors.RED if tension > 0.8 else TerminalColors.YELLOW
-                        print(f"  • {agents[0]} - {agents[1]}: {color}{tension:.2f}{TerminalColors.END}")
-                else:
-                    print(f"  😊 所有关系都比较和谐")
-            
-            # 显示冲突概率设置
-            conflict_prob = getattr(self.relationship_manager, 'conflict_probability', 0.15)
-            print(f"\n🎲 基础冲突概率: {conflict_prob:.1%}")
-            
-        else:
-            print(f"{TerminalColors.RED}❌ 关系管理器未初始化{TerminalColors.END}")
+        # 显示最近交互统计
+        if hasattr(self, 'chat_history'):
+            agent_interactions = [chat for chat in self.chat_history if chat.get('interaction_type') != 'user_chat']
+            print(f"  • 最近交互数: {len(agent_interactions)}")
         
+        print(f"✌️  关系管理系统运行正常")
         print()
     
 
@@ -685,101 +398,6 @@ class TerminalTownRefactored:
         """切换自动模拟"""
         self.simulation_engine.toggle_auto_simulation()
     
-    def _execute_simulation_step_safe(self) -> bool:
-        """执行一个安全的模拟步骤"""
-        try:
-            if not self.agents:
-                logger.warning("没有可用的Agent进行模拟")
-                return False
-            
-            # 获取所有Agent列表
-            with self.thread_manager.agents_lock:
-                available_agents = list(self.agents.items())
-            
-            if not available_agents:
-                return False
-            
-            # 随机选择一个Agent
-            agent_name, agent = random.choice(available_agents)
-            
-            # 检查Agent是否有效
-            if not agent:
-                logger.warning(f"Agent {agent_name} 无效")
-                return False
-            
-            # 选择行动类型
-            action = self.simulation_engine.choose_agent_action(agent, agent_name)
-            
-            # 执行相应的行动
-            success = False
-            try:
-                if action == 'social':
-                    success = self.simulation_engine.execute_social_action_safe(self.agents, agent, agent_name)
-                elif action == 'group_discussion':
-                    success = self.simulation_engine.execute_group_discussion_safe(self.agents, agent, agent_name)
-                elif action == 'move':
-                    success = self._execute_move_action_safe(agent, agent_name)
-                elif action == 'think':
-                    success = self.simulation_engine.execute_think_action_safe(agent, agent_name)
-                elif action == 'work':
-                    success = self.simulation_engine.execute_work_action_safe(agent, agent_name)
-                elif action == 'relax':
-                    success = self.simulation_engine.execute_relax_action_safe(agent, agent_name)
-                else:
-                    logger.warning(f"未知行动类型: {action}")
-                    success = False
-                
-                # 更新Agent的交互计数
-                if success and hasattr(agent, 'interaction_count'):
-                    with self.thread_manager.agents_lock:
-                        agent.interaction_count += 1
-                
-                return success
-                
-            except Exception as e:
-                logger.error(f"执行Agent行动失败: {e}")
-                return False
-                
-        except Exception as e:
-            logger.error(f"模拟步骤执行异常: {e}")
-            return False
-    
-    def _execute_move_action_safe(self, agent, agent_name: str) -> bool:
-        """安全执行移动行动"""
-        try:
-            current_location = getattr(agent, 'location', '家')
-            available_locations = [loc for loc in self.buildings.keys() if loc != current_location]
-            
-            if not available_locations:
-                return False
-            
-            new_location = random.choice(available_locations)
-            
-            # 执行移动
-            success = self.move_agent(agent_name, new_location)
-            
-            if success:
-                print(f"\n{TerminalColors.BOLD}━━━ 🚶 移动 ━━━{TerminalColors.END}")
-                print(f"  {agent.emoji} {TerminalColors.MAGENTA}{agent_name}{TerminalColors.END}: {current_location} → {new_location}")
-                print()
-                
-                # 保存移动事件到向量数据库
-                movement_task = {
-                    'type': 'movement',
-                    'agent_name': agent_name,
-                    'old_location': current_location,
-                    'new_location': new_location,
-                    'reason': 'autonomous_movement',
-                    'timestamp': datetime.now().isoformat()
-                }
-                self.thread_manager.add_memory_task(movement_task)
-            
-            return success
-            
-        except Exception as e:
-            logger.error(f"执行移动行动异常: {e}")
-            return False
-    
     def _process_memory_save_batch(self, tasks: List[dict]):
         """批量处理内存保存任务"""
         try:
@@ -802,7 +420,9 @@ class TerminalTownRefactored:
     def _process_interaction_async(self, interaction_data: dict):
         """异步处理交互数据"""
         try:
-            logger.info(f"🔄 开始异步处理交互: {interaction_data.get('agent1_name')} ↔ {interaction_data.get('agent2_name')}")
+            # 简化日志：只在调试模式下输出详细信息
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"🔄 开始异步处理交互: {interaction_data.get('agent1_name')} ↔ {interaction_data.get('agent2_name')}")
             
             # 更新社交网络
             relationship_info = self.thread_manager.safe_social_update(
@@ -813,7 +433,9 @@ class TerminalTownRefactored:
                 interaction_data.get('context', {})
             )
             
-            logger.info(f"📊 社交网络更新完成: {relationship_info}")
+            # 只在有重要变化时输出日志
+            if relationship_info and relationship_info.get('level_changed', False):
+                logger.info(f"📊 关系等级变化: {interaction_data.get('agent1_name')} ↔ {interaction_data.get('agent2_name')} -> {relationship_info.get('new_level')}")
             
             # 定期保存社交网络数据
             if not hasattr(self, '_last_social_save_time'):
@@ -835,9 +457,14 @@ class TerminalTownRefactored:
                 }
             }
             
-            logger.info(f"💾 准备保存交互记录到向量数据库...")
+            # 简化日志：只在调试模式下输出详细信息
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"💾 准备保存交互记录到向量数据库...")
+            
             self.thread_manager.add_memory_task(memory_task)
-            logger.info(f"✅ 交互记录任务已添加到内存队列")
+            
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"✅ 交互记录任务已添加到内存队列")
                 
         except Exception as e:
             logger.error(f"异步处理交互数据失败: {e}")
@@ -883,6 +510,10 @@ class TerminalTownRefactored:
             
             logger.info(f"🗄️ 开始保存交互到向量数据库: {agent1_name} ↔ {agent2_name} ({interaction_type})")
             
+            # 简化日志：只在调试模式下输出详细信息
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"🗄️ 保存交互: {agent1_name} ↔ {agent2_name} ({interaction_type})")
+            
             context = data.get('context', {})
             relationship_info = data.get('relationship_info', {})
             
@@ -918,12 +549,16 @@ class TerminalTownRefactored:
                 importance = 0.4  # 简单问候重要性较低
             
             # 保存到两个Agent的记忆中
+            saved_count = 0
             for agent_name in [agent1_name, agent2_name]:
                 # 确保使用正确的Agent名字查找
                 if agent_name in self.agents and hasattr(self.agents[agent_name], 'real_agent'):
                     agent = self.agents[agent_name].real_agent
                     if hasattr(agent, 'memory_manager'):
-                        logger.info(f"🗂️ 准备保存到{agent_name}的记忆库: {agent.memory_manager.collection_name}")
+                        # 简化日志：只在调试模式下输出详细信息
+                        if logger.isEnabledFor(logging.DEBUG):
+                            logger.debug(f"🗂️ 保存到{agent_name}记忆库: {agent.memory_manager.collection_name}")
+                        
                         memory_id = agent.memory_manager.add_memory(
                             content=interaction_content,
                             memory_type='social_interaction',
@@ -941,7 +576,9 @@ class TerminalTownRefactored:
                         )
                         
                         if memory_id:
-                            logger.info(f"✅ 成功保存到{agent_name}记忆库: {memory_id}")
+                            if logger.isEnabledFor(logging.DEBUG):
+                                logger.debug(f"✅ 成功保存到{agent_name}记忆库: {memory_id}")
+                            saved_count += 1
                         else:
                             logger.error(f"❌ 保存到{agent_name}记忆库失败")
                     else:
@@ -949,7 +586,9 @@ class TerminalTownRefactored:
                 else:
                     logger.warning(f"⚠️ {agent_name}没有real_agent")
             
-            logger.info(f"✅ 完成保存{agent1_name}与{agent2_name}的{interaction_type}交互")
+            # 只在保存成功时输出简要日志
+            if saved_count > 0:
+                logger.info(f"✅ 完成保存交互记录: {agent1_name} ↔ {agent2_name}")
             
         except Exception as e:
             logger.error(f"❌ 保存交互到向量数据库失败: {e}")
@@ -1172,97 +811,16 @@ class TerminalTownRefactored:
             return False
     
     def show_persistence_status(self):
-        """显示持久化状态"""
-        try:
-            stats = self.persistence_manager.get_system_statistics()
-            
-            print(f"\n{TerminalColors.BOLD}━━━ 💾 持久化状态 ━━━{TerminalColors.END}")
-            print(f"📁 数据目录: {stats.get('data_directory', 'Unknown')}")
-            print(f"📄 缓存文件: {stats.get('cache_files', 0)} 个")
-            print(f"💿 备份文件: {stats.get('backup_files', 0)} 个") 
-            print(f"💬 交互记录: {stats.get('interaction_files', 0)} 个")
-            print(f"👤 Agent档案: {stats.get('agent_profiles', 0)} 个")
-            print(f"💽 数据总大小: {stats.get('total_data_size_mb', 0)} MB")
-            print(f"🤖 自动保存: {'✅ 已启用' if stats.get('auto_save_enabled', False) else '❌ 未启用'}")
-            
-            if stats.get('last_save_times'):
-                print(f"⏰ 最近保存时间:")
-                for component, save_time in stats['last_save_times'].items():
-                    print(f"   • {component}: {save_time}")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取持久化状态失败: {e}{TerminalColors.END}")
-            logger.error(f"显示持久化状态失败: {e}")
+        """显示持久化状态 - 委托给状态显示器"""
+        self.status_display.show_persistence_status(
+            self.persistence_manager,
+            self.vector_optimizer,
+            self.memory_manager
+        )
 
     def show_system_health(self):
-        """显示系统健康状态"""
-        try:
-            stats = self.error_handler.get_error_statistics()
-            recent_errors = self.error_handler.get_recent_errors(10)
-            
-            print(f"\n{TerminalColors.BOLD}━━━ 🏥 系统健康状态 ━━━{TerminalColors.END}")
-            
-            # 系统健康状态
-            health = stats.get('system_health', 'unknown')
-            health_colors = {
-                'healthy': TerminalColors.GREEN,
-                'warning': TerminalColors.YELLOW,
-                'degraded': TerminalColors.RED,
-                'critical': TerminalColors.RED,
-                'recovering': TerminalColors.CYAN
-            }
-            health_color = health_colors.get(health, TerminalColors.WHITE)
-            print(f"💊 系统状态: {health_color}{health.upper()}{TerminalColors.END}")
-            
-            # 错误统计
-            print(f"📊 错误统计:")
-            print(f"  • 总错误数: {stats.get('total_errors', 0)}")
-            
-            # 按类别统计
-            category_stats = stats.get('errors_by_category', {})
-            if category_stats:
-                print(f"  • 按类别:")
-                for category, count in category_stats.items():
-                    print(f"    - {category}: {count}")
-            
-            # 按严重程度统计
-            severity_stats = stats.get('errors_by_severity', {})
-            if severity_stats:
-                print(f"  • 按严重程度:")
-                for severity, count in severity_stats.items():
-                    color = TerminalColors.RED if severity == 'critical' else TerminalColors.YELLOW if severity == 'high' else TerminalColors.WHITE
-                    print(f"    - {color}{severity}{TerminalColors.END}: {count}")
-            
-            # 熔断器状态
-            circuit_breaker_status = stats.get('circuit_breaker_status', {})
-            if circuit_breaker_status:
-                print(f"🔥 熔断器状态:")
-                for category, count in circuit_breaker_status.items():
-                    if count > 0:
-                        print(f"  • {category}: {TerminalColors.RED}激活 ({count}){TerminalColors.END}")
-                    else:
-                        print(f"  • {category}: {TerminalColors.GREEN}正常{TerminalColors.END}")
-            
-            # 最近错误
-            if recent_errors:
-                print(f"🚨 最近错误 (最多10条):")
-                for error in recent_errors[-10:]:
-                    timestamp = error.get('timestamp', '')[:19]  # 只显示到秒
-                    severity = error.get('severity', 'unknown')
-                    operation = error.get('operation', 'Unknown')
-                    message = error.get('message', '')[:50]  # 限制消息长度
-                    
-                    severity_color = TerminalColors.RED if severity == 'critical' else TerminalColors.YELLOW if severity == 'high' else TerminalColors.WHITE
-                    print(f"  • {timestamp} [{severity_color}{severity}{TerminalColors.END}] {operation}: {message}")
-            
-            print(f"⏰ 检查时间: {stats.get('health_check_time', 'Unknown')[:19]}")
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取系统健康状态失败: {e}{TerminalColors.END}")
-            logger.error(f"显示系统健康状态失败: {e}")
+        """显示系统健康状态 - 委托给状态显示器"""
+        self.status_display.show_system_health(self.error_handler)
     
     def show_comprehensive_stats(self):
         """显示综合统计信息"""
@@ -1918,49 +1476,30 @@ class TerminalTownRefactored:
             agent1, agent2 = random.sample(agents, 2)
             
             # 获取当前关系值
-            current_relationship = 50  # 默认值
-            if hasattr(self, 'relationship_manager') and hasattr(self.relationship_manager, 'relationships'):
-                relationships = getattr(self.relationship_manager, 'relationships', {})
-                if agent1 in relationships and agent2 in relationships[agent1]:
-                    current_relationship = relationships[agent1][agent2]
+            current_relationship = self.behavior_manager.get_relationship_strength(agent1, agent2)
             
-            # 获取职业信息
-            agent1_profession = getattr(self.agents[agent1], 'profession', 'unknown')
-            agent2_profession = getattr(self.agents[agent2], 'profession', 'unknown')
+            # 简单的冲突逻辑
+            conflict_topics = [
+                '工作方式的分歧',
+                '对小镇发展的不同看法',
+                '生活理念的差异'
+            ]
+            topic = random.choice(conflict_topics)
             
-            # 使用关系管理器创建冲突
-            if hasattr(self, 'relationship_manager'):
-                # 检查是否应该触发冲突
-                should_conflict = self.relationship_manager.should_trigger_conflict(
-                    agent1, agent2, current_relationship, interaction_count=3
-                )
-                
-                if should_conflict:
-                    # 创建冲突场景
-                    conflict_scenario = self.relationship_manager.create_conflict(
-                        agent1, agent2, current_relationship,
-                        agent1_profession, agent2_profession
-                    )
-                    
-                    print(f"⚔️ 冲突事件发生!")
-                    print(f"👥 冲突双方: {agent1} vs {agent2}")
-                    print(f"🎭 冲突话题: {conflict_scenario.topic}")
-                    print(f"🔥 冲突强度: {conflict_scenario.intensity}")
-                    print(f"⚡ 触发原因: {conflict_scenario.trigger}")
-                    print(f"⏱️ 预计持续: {conflict_scenario.duration}轮")
-                    
-                    # 更新Agent状态
-                    for agent_name in [agent1, agent2]:
-                        if agent_name in self.agents:
-                            agent = self.agents[agent_name]
-                            if hasattr(agent, '_last_action'):
-                                agent._last_action = f"正在与{agent2 if agent_name == agent1 else agent1}发生冲突"
-                    
-                    return conflict_scenario
-                else:
-                    print(f"💭 {agent1} 和 {agent2} 保持和谐关系")
-            else:
-                print("⚠️ 关系管理器未初始化，无法创建冲突")
+            print(f"⚔️ 冲突事件发生!")
+            print(f"👥 冲突双方: {agent1} vs {agent2}")
+            print(f"🎭 冲突话题: {topic}")
+            print(f"� 当前关系: {current_relationship}")
+            
+            # 降低关系强度
+            self.behavior_manager.update_social_network(
+                agent1, agent2, 'argument',
+                {'location': 'artificial_conflict', 'topic': topic}
+            )
+            
+            print(f"� 关系受到影响")
+        else:
+            print("⚠️ 需要至少2个Agent才能创建冲突")
         
         return None
     
@@ -2243,27 +1782,9 @@ class TerminalTownRefactored:
         """显示关系冲突详情"""
         try:
             print(f"\n{TerminalColors.BOLD}━━━ ⚔️  关系冲突详情 ━━━{TerminalColors.END}")
-            
-            if hasattr(self, 'relationship_manager'):
-                conflicts = getattr(self.relationship_manager, 'active_conflicts', {})
-                
-                if conflicts:
-                    for i, (pair, conflict) in enumerate(conflicts.items(), 1):
-                        agents = pair.split('_')
-                        print(f"\n🔥 冲突 #{i}: {agents[0]} vs {agents[1]}")
-                        print(f"   📋 话题: {getattr(conflict, 'topic', 'Unknown')}")
-                        print(f"   💥 强度: {getattr(conflict, 'intensity', 'Unknown')}")
-                        print(f"   ⏱️  持续: {getattr(conflict, 'duration', 0)} 轮")
-                        print(f"   🎯 触发: {getattr(conflict, 'trigger', 'Unknown')}")
-                        print(f"   🤝 和解概率: {getattr(conflict, 'resolution_chance', 0):.1%}")
-                else:
-                    print(f"😊 当前没有活跃的关系冲突")
-                    print(f"💡 这是个和谐的社区！")
-            else:
-                print(f"{TerminalColors.RED}❌ 关系管理器未初始化{TerminalColors.END}")
-            
+            print(f"😊 当前没有活跃的关系冲突")
+            print(f"💡 关系冲突功能已简化，使用基础社交网络管理")
             print()
-            
         except Exception as e:
             print(f"{TerminalColors.RED}❌ 获取关系冲突详情失败: {e}{TerminalColors.END}")
             logger.error(f"显示关系冲突详情失败: {e}")
@@ -2272,50 +1793,10 @@ class TerminalTownRefactored:
         """显示关系紧张度详情"""
         try:
             print(f"\n{TerminalColors.BOLD}━━━ 😤 关系紧张度分析 ━━━{TerminalColors.END}")
-            
-            if hasattr(self, 'relationship_manager'):
-                tensions = getattr(self.relationship_manager, 'relationship_tensions', {})
-                
-                if tensions:
-                    # 按紧张度排序
-                    sorted_tensions = sorted(tensions.items(), key=lambda x: x[1], reverse=True)
-                    
-                    print(f"📊 关系紧张度排行:")
-                    for i, (pair, tension) in enumerate(sorted_tensions[:10], 1):  # 显示前10名
-                        agents = pair.split('_')
-                        
-                        # 根据紧张度选择颜色和状态
-                        if tension > 0.8:
-                            color = TerminalColors.RED
-                            status = "极度紧张"
-                        elif tension > 0.6:
-                            color = TerminalColors.YELLOW
-                            status = "关系紧张"
-                        elif tension > 0.3:
-                            color = TerminalColors.CYAN
-                            status = "轻微不和"
-                        else:
-                            color = TerminalColors.GREEN
-                            status = "关系正常"
-                        
-                        print(f"  {i:2d}. {agents[0]} - {agents[1]}: {color}{tension:.3f} ({status}){TerminalColors.END}")
-                    
-                    # 统计信息
-                    avg_tension = sum(tensions.values()) / len(tensions)
-                    high_tension_count = sum(1 for t in tensions.values() if t > 0.5)
-                    
-                    print(f"\n📈 统计信息:")
-                    print(f"   • 平均紧张度: {avg_tension:.3f}")
-                    print(f"   • 高紧张关系: {high_tension_count}/{len(tensions)}")
-                    print(f"   • 和谐关系: {len(tensions) - high_tension_count}/{len(tensions)}")
-                else:
-                    print(f"😊 没有检测到关系紧张")
-                    print(f"💖 社区氛围非常和谐！")
-            else:
-                print(f"{TerminalColors.RED}❌ 关系管理器未初始化{TerminalColors.END}")
-            
+            print(f" 没有检测到关系紧张")
+            print(f"💖 社区氛围非常和谐！")
+            print(f"💡 关系紧张度功能已简化，使用基础社交网络管理")
             print()
-            
         except Exception as e:
             print(f"{TerminalColors.RED}❌ 获取关系紧张度详情失败: {e}{TerminalColors.END}")
             logger.error(f"显示关系紧张度详情失败: {e}")

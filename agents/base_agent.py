@@ -120,15 +120,14 @@ class BaseAgent:
         
         if is_negative_interaction:
             # 负面互动时，强制保持负面，不允许缓解气氛
-            prompt = f"""{self.name}是一名{self.profession}，{self.personality}。
-现在{context}
-重要：这是负面互动，必须保持负面情感，不允许缓解气氛或转向积极。
-{self.name}："""
+            prompt = f"""我是{self.name}，一名{self.profession}，{self.personality}。{context}
+
+请直接以{self.name}的身份回应，只说你要说的话，不要解释或分析："""
         else:
             # 正常互动
-            prompt = f"""{self.name}是一名{self.profession}，{self.personality}。
-现在{context}
-{self.name}："""
+            prompt = f"""我是{self.name}，一名{self.profession}，{self.personality}。{context}
+
+请直接以{self.name}的身份回应，只说你要说的话，不要解释或分析："""
         return prompt
     
     def analyze_task_complexity(self, situation: str) -> float:
@@ -187,29 +186,25 @@ class BaseAgent:
             return self._advanced_thinking_local(situation)
         
         # 构建更自然的prompt用于API
-        enhanced_prompt = f"""
-        {self.name}是一名{self.profession}。
-        
-        个性特点：{self.personality}
-        背景：{self.background}
+        enhanced_prompt = f"""我是{self.name}，一名{self.profession}。
 
-        状态：在{self.current_location}，心情{self.current_mood}，精力{self.energy_level}%
+个性特点：{self.personality}
+背景：{self.background}
+当前状态：在{self.current_location}，心情{self.current_mood}，精力{self.energy_level}%
 
-        相关经历：{self.retrieve_relevant_memories(situation, limit=3)}
+相关经历：{self.retrieve_relevant_memories(situation, limit=3)}
 
-        遇到的情况：{situation}
+现在面对的情况：{situation}
 
-        {self.name}："""
+请直接以{self.name}的身份回应，只说你要说的话，不要分析或解释："""
         
         return self.deepseek_api.chat(enhanced_prompt, max_tokens=180)  # 从1200降到180
     
     def _advanced_thinking_local(self, situation: str) -> str:
         """高级思考模式 - 本地模型备用"""
-        prompt = f"""
-        {self.build_personality_prompt(situation)}
-        
-        {self.name}：
-        """
+        prompt = f"""我是{self.name}，一名{self.profession}，{self.personality}。{situation}
+
+请直接以{self.name}的身份回应，只说你要说的话，不要分析或解释："""
         return self.local_model.chat(prompt, max_tokens=150)  # 从800降到150
     
     def interact_with(self, other_agent, message: str) -> str:

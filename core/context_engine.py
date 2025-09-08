@@ -444,52 +444,219 @@ class AdvancedContextEngine:
 回应："""
     
     def clean_response(self, response: str, agent_type: str = None) -> str:
-        """高级响应清理"""
+        """高级响应清理 - 增强版本"""
         if not response:
-            return "嗯。"
+            return "..."
         
-        original_response = response
-        
-        # 应用质量过滤器
-        for pattern in self.quality_filters:
-            response = re.sub(pattern, '', response, flags=re.IGNORECASE)
+        # 首先移除训练数据残留和系统信息
+        response = re.sub(r'Human:\s*.*', '', response)  # 移除Human:开头的内容
+        response = re.sub(r'Assistant:\s*.*', '', response)  # 移除Assistant:开头的内容
+        response = re.sub(r'聊天记录：.*', '', response)  # 移除聊天记录相关内容
+        response = re.sub(r'以下是.*记录.*', '', response)  # 移除记录相关说明
         
         # 增强的系统信息清理
-        # 移除Agent描述和系统信息
         response = re.sub(r'---.*?---', '', response, flags=re.DOTALL)  # 移除---包围的内容
         response = re.sub(r'接下来是.*?[。！？]', '', response)  # 移除"接下来是..."
-        response = re.sub(r'一名.*?工程师.*?[。！？]', '', response)  # 移除职业描述
+        response = re.sub(r'一名.*?[工程师|艺术家|老师|商人|学生|医生|厨师|机械师|退休人员].*?[。！？]', '', response)  # 移除职业描述
         response = re.sub(r'[内外]向.*?[。！？]', '', response)  # 移除性格描述
         response = re.sub(r'注重.*?[。！？]', '', response)  # 移除特点描述
-        response = re.sub(r'.*?专业.*?[。！？]', '', response)  # 移除专业相关描述
+        response = re.sub(r'理性.*?逻辑.*?[。！？]', '', response)  # 移除理性逻辑描述
         
-        # 移除Agent名字后跟冒号的格式
-        agent_names = ['Alex', 'Emma', 'Sarah', 'David', 'Lisa', 'Mike', 'John', 'Anna', 'Tom']
-        for name in agent_names:
-            response = re.sub(f'{name}[：:].*?[。！？]', '', response)
-            response = re.sub(f'{name}[：:].*?$', '', response)  # 移除行尾的名字:内容
+        # 移除可能的提示词残留和非对话内容
+        patterns_to_remove = [
+            r"简短地?回应：?",
+            r"回应：?",
+            r"回答：?", 
+            r"说：?",
+            r"思考：?",
+            r".*?说：['\"](.*?)['\"].*",
+            r".*?回应：['\"](.*?)['\"].*",
+            # 移除对话历史杂糅（包含其他人名字的部分）
+            r".*?\w+:\s*[\"'](.*?)[\"'].*",  # 移除包含姓名:内容的部分
+            r"\w+:\s*[\"'](.*?)[\"']",  # 移除姓名: "内容"格式
+            r".*?\w+\s*→\s*\w+.*",  # 移除A → B格式
+            r".*?很高兴听到.*很高兴听到.*",  # 移除重复内容
+            # 移除注释和元信息
+            r"（注释：.*?）",  # 移除（注释：...）
+            r"\(注释：.*?\)",  # 移除(注释：...)
+            r"（.*?注释.*?）",  # 移除包含"注释"的括号内容
+            r"\(.*?注释.*?\)",  # 移除包含"注释"的括号内容
+            r"注释：.*",  # 移除"注释："开头的内容
+            r"（.*?这里.*?）",  # 移除（这里...）
+            r"\(.*?这里.*?\)",  # 移除(这里...)
+            r"（.*?展示.*?）",  # 移除（展示...）
+            r"\(.*?展示.*?\)",  # 移除(展示...)
+            # 移除英文提示词
+            r"If you are .+?, how would you respond to this situation\?",
+            r"As .+?, I'd .+",
+            r"How would you respond\?",
+            r"What would you say\?",
+            r".*respond to this situation.*",
+            r".*how would you.*",
+            r".*As \w+, I.*would.*",
+            # 移除多语言混合的部分
+            r"[a-zA-Z]{30,}",  # 移除长串英文
+            # 移除重复的名字和角色描述
+            r".*我是\w+.*",
+            r".*作为\w+.*",
+            r".*我叫\w+.*",
+            # 移除非对话内容
+            r"你正在与.+?交谈。?",
+            r".*正在与.*交谈.*",
+            r"你是.+?，.*",
+            r"在这种情况下.*",
+            r"根据.*情况.*",
+        ]
         
-        # 移除多余空格和标点
-        response = re.sub(r'\s+', ' ', response).strip()
-        response = re.sub(r'^[。！？，、\-]+', '', response)
-        response = re.sub(r'[。！？，、\-]+$', '', response)
+        cleaned = response.strip()
+        for pattern in patterns_to_remove:
+            try:
+                # 检查模式是否有捕获组
+                if pattern in [
+                    r".*?说：['\"](.*?)['\"].*",
+                    r".*?回应：['\"](.*?)['\"].*",
+                    r".*?\w+:\s*[\"'](.*?)[\"'].*",
+                    r"\w+:\s*[\"'](.*?)[\"']"
+                ]:
+                    # 这些模式有捕获组，提取第一组
+                    cleaned = re.sub(pattern, r"\1", cleaned, flags=re.IGNORECASE)
+                else:
+                    # 其他模式完全移除
+                    cleaned = re.sub(pattern, "", cleaned, flags=re.IGNORECASE)
+            except re.error as e:
+                # 如果正则表达式出错，跳过这个模式
+                logger.warning(f"正则表达式模式错误: {pattern}, 错误: {e}")
+                continue
         
-        # 如果清理后为空，添加句号
-        if response and not response.endswith(('。', '！', '？')):
-            response += '。'
+        # 移除引号包围
+        if cleaned.startswith('"') and cleaned.endswith('"'):
+            cleaned = cleaned[1:-1]
+        if cleaned.startswith("'") and cleaned.endswith("'"):
+            cleaned = cleaned[1:-1]
         
-        # 确保响应合理长度
-        if len(response) > 150:
-            sentences = re.split(r'[。！？]', response)
-            response = sentences[0] + '。' if sentences[0] else "嗯。"
+        # 按句号分割，处理重复和长度问题
+        sentences = re.split(r'[。！？\n]', cleaned)
+        valid_sentences = []
         
-        # 最终质量检查
-        if self._is_quality_response(response, agent_type):
-            logger.debug(f"响应清理成功: {original_response[:50]}... -> {response}")
-            return response
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if not sentence:
+                continue
+            
+            # 移除包含大量英文的句子
+            chinese_chars = len(re.findall(r'[\u4e00-\u9fff]', sentence))
+            english_chars = len(re.findall(r'[a-zA-Z]', sentence))
+            total_chars = len(sentence)
+            
+            if total_chars > 0 and english_chars / total_chars > 0.7:
+                continue
+            
+            # 移除明显的指令性开头和非对话内容
+            if sentence.startswith(('请注意', '请记住', '如果', '当然可以', '好的我来', '我会帮助', '你正在', '根据', '注释', '这里')):
+                continue
+            
+            # 移除包含特定非对话关键词的句子
+            if any(keyword in sentence for keyword in ['交谈', '对话', '情况下', '根据', '注释', '展示', '表情符号', '增加互动性', '趣味性', '特点']):
+                continue
+            
+            # 移除代码相关内容
+            if any(keyword in sentence for keyword in ['```', 'def ', 'import ', 'python', 'def(', 'pass']):
+                continue
+            
+            # 移除包含其他Agent名字的句子（避免对话杂糅）
+            if ':' in sentence and any(name in sentence for name in ['Mike', 'John', 'Emma', 'Lisa', 'Sarah', 'Alex', 'David', 'Anna', 'Tom']):
+                continue
+            
+            # 移除重复的"很高兴听到"类型内容
+            if '很高兴听到' in sentence and any('很高兴听到' in prev for prev in valid_sentences):
+                continue
+            
+            # 移除包含元信息的句子
+            if any(meta_word in sentence for meta_word in ['抓住商机', '商机', '场合下', '迅速', '展示了你']):
+                continue
+            
+            # 移除元分析和解释性内容 - 这是核心修复
+            meta_analysis_patterns = [
+                '这句话既表达了',
+                '体现了.*?的',
+                '是一个很好的方式',
+                '它不仅.*?还',
+                '巧妙地融入了',
+                '透露了.*?的主题',
+                '关于.*?的',
+                '这.*?既.*?也',
+                '表达了.*?问候',
+                '时间流逝',
+                '人生哲理',
+                '礼貌地.*?问候',
+                '融入了关于',
+                '这是.*?的表达',
+                '体现了.*?特点',
+                '展现了.*?风格'
+            ]
+            
+            # 检查是否包含元分析内容
+            is_meta_analysis = any(pattern in sentence for pattern in meta_analysis_patterns)
+            if is_meta_analysis:
+                continue
+            
+            # 移除包含引号分析的句子 ("xxx" 这样...)
+            if '"' in sentence and any(word in sentence for word in ['这样', '这种', '这个', '表达', '方式', '体现', '展示']):
+                continue
+            
+            # 检测并移除重复的短语（通过"或者"连接或者直接重复）
+            # 先处理"或者"连接的重复
+            if '或者' in sentence:
+                parts = sentence.split('或者')
+                if len(parts) == 2:
+                    part1 = parts[0].strip('，。').strip()
+                    part2 = parts[1].strip('，。').strip()
+                    # 如果两部分相似度很高，只保留第一部分
+                    if part1 and part2 and (part1 in part2 or part2 in part1 or 
+                        len(set(part1) & set(part2)) / max(len(part1), len(part2)) > 0.6):
+                        sentence = part1
+            
+            # 检测句子内部的重复模式
+            words = sentence.split()
+            if len(words) > 2:
+                # 检测连续重复的词组
+                for i in range(len(words) - 1):
+                    for j in range(i + 2, len(words) + 1):
+                        phrase = ' '.join(words[i:j])
+                        rest_text = ' '.join(words[j:])
+                        if phrase in rest_text:
+                            # 发现重复，去除后面的重复部分
+                            sentence = ' '.join(words[:j])
+                            break
+                    else:
+                        continue
+                    break
+            
+            # 避免重复句子，但保留技术内容
+            if sentence not in valid_sentences and len(sentence) > 2:
+                valid_sentences.append(sentence)
+        
+        # 保留前5句，确保对话内容简洁
+        if valid_sentences:
+            result_sentences = valid_sentences[:5]
+            cleaned = '。'.join(result_sentences)
+            if not cleaned.endswith(('。', '！', '？')):
+                cleaned += '。'
         else:
-            logger.warning(f"响应质量不佳，使用备用: {response}")
-            return self._generate_fallback_response(agent_type)
+            # 如果没有有效句子，尝试保留原始中文部分
+            chinese_only = re.sub(r'[a-zA-Z]{20,}', '', response)
+            # 移除非对话标识
+            chinese_only = re.sub(r'你正在与.+?交谈。?', '', chinese_only)
+            if len(chinese_only.strip()) > 8:
+                cleaned = chinese_only.strip()[:80] + ('。' if not chinese_only.strip().endswith(('。', '！', '？')) else '')
+            else:
+                cleaned = "嗯，我明白了。"
+        
+        # 最终长度限制
+        if len(cleaned) > 100:
+            cleaned = cleaned[:97] + "..."
+        
+        return cleaned.strip()
     
     def _is_quality_response(self, response: str, agent_type: str = None) -> bool:
         """检查响应质量"""
@@ -517,48 +684,273 @@ class AdvancedContextEngine:
         return random.choice(responses)
 
     def generate_conflict_scenario(self, agent1_type: str, agent2_type: str) -> Dict:
-        """生成冲突场景（委托给关系管理器）"""
-        # 为了保持向后兼容，将调用委托给关系管理器
-        try:
-            from core.relationship_manager import relationship_manager
-            
-            # 使用关系管理器的模板选择逻辑
-            template = relationship_manager._select_conflict_template(agent1_type, agent2_type)
-            trigger = relationship_manager._select_conflict_trigger(template, agent1_type, agent2_type)
-            
-            # 返回兼容的格式
-            return {
-                'topic': template['topic'],
-                'trigger': trigger,
-                'conflict_level': 'moderate',  # 默认中等强度
-                'resolution_probability': 0.6,
-                'intensity_factors': template['intensity_factors']
-            }
-            
-        except Exception as e:
-            # 如果关系管理器不可用，使用简化版本
-            return self._generate_generic_conflict()
+        """生成基于角色类型的复杂冲突场景"""
+        # 获取角色特性
+        agent1_traits = self._get_agent_traits(agent1_type)
+        agent2_traits = self._get_agent_traits(agent2_type)
+        
+        # 基于角色组合生成特定冲突
+        conflict_matrix = self._get_conflict_matrix()
+        conflict_key = f"{agent1_type}_{agent2_type}"
+        reverse_key = f"{agent2_type}_{agent1_type}"
+        
+        if conflict_key in conflict_matrix:
+            base_conflict = conflict_matrix[conflict_key]
+        elif reverse_key in conflict_matrix:
+            base_conflict = conflict_matrix[reverse_key]
+        else:
+            base_conflict = self._generate_generic_conflict_with_traits(agent1_traits, agent2_traits)
+        
+        # 增强冲突细节
+        enhanced_conflict = self._enhance_conflict_details(base_conflict, agent1_traits, agent2_traits)
+        
+        return enhanced_conflict
     
-    def _generate_generic_conflict(self) -> Dict:
-        """生成通用冲突（备用方案）"""
-        topics = [
-            '对小镇发展方向的不同看法',
-            '关于工作方式的分歧', 
-            '对某个社区决策的不同意见',
-            '生活理念的差异'
+    def _get_agent_traits(self, agent_type: str) -> Dict:
+        """获取智能体特征"""
+        traits_map = {
+            'programmer': {
+                'values': ['效率', '逻辑', '技术创新'],
+                'communication_style': '直接简洁',
+                'conflict_triggers': ['低效率', '非逻辑决策', '技术落后'],
+                'resolution_style': '数据驱动分析'
+            },
+            'chef': {
+                'values': ['创意', '品质', '传统与创新平衡'],
+                'communication_style': '热情表达',
+                'conflict_triggers': ['品质妥协', '创意限制', '传统忽视'],
+                'resolution_style': '情感共鸣和妥协'
+            },
+            'teacher': {
+                'values': ['教育', '成长', '公平'],
+                'communication_style': '耐心引导',
+                'conflict_triggers': ['不公平待遇', '教育资源短缺', '价值观冲突'],
+                'resolution_style': '理性讨论和教育'
+            },
+            'artist': {
+                'values': ['创造力', '自由', '美学'],
+                'communication_style': '感性表达',
+                'conflict_triggers': ['创意被限制', '美学标准分歧', '商业化压力'],
+                'resolution_style': '情感表达和艺术诠释'
+            },
+            'businessman': {
+                'values': ['效益', '机会', '成功'],
+                'communication_style': '目标导向',
+                'conflict_triggers': ['机会损失', '低效决策', '风险厌恶'],
+                'resolution_style': '利益权衡和协商'
+            },
+            'doctor': {
+                'values': ['健康', '责任', '科学'],
+                'communication_style': '专业谨慎',
+                'conflict_triggers': ['健康风险', '非科学决策', '责任推卸'],
+                'resolution_style': '专业建议和证据支持'
+            },
+            'student': {
+                'values': ['学习', '探索', '未来'],
+                'communication_style': '好奇积极',
+                'conflict_triggers': ['学习受阻', '机会不公', '未来担忧'],
+                'resolution_style': '开放学习和适应'
+            },
+            'retired': {
+                'values': ['经验', '稳定', '传承'],
+                'communication_style': '智慧分享',
+                'conflict_triggers': ['传统被忽视', '变化过快', '价值观代沟'],
+                'resolution_style': '经验分享和渐进妥协'
+            },
+            'mechanic': {
+                'values': ['实用', '质量', '解决问题'],
+                'communication_style': '直接务实',
+                'conflict_triggers': ['理论空谈', '质量妥协', '过度复杂化'],
+                'resolution_style': '实际行动和简单解决'
+            }
+        }
+        return traits_map.get(agent_type, self._get_default_traits())
+    
+    def _get_conflict_matrix(self) -> Dict:
+        """获取角色间特定冲突矩阵"""
+        return {
+            'programmer_chef': {
+                'topic': '小镇智能化改造项目的推进速度',
+                'core_disagreement': '技术效率 vs 传统工艺保持',
+                'agent1_position': '应该快速引入自动化系统提高效率',
+                'agent2_position': '需要保持传统手工艺的温度和品质',
+                'underlying_tension': '现代化进程中传统价值的保留问题'
+            },
+            'teacher_businessman': {
+                'topic': '社区教育资源的商业化运营',
+                'core_disagreement': '教育公益性 vs 商业效益',
+                'agent1_position': '教育应该保持公益性，关注每个孩子的成长',
+                'agent2_position': '引入市场机制能提高教育质量和效率',
+                'underlying_tension': '公共服务市场化的利弊权衡'
+            },
+            'artist_mechanic': {
+                'topic': '小镇公共空间的艺术装置设计',
+                'core_disagreement': '艺术表达 vs 实用功能',
+                'agent1_position': '艺术装置应该激发灵感，传达深层意义',
+                'agent2_position': '公共设施首先要实用耐用，其次才考虑美观',
+                'underlying_tension': '美学追求与实用主义的平衡'
+            },
+            'doctor_student': {
+                'topic': '社区健康检查的强制性政策',
+                'core_disagreement': '健康保护 vs 个人自由',
+                'agent1_position': '为了公共健康，某些检查应该是强制性的',
+                'agent2_position': '年轻人应该有选择的自由，不应被过度管制',
+                'underlying_tension': '集体利益与个人权利的边界'
+            },
+            'retired_programmer': {
+                'topic': '社区传统活动的数字化改造',
+                'core_disagreement': '传统保持 vs 技术创新',
+                'agent1_position': '传统活动的魅力在于人情味，不应过度依赖技术',
+                'agent2_position': '数字化能让传统活动触达更多人，传承更广',
+                'underlying_tension': '传统文化在数字时代的传承方式'
+            }
+        }
+    
+    def _generate_generic_conflict_with_traits(self, traits1: Dict, traits2: Dict) -> Dict:
+        """基于特征生成通用冲突"""
+        # 寻找价值观冲突点
+        conflict_topics = [
+            '社区资源分配的优先级',
+            '小镇发展规划的方向选择',
+            '公共政策的制定标准',
+            '传统与创新的平衡点',
+            '个人利益与集体利益的权衡'
         ]
         
-        return {
-            'topic': random.choice(topics),
-            'trigger': '观点不同导致的分歧',
-            'conflict_level': 'mild',
-            'resolution_probability': 0.5
+        # 基于沟通风格确定冲突强度
+        style_conflict_map = {
+            ('直接简洁', '热情表达'): 'moderate',
+            ('目标导向', '感性表达'): 'high',
+            ('专业谨慎', '好奇积极'): 'mild',
+            ('直接务实', '耐心引导'): 'mild'
         }
         
+        style_pair = (traits1['communication_style'], traits2['communication_style'])
+        reverse_style_pair = (traits2['communication_style'], traits1['communication_style'])
+        
+        conflict_level = style_conflict_map.get(style_pair, 
+                        style_conflict_map.get(reverse_style_pair, 'moderate'))
+        
         return {
-            'topic': random.choice(topics),
-            'conflict_level': random.choice(['mild', 'moderate']),
-            'resolution_probability': random.uniform(0.4, 0.7)
+            'topic': random.choice(conflict_topics),
+            'core_disagreement': f"{traits1['values'][0]} vs {traits2['values'][0]}",
+            'agent1_position': f"从{traits1['values'][0]}角度出发的观点",
+            'agent2_position': f"从{traits2['values'][0]}角度出发的观点",
+            'underlying_tension': '不同价值体系的碰撞',
+            'conflict_level': conflict_level
         }
+    
+    def _enhance_conflict_details(self, base_conflict: Dict, traits1: Dict, traits2: Dict) -> Dict:
+        """增强冲突场景的细节"""
+        # 计算解决概率
+        resolution_factors = []
+        
+        # 沟通风格兼容性
+        compatible_styles = [
+            ('耐心引导', '好奇积极'),
+            ('智慧分享', '开放学习'),
+            ('专业谨慎', '理性讨论')
+        ]
+        
+        style_pair = (traits1['communication_style'], traits2['communication_style'])
+        if style_pair in compatible_styles or style_pair[::-1] in compatible_styles:
+            resolution_factors.append(0.3)
+        else:
+            resolution_factors.append(-0.1)
+        
+        # 价值观重叠度
+        common_values = set(traits1['values']) & set(traits2['values'])
+        if common_values:
+            resolution_factors.append(0.2 * len(common_values))
+        
+        # 基础解决概率
+        base_probability = 0.5
+        final_probability = max(0.1, min(0.9, base_probability + sum(resolution_factors)))
+        
+        # 生成具体的冲突触发事件
+        trigger_events = [
+            '社区会议上的激烈讨论',
+            '项目推进过程中的意见分歧',
+            '资源分配方案的不同建议',
+            '突发事件处理方式的争议',
+            '长期规划目标的分歧'
+        ]
+        
+        # 生成可能的解决路径
+        resolution_paths = []
+        if traits1['resolution_style'] == traits2['resolution_style']:
+            resolution_paths.append(f"通过{traits1['resolution_style']}达成共识")
+        else:
+            resolution_paths.extend([
+                f"结合{traits1['resolution_style']}和{traits2['resolution_style']}",
+                "寻找第三方调解",
+                "分阶段解决，先易后难",
+                "建立定期沟通机制"
+            ])
+        
+        enhanced_conflict = {
+            **base_conflict,
+            'trigger_event': random.choice(trigger_events),
+            'conflict_level': base_conflict.get('conflict_level', 'moderate'),
+            'resolution_probability': final_probability,
+            'resolution_paths': resolution_paths,
+            'agent1_traits': {
+                'communication_style': traits1['communication_style'],
+                'primary_values': traits1['values'][:2],
+                'resolution_preference': traits1['resolution_style']
+            },
+            'agent2_traits': {
+                'communication_style': traits2['communication_style'],
+                'primary_values': traits2['values'][:2],
+                'resolution_preference': traits2['resolution_style']
+            },
+            'escalation_risk': self._calculate_escalation_risk(traits1, traits2),
+            'potential_outcomes': self._generate_potential_outcomes(base_conflict, traits1, traits2)
+        }
+        
+        return enhanced_conflict
+    
+    def _get_default_traits(self) -> Dict:
+        """获取默认特征"""
+        return {
+            'values': ['和谐', '理解', '合作'],
+            'communication_style': '友好交流',
+            'conflict_triggers': ['误解', '沟通不畅'],
+            'resolution_style': '相互理解和妥协'
+        }
+    
+    def _calculate_escalation_risk(self, traits1: Dict, traits2: Dict) -> str:
+        """计算冲突升级风险"""
+        high_risk_combinations = [
+            ('目标导向', '感性表达'),
+            ('直接简洁', '热情表达'),
+            ('直接务实', '艺术感性')
+        ]
+        
+        style_pair = (traits1['communication_style'], traits2['communication_style'])
+        if style_pair in high_risk_combinations or style_pair[::-1] in high_risk_combinations:
+            return 'high'
+        elif 'aggressive' in style_pair[0] or 'aggressive' in style_pair[1]:
+            return 'high'
+        else:
+            return random.choice(['low', 'medium'])
+    
+    def _generate_potential_outcomes(self, conflict: Dict, traits1: Dict, traits2: Dict) -> List[str]:
+        """生成可能的冲突结果"""
+        outcomes = [
+            '双方达成妥协方案',
+            '寻找创新的第三条路',
+            '暂时搁置争议，寻求更多信息',
+            '分阶段实施不同方案'
+        ]
+        
+        # 基于特征添加特殊结果
+        if '创新' in traits1['values'] or '创新' in traits2['values']:
+            outcomes.append('通过创新思维找到突破点')
+        
+        if '教育' in traits1['values'] or '教育' in traits2['values']:
+            outcomes.append('通过深入讨论增进理解')
+        
+        return outcomes[:3]  # 返回前3个最可能的结果
 
 

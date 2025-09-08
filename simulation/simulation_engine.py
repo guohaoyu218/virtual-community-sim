@@ -10,34 +10,36 @@ import logging
 import concurrent.futures
 from datetime import datetime
 from display.terminal_colors import TerminalColors
-from simulation.social_interaction import SocialInteractionHandler
 
 logger = logging.getLogger(__name__)
 
 class SimulationEngine:
     """模拟引擎"""
     
-    def __init__(self, thread_manager, response_cleaner_func, behavior_manager=None):
+    def __init__(self, thread_manager, response_cleaner_func, behavior_manager=None, agents_ref=None, buildings_ref=None, agent_manager=None):
         self.thread_manager = thread_manager
         self.clean_response = response_cleaner_func
         self.auto_simulation = False
         self.simulation_thread = None
         self.running = True
         self.behavior_manager = behavior_manager  # 保存behavior_manager为实例变量
+        self.last_actions = {}  # 记录每个Agent的最近行动，避免重复
+        self.active_interactions = set()  # 记录正在进行的交互，避免重复
+        self.simulation_lock = threading.Lock()  # 模拟执行锁
         
-        # 初始化社交交互处理器
-        if behavior_manager:
-            self.social_handler = SocialInteractionHandler(
-                thread_manager, behavior_manager, response_cleaner_func
-            )
-        else:
-            self.social_handler = None
+        # 添加依赖引用
+        self.agents_ref = agents_ref  # 对agents字典的引用
+        self.buildings_ref = buildings_ref  # 对buildings字典的引用
+        self.agent_manager = agent_manager  # agent_manager引用
+        
+        logger.info("🔄 模拟引擎已初始化")
     
     def toggle_auto_simulation(self):
         """简单切换自动模拟状态"""
-        self.auto_simulation = not self.auto_simulation
-        
-        if self.auto_simulation:
+        # 防止多线程重复启动
+        if not self.auto_simulation:
+            # 开启自动模拟
+            self.auto_simulation = True
             print(f"{TerminalColors.GREEN}🤖 自动模拟已开启！Agent将开始自主行动{TerminalColors.END}")
             print(f"{TerminalColors.CYAN}💡 再次输入 'auto' 可以关闭自动模拟{TerminalColors.END}")
             
@@ -49,9 +51,14 @@ class SimulationEngine:
                     daemon=True
                 )
                 self.simulation_thread.start()
+                logger.info("新的自动模拟线程已启动")
+            else:
+                logger.info("模拟线程已在运行中")
         else:
+            # 关闭自动模拟
+            self.auto_simulation = False
             print(f"{TerminalColors.YELLOW}⏸️  自动模拟已关闭{TerminalColors.END}")
-            # 线程会在下一次检查时自动停止
+            logger.info("自动模拟已手动关闭")
     
     def _simple_auto_loop(self):
         """简单的自动模拟循环"""
@@ -64,20 +71,18 @@ class SimulationEngine:
                     success = self._execute_simulation_step_safe()
                     if not success:
                         # 如果模拟步骤失败，短暂休眠后继续
-                        time.sleep(1)
+                        time.sleep(3)
                 else:
                     logger.warning("_execute_simulation_step_safe 方法未找到，跳过此轮模拟")
-                    time.sleep(2)
+                    time.sleep(5)
                 
-                # 模拟步骤间隔
-                time.sleep(random.uniform(2, 5))  # 2-5秒随机间隔
+                # 增加模拟步骤间隔，减少刷屏
+                time.sleep(random.uniform(5, 10))  # 5-10秒随机间隔，比之前更长
                 
             except Exception as e:
                 logger.error(f"自动模拟循环错误: {e}")
-                time.sleep(5)  # 错误后等待5秒
+                time.sleep(8)  # 错误后等待8秒
         
-        logger.info("自动模拟循环结束")
-    
         logger.info("自动模拟循环结束")
     
     def choose_agent_action(self, agent, agent_name: str) -> str:
@@ -91,6 +96,13 @@ class SimulationEngine:
             'work': 10,
             'relax': 5
         }
+        
+        # 获取Agent最近的行动，避免重复
+        if agent_name in self.last_actions:
+            last_action = self.last_actions[agent_name]
+            # 降低最近执行过的行动的权重
+            if last_action in action_weights:
+                action_weights[last_action] = max(1, action_weights[last_action] - 15)
         
         # 根据Agent状态调整权重
         energy = getattr(agent, 'energy', 80)
@@ -112,7 +124,12 @@ class SimulationEngine:
         for action, weight in action_weights.items():
             actions.extend([action] * max(1, weight))
         
-        return random.choice(actions)
+        chosen_action = random.choice(actions)
+        
+        # 记录Agent的最近行动
+        self.last_actions[agent_name] = chosen_action
+        
+        return chosen_action
     
     def execute_solo_thinking(self, agent, agent_name: str, location: str) -> bool:
         """执行独自思考"""
@@ -277,53 +294,73 @@ class SimulationEngine:
     def _execute_social_interaction(self, agent1, agent1_name: str, agent2, agent2_name: str, location: str) -> bool:
         """执行社交互动的核心逻辑"""
         try:
-            # 确保两人在同一位置
-            if getattr(agent1, 'location') != getattr(agent2, 'location'):
-                agent2.move_to(location)
-                if hasattr(agent2, 'real_agent'):
-                    agent2.real_agent.current_location = location
+            # 创建交互标识符，防止重复交互
+            interaction_id = tuple(sorted([agent1_name, agent2_name]))
             
-            # 获取当前关系强度
-            if self.behavior_manager:
-                current_relationship = self.behavior_manager.get_relationship_strength(agent1_name, agent2_name)
-            else:
-                current_relationship = 50  # 默认中性关系
+            # 检查是否已有活跃交互
+            with self.simulation_lock:
+                if interaction_id in self.active_interactions:
+                    logger.info(f"跳过重复交互: {agent1_name} ↔ {agent2_name}")
+                    return False
+                self.active_interactions.add(interaction_id)
             
-            # 显示对话标题
-            print(f"\n{TerminalColors.BOLD}━━━ 💬 对话交流 ━━━{TerminalColors.END}")
-            print(f"📍 地点: {location}")
-            print(f"👥 参与者: {agent1_name} ↔ {agent2_name} (关系: {current_relationship})")
-            
-            # Agent1发起对话
-            topic_prompt = f"在{location}遇到{agent2_name}，简短地打个招呼或说句话："
-            topic = agent1.think_and_respond(topic_prompt)
-            topic = self.clean_response(topic)
-            
-            print(f"  {agent1.emoji} {TerminalColors.CYAN}{agent1_name} → {agent2_name}{TerminalColors.END}: {topic}")
-            
-            # 根据关系决定互动类型
-            interaction_type = self._choose_interaction_type(current_relationship)
-            
-            # Agent2回应
-            response = self._generate_agent_response(agent2, agent2_name, agent1_name, topic, interaction_type)
-            display_color = self._get_interaction_color(interaction_type)
-            
-            print(f"  {agent2.emoji} {display_color}{agent2_name} → {agent1_name}{TerminalColors.END}: {response}")
-            
-            # Agent1的反馈
-            feedback = self._generate_feedback_response(agent1, agent1_name, agent2_name, response, interaction_type)
-            feedback_color = self._get_interaction_color(interaction_type)
-            
-            print(f"  {agent1.emoji} {feedback_color}{agent1_name} → {agent2_name}{TerminalColors.END}: {feedback}")
-            
-            # 更新社交网络
-            self._update_relationship(agent1_name, agent2_name, interaction_type, location)
-            
-            print()  # 空行分隔
-            return True
+            try:
+                # 确保两人在同一位置
+                if getattr(agent1, 'location') != getattr(agent2, 'location'):
+                    agent2.move_to(location)
+                    if hasattr(agent2, 'real_agent'):
+                        agent2.real_agent.current_location = location
+                
+                # 获取当前关系强度
+                if self.behavior_manager:
+                    current_relationship = self.behavior_manager.get_relationship_strength(agent1_name, agent2_name)
+                else:
+                    current_relationship = 50  # 默认中性关系
+                
+                # 显示对话标题
+                print(f"\n{TerminalColors.BOLD}━━━ 💬 对话交流 ━━━{TerminalColors.END}")
+                print(f"📍 地点: {location}")
+                print(f"👥 参与者: {agent1_name} ↔ {agent2_name} (关系: {current_relationship})")
+                
+                # Agent1发起对话
+                topic_prompt = f"在{location}遇到{agent2_name}，简短地打个招呼或说句话："
+                topic = agent1.think_and_respond(topic_prompt)
+                topic = self.clean_response(topic)
+                
+                print(f"  {agent1.emoji} {TerminalColors.CYAN}{agent1_name} → {agent2_name}{TerminalColors.END}: {topic}")
+                
+                # 根据关系决定互动类型
+                interaction_type = self._choose_interaction_type(current_relationship)
+                
+                # Agent2回应
+                response = self._generate_agent_response(agent2, agent2_name, agent1_name, topic, interaction_type)
+                display_color = self._get_interaction_color(interaction_type)
+                
+                print(f"  {agent2.emoji} {display_color}{agent2_name} → {agent1_name}{TerminalColors.END}: {response}")
+                
+                # Agent1的反馈
+                feedback = self._generate_feedback_response(agent1, agent1_name, agent2_name, response, interaction_type)
+                feedback_color = self._get_interaction_color(interaction_type)
+                
+                print(f"  {agent1.emoji} {feedback_color}{agent1_name} → {agent2_name}{TerminalColors.END}: {feedback}")
+                
+                # 更新社交网络
+                self._update_relationship(agent1_name, agent2_name, interaction_type, location)
+                
+                print()  # 空行分隔
+                return True
+                
+            finally:
+                # 清理活跃交互标识
+                with self.simulation_lock:
+                    self.active_interactions.discard(interaction_id)
             
         except Exception as e:
             logger.error(f"执行社交互动异常: {e}")
+            # 确保清理
+            with self.simulation_lock:
+                interaction_id = tuple(sorted([agent1_name, agent2_name]))
+                self.active_interactions.discard(interaction_id)
             return False
     
     def _fallback_solo_thinking(self, agent, agent_name: str) -> bool:
@@ -340,7 +377,7 @@ class SimulationEngine:
             except Exception:
                 cleaned_thought = "在安静地思考..."
             
-            print(f"\n{TerminalColors.BOLD}━━━ � 独自思考 ━━━{TerminalColors.END}")
+            print(f"\n{TerminalColors.BOLD}━━━ 💭 独自思考 ━━━{TerminalColors.END}")
             print(f"  {agent.emoji} {TerminalColors.YELLOW}{agent_name}{TerminalColors.END}: {cleaned_thought}")
             print()
             
@@ -360,26 +397,9 @@ class SimulationEngine:
             self.simulation_thread.join(timeout=10.0)
     
     def _choose_interaction_type(self, relationship_strength: int) -> str:
-        """根据关系强度选择互动类型"""
-        if relationship_strength >= 70:
-            # 关系很好：65%友好，20%中性，15%负面
-            weights = [('friendly_chat', 65), ('casual_meeting', 20), ('misunderstanding', 12), ('argument', 3)]
-        elif relationship_strength >= 50:
-            # 关系一般：50%友好，25%中性，25%负面
-            weights = [('friendly_chat', 50), ('casual_meeting', 25), ('misunderstanding', 18), ('argument', 7)]
-        elif relationship_strength >= 30:
-            # 关系较差：30%友好，30%中性，40%负面
-            weights = [('friendly_chat', 30), ('casual_meeting', 30), ('misunderstanding', 25), ('argument', 15)]
-        else:
-            # 关系很差：20%友好，25%中性，55%负面
-            weights = [('friendly_chat', 20), ('casual_meeting', 25), ('misunderstanding', 35), ('argument', 20)]
-        
-        # 根据权重随机选择
-        interaction_types = []
-        for interaction_type, weight in weights:
-            interaction_types.extend([interaction_type] * weight)
-        
-        return random.choice(interaction_types)
+        """根据关系强度选择互动类型 - 委托给工具类"""
+        from .interaction_utils import InteractionUtils
+        return InteractionUtils.choose_interaction_type(relationship_strength)
     
     def _generate_agent_response(self, agent, agent_name: str, other_name: str, topic: str, interaction_type: str) -> str:
         """生成Agent的回应"""
@@ -412,19 +432,33 @@ class SimulationEngine:
     def _generate_feedback_response(self, agent, agent_name: str, other_name: str, response: str, interaction_type: str) -> str:
         """生成反馈回应"""
         try:
+            # 限制回应长度，确保简洁连贯
+            max_length = 50  # 最大字符数限制
+            
             if interaction_type == 'friendly_chat':
-                prompt = f"{other_name}回应：'{response}'，表示认同或进一步交流："
+                prompt = f"{other_name}说：'{response}'，用1-2句话表示认同或进一步交流："
             elif interaction_type == 'casual_meeting':
-                prompt = f"{other_name}回应：'{response}'，简单回应或结束对话："
+                prompt = f"{other_name}说：'{response}'，用1句话简单回应或结束对话："
             elif interaction_type == 'misunderstanding':
-                prompt = f"{other_name}回应：'{response}'，尝试澄清或表示困惑："
+                prompt = f"{other_name}说：'{response}'，用1句话尝试澄清或表示困惑："
             elif interaction_type == 'argument':
-                prompt = f"{other_name}回应：'{response}'，继续表达不同观点："
+                prompt = f"{other_name}说：'{response}'，用1句话继续表达不同观点："
             else:
-                prompt = f"{other_name}回应：'{response}'，简短回应："
+                prompt = f"{other_name}说：'{response}'，简短回应："
             
             feedback = agent.think_and_respond(prompt)
-            return self.clean_response(feedback)
+            feedback = self.clean_response(feedback)
+            
+            # 限制回应长度
+            if len(feedback) > max_length:
+                # 截取到最后一个完整的句子
+                sentences = feedback.split('。')
+                if len(sentences) > 1 and len(sentences[0]) <= max_length:
+                    feedback = sentences[0] + '。'
+                else:
+                    feedback = feedback[:max_length] + '...'
+            
+            return feedback
             
         except Exception as e:
             logger.error(f"生成反馈异常: {e}")
@@ -523,7 +557,9 @@ class SimulationEngine:
             }
             
             self.thread_manager.add_interaction_task(interaction_data)
-            logger.info(f"📤 交互任务已添加到队列: {agent1_name} ↔ {agent2_name}")
+            # 简化日志：只在调试模式下输出详细信息
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"📤 交互任务已添加到队列: {agent1_name} ↔ {agent2_name}")
             
         except Exception as e:
             logger.error(f"更新社交关系失败: {e}")
@@ -531,11 +567,121 @@ class SimulationEngine:
     def execute_group_discussion_safe(self, agents, agent, agent_name: str) -> bool:
         """统一的群体讨论执行"""
         try:
-            current_location = getattr(agent, 'location', '家')
-            print(f"\n{TerminalColors.BOLD}━━━ 👥 群体讨论 ━━━{TerminalColors.END}")
-            print(f"  {agent.emoji} {TerminalColors.BLUE}{agent_name}{TerminalColors.END} 在{current_location}参与群体讨论")
-            print()
-            return True
+            # 如果有社交处理器，委托给它处理
+            if self.social_handler:
+                return self.social_handler.execute_group_discussion_safe(agents, agent, agent_name)
+            else:
+                # 后备简单实现
+                current_location = getattr(agent, 'location', '家')
+                print(f"\n{TerminalColors.BOLD}━━━ 👥 群体讨论 ━━━{TerminalColors.END}")
+                print(f"  {agent.emoji} {TerminalColors.BLUE}{agent_name}{TerminalColors.END} 在{current_location}参与群体讨论")
+                print()
+                return True
         except Exception as e:
             logger.error(f"群体讨论异常: {e}")
+            return False
+    
+    def _execute_simulation_step_safe(self) -> bool:
+        """执行一个安全的模拟步骤"""
+        try:
+            if not self.agents_ref or not self.agents_ref():
+                logger.warning("没有可用的Agent进行模拟")
+                return False
+            
+            agents = self.agents_ref()
+            buildings = self.buildings_ref() if self.buildings_ref else {}
+            
+            # 获取所有Agent列表
+            with self.thread_manager.agents_lock:
+                available_agents = list(agents.items())
+            
+            if not available_agents:
+                return False
+            
+            # 随机选择一个Agent
+            agent_name, agent = random.choice(available_agents)
+            
+            # 检查Agent是否有效
+            if not agent:
+                logger.warning(f"Agent {agent_name} 无效")
+                return False
+            
+            # 选择行动类型
+            action = self.choose_agent_action(agent, agent_name)
+            
+            # 执行相应的行动
+            success = False
+            try:
+                if action == 'social':
+                    success = self.execute_social_action_safe(agents, agent, agent_name)
+                elif action == 'group_discussion':
+                    success = self.execute_group_discussion_safe(agents, agent, agent_name)
+                elif action == 'move':
+                    success = self._execute_move_action_safe(agent, agent_name, buildings)
+                elif action == 'think':
+                    success = self.execute_think_action_safe(agent, agent_name)
+                elif action == 'work':
+                    success = self.execute_work_action_safe(agent, agent_name)
+                elif action == 'relax':
+                    success = self.execute_relax_action_safe(agent, agent_name)
+                else:
+                    logger.warning(f"未知行动类型: {action}")
+                    success = False
+                
+                # 更新Agent的交互计数
+                if success and hasattr(agent, 'interaction_count'):
+                    with self.thread_manager.agents_lock:
+                        agent.interaction_count += 1
+                
+                return success
+                
+            except Exception as e:
+                logger.error(f"执行Agent行动失败: {e}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"模拟步骤执行异常: {e}")
+            return False
+    
+    def _execute_move_action_safe(self, agent, agent_name: str, buildings: dict) -> bool:
+        """安全执行移动行动"""
+        try:
+            current_location = getattr(agent, 'location', '家')
+            available_locations = [loc for loc in buildings.keys() if loc != current_location]
+            
+            if not available_locations:
+                return False
+            
+            new_location = random.choice(available_locations)
+            
+            # 执行移动 - 使用agent_manager
+            if self.agent_manager:
+                agents = self.agents_ref() if self.agents_ref else {}
+                success = self.agent_manager.move_agent(
+                    agents, buildings, self.behavior_manager, agent_name, new_location
+                )
+                
+                if success:
+                    print(f"\n{TerminalColors.BOLD}━━━ 🚶 移动 ━━━{TerminalColors.END}")
+                    print(f"  {agent.emoji} {TerminalColors.MAGENTA}{agent_name}{TerminalColors.END}: {current_location} → {new_location}")
+                    print()
+                    
+                    # 保存移动事件到向量数据库
+                    movement_task = {
+                        'type': 'movement',
+                        'agent_name': agent_name,
+                        'old_location': current_location,
+                        'new_location': new_location,
+                        'reason': 'autonomous_movement',
+                        'timestamp': datetime.now().isoformat()
+                    }
+                    self.thread_manager.add_memory_task(movement_task)
+                
+                return success
+            else:
+                logger.warning("没有可用的agent_manager")
+                return False
+                
+        except Exception as e:
+            logger.error(f"执行移动行动异常: {e}")
             return False

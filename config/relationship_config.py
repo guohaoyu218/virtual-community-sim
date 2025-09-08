@@ -6,7 +6,7 @@
 # 关系等级配置
 RELATIONSHIP_LEVELS = {
     "敌对": {"min": -20, "max": -1, "emoji": "😠", "description": "关系很差，经常冲突"},
-    "陌生": {"min": 0, "max": 20, "emoji": "�", "description": "不熟悉，初次见面"},
+    "陌生": {"min": 0, "max": 20, "emoji": "😐", "description": "不熟悉，初次见面"},
     "认识": {"min": 21, "max": 40, "emoji": "🙂", "description": "有过几次交流，算是认识"},
     "熟人": {"min": 41, "max": 60, "emoji": "😊", "description": "比较熟悉，偶尔聊天"},
     "好朋友": {"min": 61, "max": 80, "emoji": "😄", "description": "关系很好，经常交流"},
