@@ -25,9 +25,9 @@ class InteractionUtils:
             # 关系较差：30%友好，30%中性，40%负面
             weights = [('friendly_chat', 30), ('casual_meeting', 30), ('misunderstanding', 25), ('argument', 15)]
         else:
-            # 关系很差：20%友好，25%中性，55%负面
-            weights = [('friendly_chat', 20), ('casual_meeting', 25), ('misunderstanding', 35), ('argument', 20)]
-        
+            # 关系很差：40%友好，25%中性，35%负面
+            weights = [('friendly_chat', 40), ('casual_meeting', 25), ('misunderstanding', 15), ('argument', 20)]
+
         # 根据权重随机选择 - 支持两种算法
         total_weight = sum(weight for _, weight in weights)
         random_num = random.randint(1, total_weight)
@@ -63,6 +63,21 @@ class InteractionUtils:
             'friendly_chat': TerminalColors.GREEN,
             'casual_meeting': TerminalColors.CYAN,
             'misunderstanding': TerminalColors.YELLOW,
-            'argument': TerminalColors.RED
+            'argument': TerminalColors.RED,
+            'deep_conversation': TerminalColors.BLUE,
+            'collaboration': TerminalColors.MAGENTA
         }
         return color_map.get(interaction_type, TerminalColors.WHITE)
+    
+    @staticmethod
+    def get_interaction_icon(interaction_type: str) -> str:
+        """获取交互类型对应的图标"""
+        icon_map = {
+            'friendly_chat': "💫",
+            'casual_meeting': "💭",
+            'misunderstanding': "❓",
+            'argument': "💥",
+            'deep_conversation': "🧠",
+            'collaboration': "🤝"
+        }
+        return icon_map.get(interaction_type, "🔄")

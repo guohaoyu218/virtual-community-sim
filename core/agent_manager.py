@@ -45,8 +45,9 @@ class AgentManager:
             logger.error(f"AI Agent初始化失败: {e}")
             return {}
     
-    def move_agent(self, agents, buildings, behavior_manager, agent_name: str, location: str):
-        """移动Agent - 线程安全版本"""
+    def move_agent(self, agents, buildings, behavior_manager, agent_name: str, location: str, show_output: bool = True):
+        """移动Agent - 线程安全版本
+        show_output: 是否在此函数内打印移动信息（模拟引擎会自行打印更完整的区块，因此可关闭）"""
         try:
             # 验证参数
             if location not in buildings:
@@ -72,7 +73,8 @@ class AgentManager:
                 # 异步更新地点热度
                 self._async_update_location_popularity(behavior_manager, old_location, location)
                 
-                print(f"{TerminalColors.GREEN}🚶 {agent.emoji} {agent_name} 从 {old_location} 移动到 {location}{TerminalColors.END}")
+                if show_output:
+                    print(f"{TerminalColors.GREEN}🚶 {agent.emoji} {agent_name} 从 {old_location} 移动到 {location}{TerminalColors.END}")
                 
                 # 记录移动事件
                 self._record_movement_event(agent_name, old_location, location)

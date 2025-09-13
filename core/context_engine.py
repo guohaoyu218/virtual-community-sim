@@ -15,6 +15,7 @@ import logging
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
+from collections import OrderedDict  # 新增缓存结构
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,56 @@ class AdvancedContextEngine:
         self.context_templates = self._init_context_templates()
         self.response_patterns = self._init_response_patterns()
         self.quality_filters = self._init_quality_filters()
+        # == 性能优化部分 ==
+        # 预编译清理正则 & 元分析片段
+        self._remove_patterns_raw = [
+            r"Human:\s*.*",
+            r"Assistant:\s*.*",
+            r"聊天记录：.*",
+            r"以下是.*记录.*",
+            r"---.*?---",
+            r"接下来是.*?[。！？]",
+            r"一名.*?[工程师|艺术家|老师|商人|学生|医生|厨师|机械师|退休人员].*?[。！？]",
+            r"[内外]向.*?[。！？]",
+            r"注重.*?[。！？]",
+            r"理性.*?逻辑.*?[。！？]",
+            r"简短地?回应：?",
+            r"回应：?",
+            r"回答：?",
+            r"说：?",
+            r"思考：?",
+            r"（注释：.*?）",
+            r"\(注释：.*?\)",
+            r"（.*?注释.*?）",
+            r"\(.*?注释.*?\)",
+            r"注释：.*",
+            r"（.*?这里.*?）",
+            r"\(.*?这里.*?\)",
+            r"（.*?展示.*?）",
+            r"\(.*?展示.*?\)",
+            r"If you are .+?, how would you respond to this situation\?",
+            r"As .+?, I'd .+",
+            r"How would you respond\?",
+            r"What would you say\?",
+            r".*respond to this situation.*",
+            r".*how would you.*",
+            r".*As \w+, I.*would.*",
+            r"[a-zA-Z]{30,}",
+            r"你正在与.+?交谈。?",
+            r".*正在与.*交谈.*",
+            r"你是.+?，.*",
+            r"在这种情况下.*",
+            r"根据.*情况.*",
+        ]
+        self._compiled_remove_patterns = [re.compile(p, re.IGNORECASE) for p in self._remove_patterns_raw]
+        # 元分析判定使用片段匹配提升性能
+        self._meta_fragments = (
+            '这句话既表达', '体现了', '巧妙地', '不仅', '融入了', '透露了', '既', '也', '表达了', '方式',
+            '展示了', '风格', '主题', '人生哲理', '礼貌地', '问候', '特点'
+        )
+        # 简单LRU缓存（最多1024条）
+        self._clean_cache: OrderedDict[str, str] = OrderedDict()
+        self._clean_cache_limit = 1024
         
     def _init_context_templates(self) -> Dict[str, ContextTemplate]:
         """初始化上下文模板"""
@@ -444,219 +495,111 @@ class AdvancedContextEngine:
 回应："""
     
     def clean_response(self, response: str, agent_type: str = None) -> str:
-        """高级响应清理 - 增强版本"""
+        """高级响应清理（优化版，预编译+缓存）
+        修复：
+        1. 过度清理导致只剩姓名/标点
+        2. 极短文本关系信号不足
+        策略：
+        - 对很短且原始文本看起来已是自然中文句子时，绕过重度清理
+        - 二次回退：若清理后长度 < 3，则使用温和清理版本
+        - 不缓存长度 <3 的结果，避免放大糟糕片段
+        """
         if not response:
             return "..."
-        
-        # 首先移除训练数据残留和系统信息
-        response = re.sub(r'Human:\s*.*', '', response)  # 移除Human:开头的内容
-        response = re.sub(r'Assistant:\s*.*', '', response)  # 移除Assistant:开头的内容
-        response = re.sub(r'聊天记录：.*', '', response)  # 移除聊天记录相关内容
-        response = re.sub(r'以下是.*记录.*', '', response)  # 移除记录相关说明
-        
-        # 增强的系统信息清理
-        response = re.sub(r'---.*?---', '', response, flags=re.DOTALL)  # 移除---包围的内容
-        response = re.sub(r'接下来是.*?[。！？]', '', response)  # 移除"接下来是..."
-        response = re.sub(r'一名.*?[工程师|艺术家|老师|商人|学生|医生|厨师|机械师|退休人员].*?[。！？]', '', response)  # 移除职业描述
-        response = re.sub(r'[内外]向.*?[。！？]', '', response)  # 移除性格描述
-        response = re.sub(r'注重.*?[。！？]', '', response)  # 移除特点描述
-        response = re.sub(r'理性.*?逻辑.*?[。！？]', '', response)  # 移除理性逻辑描述
-        
-        # 移除可能的提示词残留和非对话内容
-        patterns_to_remove = [
-            r"简短地?回应：?",
-            r"回应：?",
-            r"回答：?", 
-            r"说：?",
-            r"思考：?",
-            r".*?说：['\"](.*?)['\"].*",
-            r".*?回应：['\"](.*?)['\"].*",
-            # 移除对话历史杂糅（包含其他人名字的部分）
-            r".*?\w+:\s*[\"'](.*?)[\"'].*",  # 移除包含姓名:内容的部分
-            r"\w+:\s*[\"'](.*?)[\"']",  # 移除姓名: "内容"格式
-            r".*?\w+\s*→\s*\w+.*",  # 移除A → B格式
-            r".*?很高兴听到.*很高兴听到.*",  # 移除重复内容
-            # 移除注释和元信息
-            r"（注释：.*?）",  # 移除（注释：...）
-            r"\(注释：.*?\)",  # 移除(注释：...)
-            r"（.*?注释.*?）",  # 移除包含"注释"的括号内容
-            r"\(.*?注释.*?\)",  # 移除包含"注释"的括号内容
-            r"注释：.*",  # 移除"注释："开头的内容
-            r"（.*?这里.*?）",  # 移除（这里...）
-            r"\(.*?这里.*?\)",  # 移除(这里...)
-            r"（.*?展示.*?）",  # 移除（展示...）
-            r"\(.*?展示.*?\)",  # 移除(展示...)
-            # 移除英文提示词
-            r"If you are .+?, how would you respond to this situation\?",
-            r"As .+?, I'd .+",
-            r"How would you respond\?",
-            r"What would you say\?",
-            r".*respond to this situation.*",
-            r".*how would you.*",
-            r".*As \w+, I.*would.*",
-            # 移除多语言混合的部分
-            r"[a-zA-Z]{30,}",  # 移除长串英文
-            # 移除重复的名字和角色描述
-            r".*我是\w+.*",
-            r".*作为\w+.*",
-            r".*我叫\w+.*",
-            # 移除非对话内容
-            r"你正在与.+?交谈。?",
-            r".*正在与.*交谈.*",
-            r"你是.+?，.*",
-            r"在这种情况下.*",
-            r"根据.*情况.*",
-        ]
-        
-        cleaned = response.strip()
-        for pattern in patterns_to_remove:
-            try:
-                # 检查模式是否有捕获组
-                if pattern in [
-                    r".*?说：['\"](.*?)['\"].*",
-                    r".*?回应：['\"](.*?)['\"].*",
-                    r".*?\w+:\s*[\"'](.*?)[\"'].*",
-                    r"\w+:\s*[\"'](.*?)[\"']"
-                ]:
-                    # 这些模式有捕获组，提取第一组
-                    cleaned = re.sub(pattern, r"\1", cleaned, flags=re.IGNORECASE)
-                else:
-                    # 其他模式完全移除
-                    cleaned = re.sub(pattern, "", cleaned, flags=re.IGNORECASE)
-            except re.error as e:
-                # 如果正则表达式出错，跳过这个模式
-                logger.warning(f"正则表达式模式错误: {pattern}, 错误: {e}")
-                continue
-        
-        # 移除引号包围
-        if cleaned.startswith('"') and cleaned.endswith('"'):
+
+        raw_original = response
+        original = response.strip()
+        # 纯中文简短自然句直接返回（避免被规则误杀）
+        if 3 <= len(original) <= 25 and re.search(r"[\u4e00-\u9fff]", original) \
+           and not re.search(r"(提示|指令|请用中文|不要|系统|身份|分析|注释)", original):
+            if not original.endswith(('。','！','？')):
+                original += '。'
+            return original
+
+        # 缓存命中（仅对原始文本）
+        cache_hit = self._clean_cache.get(raw_original)
+        if cache_hit is not None:
+            self._clean_cache.move_to_end(raw_original)
+            return cache_hit
+
+        cleaned = original
+        for pattern in self._compiled_remove_patterns:
+            cleaned = pattern.sub("", cleaned)
+
+        # 去除首尾成对引号
+        if (cleaned.startswith(("\"", '“', "'")) and cleaned[-1:] in ('"', '”', "'")):
             cleaned = cleaned[1:-1]
-        if cleaned.startswith("'") and cleaned.endswith("'"):
-            cleaned = cleaned[1:-1]
-        
-        # 按句号分割，处理重复和长度问题
+
         sentences = re.split(r'[。！？\n]', cleaned)
-        valid_sentences = []
-        
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if not sentence:
+        valid = []
+        name_block = ('Mike','John','Emma','Lisa','Sarah','Alex','David','Anna','Tom')
+        skip_contains = ('交谈','情况下','根据','注释','展示','表情符号','增加互动性','趣味性','特点')
+        code_tokens = ('```','def ','import ','python','pass')
+
+        for sent in sentences[:10]:
+            s = sent.strip()
+            if not s:
                 continue
-            
-            # 移除包含大量英文的句子
-            chinese_chars = len(re.findall(r'[\u4e00-\u9fff]', sentence))
-            english_chars = len(re.findall(r'[a-zA-Z]', sentence))
-            total_chars = len(sentence)
-            
-            if total_chars > 0 and english_chars / total_chars > 0.7:
+            total = len(s)
+            if total == 0:
                 continue
-            
-            # 移除明显的指令性开头和非对话内容
-            if sentence.startswith(('请注意', '请记住', '如果', '当然可以', '好的我来', '我会帮助', '你正在', '根据', '注释', '这里')):
+            english_chars = len(re.findall(r'[A-Za-z]', s))
+            if total > 0 and english_chars/total > 0.7:
                 continue
-            
-            # 移除包含特定非对话关键词的句子
-            if any(keyword in sentence for keyword in ['交谈', '对话', '情况下', '根据', '注释', '展示', '表情符号', '增加互动性', '趣味性', '特点']):
+            if s.startswith(('请注意','请记住','如果','当然可以','好的我来','我会帮助','你正在','根据','注释','这里')):
                 continue
-            
-            # 移除代码相关内容
-            if any(keyword in sentence for keyword in ['```', 'def ', 'import ', 'python', 'def(', 'pass']):
+            if any(k in s for k in skip_contains):
                 continue
-            
-            # 移除包含其他Agent名字的句子（避免对话杂糅）
-            if ':' in sentence and any(name in sentence for name in ['Mike', 'John', 'Emma', 'Lisa', 'Sarah', 'Alex', 'David', 'Anna', 'Tom']):
+            if any(k in s for k in code_tokens):
                 continue
-            
-            # 移除重复的"很高兴听到"类型内容
-            if '很高兴听到' in sentence and any('很高兴听到' in prev for prev in valid_sentences):
+            if ':' in s and any(n in s for n in name_block):
                 continue
-            
-            # 移除包含元信息的句子
-            if any(meta_word in sentence for meta_word in ['抓住商机', '商机', '场合下', '迅速', '展示了你']):
+            if any(frag in s for frag in self._meta_fragments):
                 continue
-            
-            # 移除元分析和解释性内容 - 这是核心修复
-            meta_analysis_patterns = [
-                '这句话既表达了',
-                '体现了.*?的',
-                '是一个很好的方式',
-                '它不仅.*?还',
-                '巧妙地融入了',
-                '透露了.*?的主题',
-                '关于.*?的',
-                '这.*?既.*?也',
-                '表达了.*?问候',
-                '时间流逝',
-                '人生哲理',
-                '礼貌地.*?问候',
-                '融入了关于',
-                '这是.*?的表达',
-                '体现了.*?特点',
-                '展现了.*?风格'
-            ]
-            
-            # 检查是否包含元分析内容
-            is_meta_analysis = any(pattern in sentence for pattern in meta_analysis_patterns)
-            if is_meta_analysis:
+            if '很高兴听到' in s and any('很高兴听到' in v for v in valid):
                 continue
-            
-            # 移除包含引号分析的句子 ("xxx" 这样...)
-            if '"' in sentence and any(word in sentence for word in ['这样', '这种', '这个', '表达', '方式', '体现', '展示']):
+            if s in valid:
                 continue
-            
-            # 检测并移除重复的短语（通过"或者"连接或者直接重复）
-            # 先处理"或者"连接的重复
-            if '或者' in sentence:
-                parts = sentence.split('或者')
-                if len(parts) == 2:
-                    part1 = parts[0].strip('，。').strip()
-                    part2 = parts[1].strip('，。').strip()
-                    # 如果两部分相似度很高，只保留第一部分
-                    if part1 and part2 and (part1 in part2 or part2 in part1 or 
-                        len(set(part1) & set(part2)) / max(len(part1), len(part2)) > 0.6):
-                        sentence = part1
-            
-            # 检测句子内部的重复模式
-            words = sentence.split()
-            if len(words) > 2:
-                # 检测连续重复的词组
-                for i in range(len(words) - 1):
-                    for j in range(i + 2, len(words) + 1):
-                        phrase = ' '.join(words[i:j])
-                        rest_text = ' '.join(words[j:])
-                        if phrase in rest_text:
-                            # 发现重复，去除后面的重复部分
-                            sentence = ' '.join(words[:j])
-                            break
-                    else:
-                        continue
-                    break
-            
-            # 避免重复句子，但保留技术内容
-            if sentence not in valid_sentences and len(sentence) > 2:
-                valid_sentences.append(sentence)
-        
-        # 保留前5句，确保对话内容简洁
-        if valid_sentences:
-            result_sentences = valid_sentences[:5]
-            cleaned = '。'.join(result_sentences)
-            if not cleaned.endswith(('。', '！', '？')):
+            valid.append(s)
+            if len(valid) >= 5:
+                break
+
+        if valid:
+            cleaned = '。'.join(valid)
+            if not cleaned.endswith(('。','！','？')):
                 cleaned += '。'
         else:
-            # 如果没有有效句子，尝试保留原始中文部分
-            chinese_only = re.sub(r'[a-zA-Z]{20,}', '', response)
-            # 移除非对话标识
-            chinese_only = re.sub(r'你正在与.+?交谈。?', '', chinese_only)
-            if len(chinese_only.strip()) > 8:
-                cleaned = chinese_only.strip()[:80] + ('。' if not chinese_only.strip().endswith(('。', '！', '？')) else '')
+            # 回退：保留原始中文骨架
+            chinese_core = re.sub(r'[a-zA-Z]{20,}', '', original)
+            chinese_core = re.sub(r'你正在与.+?交谈。?', '', chinese_core)
+            cleaned = chinese_core.strip()[:80] or "嗯，我明白了。"
+            if not cleaned.endswith(('。','！','？')):
+                cleaned += '。'
+
+        # 二次回退：若结果仍过短（<3个汉字或只含姓名/标点）
+        core_no_punct = re.sub(r'[。！？，,.!\s]','', cleaned)
+        if len(core_no_punct) < 3:
+            alt = re.sub(r'[\n"“”]','', original)
+            alt = re.sub(r'(请用中文回答|不要解释|不要分析|只用一句话|回应要求.*)$','', alt)
+            alt = alt.strip('：: ,，。 ')
+            if len(alt) >= 3 and re.search(r'[\u4e00-\u9fff]', alt):
+                if not alt.endswith(('。','！','？')):
+                    alt += '。'
+                cleaned = alt
             else:
-                cleaned = "嗯，我明白了。"
-        
-        # 最终长度限制
+                cleaned = '嗯，我在想。'
+
         if len(cleaned) > 100:
-            cleaned = cleaned[:97] + "..."
-        
-        return cleaned.strip()
+            cleaned = cleaned[:97] + '...'
+        cleaned = cleaned.strip()
+
+        # 仅缓存正常长度结果
+        if len(core_no_punct) >= 3:
+            self._clean_cache[raw_original] = cleaned
+            if len(self._clean_cache) > self._clean_cache_limit:
+                self._clean_cache.popitem(last=False)
+
+        return cleaned
     
     def _is_quality_response(self, response: str, agent_type: str = None) -> bool:
         """检查响应质量"""

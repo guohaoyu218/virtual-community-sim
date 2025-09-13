@@ -39,7 +39,7 @@ class TerminalUI:
   💾 save         - 手动保存系统状态
   
 {TerminalColors.CYAN}📊 信息查看：{TerminalColors.END}
-  👫 social       - 查看社交网络 (network/detailed/conflicts/tensions)
+  👫 social       - 查看社交网络 (network/advanced)
   📜 history      - 查看历史记录 (chat/interactions/movements)
   🧠 memory       - 显示内存状态
   🔧 status       - 查看系统状态

@@ -121,6 +121,8 @@ class TerminalTownRefactored:
         # 显示欢迎界面
         self.ui.clear_screen()
         self.ui.show_welcome()
+        # 标记已显示
+        self._welcome_shown = True
     
     def _clean_response(self, response: str) -> str:
         """清理AI回应中的多余内容 - 委托给context_engine"""
@@ -140,16 +142,10 @@ class TerminalTownRefactored:
         Args:
             mode: 显示模式
                 - 'basic': 基础关系矩阵
-                - 'detailed': 详细分析
-                - 'advanced': 高级状态（冲突和紧张度）
-                - 'file': 文件状态
+                - 'advanced': 高级状态和详细分析
         """
         try:
-            if mode == 'file':
-                return self._show_social_network_file_status()
-            elif mode == 'detailed':
-                return self._show_social_network_detailed()
-            elif mode == 'advanced':
+            if mode == 'advanced':
                 return self._show_social_network_advanced()
             else:
                 return self._show_social_network_basic()
@@ -194,66 +190,29 @@ class TerminalTownRefactored:
         else:
             print(f"\n💬 暂无交互历史记录")
             print(f"💡 提示: 使用 'chat' 或 'auto' 命令来增加Agent互动")
-    
-    def _show_social_network_file_status(self):
-        """显示社交网络文件状态"""
-        print(f"\n{TerminalColors.BOLD}━━━ 📁 社交网络文件状态 ━━━{TerminalColors.END}")
-        
-        try:
-            import os
-            data_dir = os.path.join(os.path.dirname(__file__), 'data')
-            file_path = os.path.join(data_dir, 'social_network.json')
-            
-            if os.path.exists(file_path):
-                # 文件存在，显示详细信息
-                file_stat = os.stat(file_path)
-                file_size = file_stat.st_size
-                modification_time = datetime.fromtimestamp(file_stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
-                
-                print(f"📄 文件路径: {file_path}")
-                print(f"📊 文件大小: {file_size} 字节")
-                print(f"🕒 修改时间: {modification_time}")
-                
-                # 尝试读取文件内容
-                try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        data = json.load(f)
-                    
-                    print(f"✅ 文件状态: 可读取")
-                    print(f"📈 社交网络大小: {len(data.get('social_network', {}))} 个Agent")
-                    
-                    # 显示behavior_manager的统计信息
-                    if hasattr(self.behavior_manager, 'get_social_network_stats'):
-                        try:
-                            stats = self.behavior_manager.get_social_network_stats()
-                            print(f"📊 统计信息:")
-                            for key, value in stats.items():
-                                print(f"   • {key}: {value}")
-                        except Exception as e:
-                            print(f"⚠️ 无法获取统计信息: {e}")
-                    
-                except json.JSONDecodeError as e:
-                    print(f"❌ 文件格式错误: {e}")
-                except Exception as e:
-                    print(f"❌ 读取文件失败: {e}")
-            else:
-                print(f"❌ 文件不存在: {file_path}")
-                print(f"💡 提示: 使用 'save' 命令创建社交网络文件")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取社交网络文件状态失败: {e}{TerminalColors.END}")
-            logger.error(f"显示社交网络文件状态失败: {e}")
 
-    def _show_social_network_detailed(self):
-        """显示详细的社交网络分析"""
-        print(f"\n{TerminalColors.BOLD}━━━ 📊 详细社交网络分析 ━━━{TerminalColors.END}")
+    def _show_social_network_advanced(self):
+        """显示高级社交网络状态和详细分析"""
+        print(f"\n{TerminalColors.BOLD}━━━ 💫 高级社交网络分析 ━━━{TerminalColors.END}")
         
         agent_names = list(self.agents.keys())
         if not agent_names:
             print(f"❌ 暂无Agent")
             return
+        
+        # 基础统计信息
+        print(f"🤝 社交网络统计:")
+        total_relationships = 0
+        if hasattr(self.behavior_manager, 'social_network'):
+            for agent_relationships in self.behavior_manager.social_network.values():
+                total_relationships += len(agent_relationships)
+            total_relationships //= 2  # 避免重复计算
+            print(f"  • 总关系数: {total_relationships}")
+            
+        # 显示最近交互统计
+        if hasattr(self, 'chat_history'):
+            agent_interactions = [chat for chat in self.chat_history if chat.get('interaction_type') != 'user_chat']
+            print(f"  • 最近交互数: {len(agent_interactions)}")
         
         # 社交活跃度排行
         print(f"\n{TerminalColors.CYAN}🏆 社交活跃度排行:{TerminalColors.END}")
@@ -296,17 +255,15 @@ class TerminalTownRefactored:
                 print(f"  {i:2d}. {emoji} {agent_name} ({profession})")
                 print(f"      📍 {location} | 💯 {stats['total_score']:.1f} | 🤝 {stats['interaction_count']} | 💬 {stats['user_chats']}")
         
-        # 显示关系网络分析
+        # 关系强度分布
         print(f"\n{TerminalColors.CYAN}🕸️ 关系网络分析:{TerminalColors.END}")
-        
-        # 统计关系强度分布
         if hasattr(self.behavior_manager, 'social_network'):
             strength_distribution = {'敌对': 0, '冷淡': 0, '中性': 0, '友好': 0, '亲密': 0}
-            total_relationships = 0
+            total_rels = 0
             
             for agent_name, relationships in self.behavior_manager.social_network.items():
                 for other_agent, strength in relationships.items():
-                    total_relationships += 1
+                    total_rels += 1
                     if strength >= 80:
                         strength_distribution['亲密'] += 1
                     elif strength >= 60:
@@ -318,33 +275,13 @@ class TerminalTownRefactored:
                     else:
                         strength_distribution['敌对'] += 1
             
-            print(f"  📊 关系分布 (总计 {total_relationships//2} 对关系):")
+            print(f"  📊 关系分布 (总计 {total_rels//2} 对关系):")
             for level, count in strength_distribution.items():
                 if count > 0:
-                    percentage = (count / total_relationships) * 100 if total_relationships > 0 else 0
+                    percentage = (count / total_rels) * 100 if total_rels > 0 else 0
                     print(f"     {level}: {count//2} 对 ({percentage/2:.1f}%)")
         
-        print()
-
-    def _show_social_network_advanced(self):
-        """显示高级社交网络状态"""
-        print(f"\n{TerminalColors.BOLD}━━━ 💫 高级社交网络 ━━━{TerminalColors.END}")
-        
-        # 显示行为管理器统计信息
-        print(f"🤝 社交网络统计:")
-        total_relationships = 0
-        if hasattr(self.behavior_manager, 'social_network'):
-            for agent_relationships in self.behavior_manager.social_network.values():
-                total_relationships += len(agent_relationships)
-            total_relationships //= 2  # 避免重复计算
-            print(f"  • 总关系数: {total_relationships}")
-            
-        # 显示最近交互统计
-        if hasattr(self, 'chat_history'):
-            agent_interactions = [chat for chat in self.chat_history if chat.get('interaction_type') != 'user_chat']
-            print(f"  • 最近交互数: {len(agent_interactions)}")
-        
-        print(f"✌️  关系管理系统运行正常")
+        print(f"\n✌️  关系管理系统运行正常")
         print()
     
 
@@ -808,7 +745,6 @@ class TerminalTownRefactored:
         except Exception as e:
             print(f"{TerminalColors.RED}❌ 保存过程中发生异常: {e}{TerminalColors.END}")
             logger.error(f"手动保存系统状态异常: {e}")
-            return False
     
     def show_persistence_status(self):
         """显示持久化状态 - 委托给状态显示器"""
@@ -1554,484 +1490,149 @@ class TerminalTownRefactored:
         try:
             logger.info("开始关闭系统...")
             self.running = False
-            
-            # 立即停止自动模拟
             if hasattr(self, 'simulation_engine'):
                 self.simulation_engine.auto_simulation = False
                 self.simulation_engine.running = False
                 logger.info("自动模拟已停止")
-            
-            # 快速保存关键数据
             print(f"{TerminalColors.YELLOW}💾 正在快速保存关键数据...{TerminalColors.END}")
             try:
-                # 只保存关键数据，跳过详细统计
                 quick_data = {
                     'agents': {name: {'location': getattr(agent, 'location', '家')} for name, agent in self.agents.items()},
                     'social_network': getattr(self.behavior_manager, 'social_network', {}),
                     'config': {'auto_simulation': False, 'last_shutdown': datetime.now().isoformat()}
                 }
                 self.persistence_manager.save_system_state(quick_data, quick_mode=True)
-                logger.info("关键数据保存完成")
             except Exception as e:
-                logger.warning(f"快速保存失败，跳过: {e}")
-            
-            # 快速关闭各个组件（设置超时）
+                logger.warning(f"快速保存失败: {e}")
             components_to_close = [
                 ('smart_cleanup_manager', 2.0),
-                ('memory_cleaner', 2.0), 
+                ('memory_cleaner', 2.0),
                 ('persistence_manager', 1.0),
                 ('error_handler', 1.0),
                 ('thread_manager', 3.0)
             ]
-            
-            for component_name, timeout in components_to_close:
+            for component_name, _ in components_to_close:
                 if hasattr(self, component_name):
-                    try:
-                        component = getattr(self, component_name)
-                        if hasattr(component, 'shutdown'):
-                            # 使用线程池快速关闭
-                            import concurrent.futures
-                            with concurrent.futures.ThreadPoolExecutor() as executor:
-                                future = executor.submit(component.shutdown)
-                                try:
-                                    future.result(timeout=timeout)
-                                    logger.info(f"{component_name} 关闭完成")
-                                except concurrent.futures.TimeoutError:
-                                    logger.warning(f"{component_name} 关闭超时，强制继续")
-                    except Exception as e:
-                        logger.warning(f"关闭 {component_name} 时出错: {e}")
-            
-            print(f"{TerminalColors.GREEN}✅ 系统已快速关闭{TerminalColors.END}")
-            logger.info("系统关闭完成")
-            
+                    comp = getattr(self, component_name)
+                    if hasattr(comp, 'shutdown'):
+                        try:
+                            comp.shutdown()
+                        except Exception as e:
+                            logger.warning(f"关闭组件 {component_name} 失败: {e}")
+            print(f"{TerminalColors.GREEN}✅ 系统已安全关闭{TerminalColors.END}")
         except Exception as e:
-            print(f"{TerminalColors.RED}❌ 关闭过程中发生异常: {e}{TerminalColors.END}")
-            logger.error(f"系统关闭异常: {e}")
-            
-            # 使用错误处理系统记录关闭异常
-            if hasattr(self, 'error_handler'):
-                try:
-                    self.error_handler.handle_error({
-                        'operation': 'system_shutdown',
-                        'category': 'SYSTEM',
-                        'severity': 'HIGH',
-                        'exception': e,
-                        'context': {'phase': 'shutdown'}
-                    })
-                except:
-                    pass  # 如果错误处理也失败，忽略
+            print(f"{TerminalColors.RED}❌ 关闭系统时出错: {e}{TerminalColors.END}")
+            logger.error(f"关闭系统失败: {e}")
 
-    def show_smart_cleanup_status(self):
-        """显示智能清理管理器状态"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 🤖 智能清理状态 ━━━{TerminalColors.END}")
-            
-            if hasattr(self, 'smart_cleanup_manager'):
-                status = self.smart_cleanup_manager.get_status()
-                
-                # 监控状态
-                is_running = status.get('is_monitoring', False)
-                print(f"🔄 监控状态: {'✅ 运行中' if is_running else '❌ 已停止'}")
-                
-                # 当前策略
-                strategy = status.get('current_strategy', 'balanced')
-                print(f"📋 清理策略: {strategy}")
-                
-                # 阈值设置
-                thresholds = status.get('thresholds', {})
-                print(f"📊 内存阈值:")
-                print(f"   • 警告: {thresholds.get('memory_warning', 70)}%")
-                print(f"   • 清理: {thresholds.get('memory_cleanup', 80)}%")
-                print(f"   • 紧急: {thresholds.get('memory_emergency', 90)}%")
-                
-                # 清理统计
-                stats = status.get('cleanup_stats', {})
-                print(f"📈 清理统计:")
-                print(f"   • 总清理次数: {stats.get('total_cleanups', 0)}")
-                print(f"   • 自动清理: {stats.get('auto_cleanups', 0)}")
-                print(f"   • 紧急清理: {stats.get('emergency_cleanups', 0)}")
-                print(f"   • 释放内存: {stats.get('memory_freed_mb', 0):.1f} MB")
-                
-                # 上次清理时间
-                last_cleanup = stats.get('last_cleanup_time')
-                if last_cleanup:
-                    print(f"   • 上次清理: {last_cleanup[:19]}")
-                
-                # 当前内存状态
-                current_memory = status.get('current_memory_percent', 0)
-                if current_memory > 0:
-                    color = TerminalColors.RED if current_memory > 85 else TerminalColors.YELLOW if current_memory > 75 else TerminalColors.GREEN
-                    print(f"💾 当前内存: {color}{current_memory:.1f}%{TerminalColors.END}")
-                
-            else:
-                print(f"{TerminalColors.RED}❌ 智能清理管理器未初始化{TerminalColors.END}")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取智能清理状态失败: {e}{TerminalColors.END}")
-            logger.error(f"显示智能清理状态失败: {e}")
-
-    def set_cleanup_strategy(self, strategy: str):
-        """设置清理策略"""
-        try:
-            if hasattr(self, 'smart_cleanup_manager'):
-                success = self.smart_cleanup_manager.set_strategy(strategy)
-                if success:
-                    print(f"{TerminalColors.GREEN}✅ 清理策略已切换为: {strategy}{TerminalColors.END}")
-                else:
-                    print(f"{TerminalColors.RED}❌ 无效的清理策略: {strategy}{TerminalColors.END}")
-                    self.show_cleanup_strategies()
-            else:
-                print(f"{TerminalColors.RED}❌ 智能清理管理器未初始化{TerminalColors.END}")
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 设置清理策略失败: {e}{TerminalColors.END}")
-            logger.error(f"设置清理策略失败: {e}")
-
-    def show_cleanup_strategies(self):
-        """显示可用的清理策略"""
-        print(f"\n{TerminalColors.BOLD}📋 可用的清理策略:{TerminalColors.END}")
-        print(f"• {TerminalColors.GREEN}balanced{TerminalColors.END}    - 平衡策略 (默认)")
-        print(f"• {TerminalColors.CYAN}performance{TerminalColors.END} - 性能优先")
-        print(f"• {TerminalColors.YELLOW}conservative{TerminalColors.END} - 保守策略")
-        print(f"• {TerminalColors.RED}aggressive{TerminalColors.END}  - 激进策略")
-        print(f"\n用法: smart strategy <strategy_name>")
-
-    def show_context_engine_status(self):
-        """显示上下文引擎状态"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 🧠 上下文引擎状态 ━━━{TerminalColors.END}")
-            
-            if hasattr(self, 'context_engine'):
-                # 获取模板信息
-                templates = self.context_engine.context_templates
-                print(f"📋 可用角色模板: {len(templates)} 个")
-                
-                for role, template in templates.items():
-                    print(f"  • {role}: {len(template.few_shot_examples)} 个示例")
-                
-                # 质量过滤器信息
-                filters = getattr(self.context_engine, 'quality_filters', {})
-                print(f"🔍 质量过滤器: {len(filters)} 个")
-                
-                print(f"✨ 功能特性:")
-                print(f"  ✅ Few-shot学习")
-                print(f"  ✅ 动态上下文构建")
-                print(f"  ✅ 响应质量过滤")
-                print(f"  ✅ 角色一致性维护")
-                
-            else:
-                print(f"{TerminalColors.RED}❌ 上下文引擎未初始化{TerminalColors.END}")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取上下文引擎状态失败: {e}{TerminalColors.END}")
-            logger.error(f"显示上下文引擎状态失败: {e}")
-
-    def test_context_engine(self):
-        """测试上下文引擎"""
-        try:
-            print(f"\n{TerminalColors.BOLD}🧪 测试上下文引擎{TerminalColors.END}")
-            
-            if hasattr(self, 'context_engine'):
-                # 测试示例
-                test_agent_name = "Alex"
-                test_situation = "有人问你最近怎么样"
-                
-                if test_agent_name in self.agents:
-                    agent = self.agents[test_agent_name]
-                    profession = getattr(agent, 'profession', 'programmer')
-                    
-                    # 构建上下文
-                    context = self.context_engine.build_context(
-                        agent_type=profession,  # 使用职业作为agent_type
-                        situation=test_situation,
-                        interaction_type='test',  # 测试类型
-                        relationship_level=50,  # 中性关系
-                        recent_memories=[]  # 空的记忆列表
-                    )
-                    
-                    print(f"✅ 为 {test_agent_name} 构建的上下文:")
-                    print(f"📝 长度: {len(context)} 字符")
-                    print(f"🎭 角色: {profession}")
-                    print(f"📋 情况: {test_situation}")
-                    
-                    # 显示部分上下文内容
-                    if len(context) > 200:
-                        preview = context[:200] + "..."
-                        print(f"👀 预览: {preview}")
-                    else:
-                        print(f"📄 内容: {context}")
-                else:
-                    print(f"{TerminalColors.YELLOW}⚠️ Agent {test_agent_name} 不存在，使用默认测试{TerminalColors.END}")
-                    
-                print(f"{TerminalColors.GREEN}✅ 上下文引擎工作正常{TerminalColors.END}")
-            else:
-                print(f"{TerminalColors.RED}❌ 上下文引擎未初始化{TerminalColors.END}")
-            
-            print()
-            
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 测试上下文引擎失败: {e}{TerminalColors.END}")
-            logger.error(f"测试上下文引擎失败: {e}")
-
-
-
-    def show_relationship_conflicts(self):
-        """显示关系冲突详情"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ ⚔️  关系冲突详情 ━━━{TerminalColors.END}")
-            print(f"😊 当前没有活跃的关系冲突")
-            print(f"💡 关系冲突功能已简化，使用基础社交网络管理")
-            print()
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取关系冲突详情失败: {e}{TerminalColors.END}")
-            logger.error(f"显示关系冲突详情失败: {e}")
-
-    def show_relationship_tensions(self):
-        """显示关系紧张度详情"""
-        try:
-            print(f"\n{TerminalColors.BOLD}━━━ 😤 关系紧张度分析 ━━━{TerminalColors.END}")
-            print(f" 没有检测到关系紧张")
-            print(f"💖 社区氛围非常和谐！")
-            print(f"💡 关系紧张度功能已简化，使用基础社交网络管理")
-            print()
-        except Exception as e:
-            print(f"{TerminalColors.RED}❌ 获取关系紧张度详情失败: {e}{TerminalColors.END}")
-            logger.error(f"显示关系紧张度详情失败: {e}")
 
 def main():
-    """主函数"""
-    try:
-        town = TerminalTownRefactored()
-        
-        print(f"\n{TerminalColors.GREEN}🎮 系统就绪！输入命令开始体验{TerminalColors.END}")
-        print(f"{TerminalColors.CYAN}💡 输入 'help' 查看所有可用命令{TerminalColors.END}\n")
-        
-        while town.running:
-            try:
-                # 正常的阻塞输入，无论是否在auto模式
-                user_input = input(f"{TerminalColors.BOLD}🏘️  小镇> {TerminalColors.END}").strip()
-                
-                if not user_input:
-                    continue
-                
-                # 解析命令
-                parts = user_input.split()
-                command = parts[0].lower()
-                
-                if command in ['quit', 'exit', '退出']:
-                    town.ui.show_info("正在安全关闭系统...")
-                    print(f"{TerminalColors.YELLOW}👋 感谢使用 Terminal Town！{TerminalColors.END}")
-                    break
-                elif command == 'map':
-                    town.show_map()
-                elif command == 'agents':
-                    town.show_agents_status()
-                elif command == 'social':
-                    if len(parts) > 1:
-                        if parts[1] == 'network':
-                            town.show_social_network('basic')
-                        elif parts[1] == 'conflicts':
-                            town.show_relationship_conflicts()
-                        elif parts[1] == 'tensions':
-                            town.show_relationship_tensions()
-                        elif parts[1] == 'advanced':
-                            town.show_social_network('advanced')
-                        elif parts[1] == 'detailed':
-                            town.show_social_network('detailed')
-                        elif parts[1] == 'file':
-                            town.show_social_network('file')
-                        else:
-                            town.show_social_network('basic')
-                    else:
-                        town.show_social_network('basic')
-                elif command == 'memory':
-                    if len(parts) > 1:
-                        if parts[1] == 'status':
-                            town.show_memory_status()
-                        elif parts[1] == 'cleanup':
-                            cleanup_type = parts[2] if len(parts) > 2 else 'normal'
-                            town.cleanup_memory(cleanup_type)
-                        elif parts[1] == 'vector':
-                            town.show_vector_database_status()
-                        elif parts[1] == 'optimize':
-                            town.optimize_vector_database()
-                        else:
-                            town.show_memory_status()
-                    else:
-                        town.show_memory_status()
-                elif command == 'status':
-                    if len(parts) > 1:
-                        if parts[1] == 'health':
-                            town.show_system_health()
-                        elif parts[1] == 'persistence':
-                            town.show_persistence_status()
-                        elif parts[1] == 'optimization':
-                            town.show_optimization_report()
-                        else:
-                            town.show_persistence_status()
-                    else:
-                        town.show_persistence_status()
-                elif command == 'chat':
-                    if len(parts) > 1:
-                        agent_name = parts[1]
-                        message = ' '.join(parts[2:]) if len(parts) > 2 else None
-                        town.chat_with_agent(agent_name, message)
-                    else:
-                        town.ui.show_error("请指定要对话的Agent名称")
-                elif command == 'move':
-                    if len(parts) >= 3:
-                        agent_name = parts[1]
-                        location = ' '.join(parts[2:])
-                        town.move_agent(agent_name, location)
-                    else:
-                        town.ui.show_error("用法: move <agent_name> <location>")
-                elif command == 'auto':
-                    town.toggle_auto_simulation()
-                elif command == 'save':
-                    town.save_system_state()
-                elif command == 'dev':
-                    # 开发者模式 - 高级功能
-                    if len(parts) > 1:
-                        dev_cmd = parts[1]
-                        if dev_cmd == 'cleanup':
-                            cleanup_type = parts[2] if len(parts) > 2 else 'normal'
-                            town.cleanup_memory(cleanup_type)
-                        elif dev_cmd == 'optimize':
-                            if len(parts) > 2 and parts[2] == 'report':
-                                town.show_optimization_report()
-                            else:
-                                town.optimize_vector_database()
-                        elif dev_cmd == 'reset':
-                            if len(parts) > 2 and parts[2] == 'errors':
-                                town.reset_error_statistics()
-                            else:
-                                print(f"{TerminalColors.YELLOW}用法: dev reset errors{TerminalColors.END}")
-                        elif dev_cmd == 'smart':
-                            if len(parts) > 2:
-                                if parts[2] == 'status':
-                                    town.show_smart_cleanup_status()
-                                elif parts[2] == 'start':
-                                    town.smart_cleanup_manager.start_monitoring()
-                                    print(f"{TerminalColors.GREEN}✅ 智能清理监控已启动{TerminalColors.END}")
-                                elif parts[2] == 'stop':
-                                    town.smart_cleanup_manager.stop_monitoring()
-                                    print(f"{TerminalColors.YELLOW}⏸️  智能清理监控已停止{TerminalColors.END}")
-                                elif parts[2] == 'strategy':
-                                    if len(parts) > 3:
-                                        town.set_cleanup_strategy(parts[3])
-                                    else:
-                                        town.show_cleanup_strategies()
-                                else:
-                                    print(f"{TerminalColors.YELLOW}用法: dev smart [status|start|stop|strategy]{TerminalColors.END}")
-                            else:
-                                town.show_smart_cleanup_status()
-                        elif dev_cmd == 'context':
-                            if len(parts) > 2 and parts[2] == 'test':
-                                town.test_context_engine()
-                            else:
-                                town.show_context_engine_status()
-                        elif dev_cmd == 'vector':
-                            town.show_vector_database_status()
-                        elif dev_cmd == 'health':
-                            town.show_system_health()
-                        else:
-                            print(f"{TerminalColors.CYAN}🔧 开发者模式可用命令:{TerminalColors.END}")
-                            print(f"  dev cleanup [normal|emergency|vector|all] - 内存清理")
-                            print(f"  dev optimize [report] - 数据库优化")
-                            print(f"  dev reset errors - 重置错误统计")
-                            print(f"  dev smart [status|start|stop|strategy] - 智能清理")
-                            print(f"  dev context [test] - 上下文引擎")
-                            print(f"  dev vector - 向量数据库状态")
-                            print(f"  dev health - 系统健康状态")
-                    else:
-                        print(f"{TerminalColors.CYAN}🔧 开发者模式 - 高级功能{TerminalColors.END}")
-                        print(f"输入 'dev' 查看可用的开发者命令")
-                elif command == 'stats':
-                    # 显示详细统计信息
-                    if len(parts) > 1:
-                        if parts[1] == 'system':
-                            town.show_persistence_status()
-                        elif parts[1] == 'errors':
-                            town.show_system_health()
-                        elif parts[1] == 'memory':
-                            town.show_memory_status()
-                        elif parts[1] == 'agents':
-                            town.show_agents_status()
-                        elif parts[1] == 'social':
-                            town.show_social_network('basic')
-                        else:
-                            # 显示综合统计
-                            town.show_comprehensive_stats()
-                    else:
-                        # 默认显示综合统计
-                        town.show_comprehensive_stats()
-                elif command == 'history':
-                    # 显示历史记录
-                    if len(parts) > 1:
-                        if parts[1] == 'chat':
-                            town.show_chat_history()
-                        elif parts[1] == 'interactions':
-                            town.show_interaction_history()
-                        elif parts[1] == 'movements':
-                            town.show_movement_history()
-                        else:
-                            town.show_system_history()
-                    else:
-                        town.show_system_history()
-                elif command == 'events' or command == 'event':
-                    # 显示和管理事件
-                    if len(parts) > 1:
-                        if parts[1] == 'list':
-                            town.show_recent_events()
-                        elif parts[1] == 'create':
-                            event_type = parts[2] if len(parts) > 2 else 'custom'
-                            town.create_event(event_type)
-                        elif parts[1] == 'clear':
-                            town.clear_event_history()
-                        else:
-                            town.show_recent_events()
-                    else:
-                        town.show_recent_events()
-                elif command == 'help':
-                    town.ui.show_welcome()
-                else:
-                    town.ui.show_error(f"未知命令: {command}")
-                    town.ui.show_info("💡 输入 'help' 查看所有可用命令")
-                    
-            except KeyboardInterrupt:
-                print(f"\n{TerminalColors.YELLOW}⚠️  检测到 Ctrl+C 中断信号{TerminalColors.END}")
-                print(f"{TerminalColors.CYAN}💡 请使用 'quit' 命令安全退出系统{TerminalColors.END}")
-                print(f"{TerminalColors.CYAN}   或再次按 Ctrl+C 强制退出{TerminalColors.END}")
-                try:
-                    # 给用户一个机会选择
-                    user_choice = input(f"{TerminalColors.BOLD}继续运行? (y/N): {TerminalColors.END}").strip().lower()
-                    if user_choice not in ['y', 'yes', '是']:
-                        town.ui.show_warning("正在强制关闭系统...")
-                        # 立即停止自动模拟
-                        if hasattr(town, 'simulation_engine') and hasattr(town.simulation_engine, 'auto_simulation'):
-                            town.simulation_engine.auto_simulation = False
-                        break
-                except KeyboardInterrupt:
-                    print(f"\n{TerminalColors.RED}🚨 强制退出系统{TerminalColors.END}")
-                    # 立即停止自动模拟
-                    if hasattr(town, 'simulation_engine') and hasattr(town.simulation_engine, 'auto_simulation'):
-                        town.simulation_engine.auto_simulation = False
-                    break
-            except EOFError:
+    """命令行主入口"""
+    town = TerminalTownRefactored()
+
+    HELP_TEXT = f"""
+{TerminalColors.CYAN}可用命令:{TerminalColors.END}
+  help                      显示帮助
+  map                       显示地图
+  agents                    显示所有Agent状态
+  social [basic|adv]        显示社交网络(默认basic, adv=高级)
+  chat <Agent> <内容>       与Agent聊天
+  move <Agent> <地点>       移动Agent到地点
+  auto                      切换自动模拟开/关
+  stats                     显示综合统计
+  history [chat|inter|move] 查看历史 (默认概览)
+  events                    查看最近事件
+  event <type>              创建事件(meeting/conflict/celebration/custom)
+  mem                       查看内存状态
+  vec                       查看向量数据库状态
+  optimize                  执行向量库优化
+  cleanup [normal|vector|all|emergency] 内存清理
+  save                      手动保存系统状态
+  exit / quit               退出程序
+"""
+    print(HELP_TEXT)
+
+    while town.running:
+        try:
+            cmd = input(f"{TerminalColors.YELLOW}🧭 指令>{TerminalColors.END} ").strip()
+            if not cmd:
+                continue
+            if cmd in ("exit", "quit", "q"):
+                town.shutdown()
                 break
-            except Exception as e:
-                town.ui.show_error(f"命令执行失败: {e}")
-                logger.error(f"命令执行异常: {e}")
-        
-    except Exception as e:
-        print(f"{TerminalColors.RED}❌ 系统启动失败: {e}{TerminalColors.END}")
-        logger.error(f"系统启动失败: {e}")
-    finally:
-        if 'town' in locals():
+            if cmd == "help":
+                print(HELP_TEXT)
+                continue
+            if cmd == "map":
+                town.show_map(); continue
+            if cmd == "agents":
+                town.show_agents_status(); continue
+            if cmd.startswith("social"):
+                parts = cmd.split()
+                mode = 'advanced' if len(parts) > 1 and parts[1] in ('adv','advanced') else 'basic'
+                town.show_social_network('advanced' if mode=='advanced' else 'basic'); continue
+            if cmd.startswith("chat "):
+                parts = cmd.split(maxsplit=2)
+                if len(parts) < 3:
+                    print("格式: chat <Agent名字> <内容>"); continue
+                agent, message = parts[1], parts[2]
+                town.chat_with_agent(agent, message); continue
+            if cmd.startswith("move "):
+                parts = cmd.split(maxsplit=2)
+                if len(parts) < 3:
+                    print("格式: move <Agent名字> <地点>"); continue
+                agent, loc = parts[1], parts[2]
+                ok = town.move_agent(agent, loc)
+                if ok:
+                    print(f"✅ 已移动 {agent} 到 {loc}")
+                else:
+                    print(f"❌ 移动失败 (检查名字/地点)")
+                continue
+            if cmd == "auto":
+                town.toggle_auto_simulation(); continue
+            if cmd.startswith("stats"):
+                town.show_comprehensive_stats(); continue
+            if cmd.startswith("history"):
+                parts = cmd.split()
+                if len(parts)==1:
+                    town.show_system_history()
+                else:
+                    t = parts[1]
+                    if t.startswith('chat'): town.show_chat_history()
+                    elif t.startswith('inter'): town.show_interaction_history()
+                    elif t.startswith('move'): town.show_movement_history()
+                    else: town.show_system_history()
+                continue
+            if cmd == "events":
+                town.show_recent_events(); continue
+            if cmd.startswith("event"):
+                parts = cmd.split()
+                etype = parts[1] if len(parts)>1 else 'custom'
+                town.create_event(etype); continue
+            if cmd == "mem":
+                town.show_memory_status(); continue
+            if cmd == "vec":
+                town.show_vector_database_status(); continue
+            if cmd == "optimize":
+                town.optimize_vector_database(); continue
+            if cmd.startswith("cleanup"):
+                parts = cmd.split()
+                ctype = parts[1] if len(parts)>1 else 'normal'
+                town.cleanup_memory(ctype); continue
+            if cmd == "save":
+                town.save_system_state(); continue
+            print("未知命令, 输入 help 查看可用命令")
+        except KeyboardInterrupt:
+            print("\n收到中断信号，正在关闭...")
             town.shutdown()
+            break
+        except EOFError:
+            print("\nEOF，退出...")
+            town.shutdown()
+            break
+        except Exception as e:
+            print(f"{TerminalColors.RED}命令执行出错: {e}{TerminalColors.END}")
+            logger.exception("命令执行出错")
+
 
 if __name__ == "__main__":
     main()
